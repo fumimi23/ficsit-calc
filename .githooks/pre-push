@@ -1,0 +1,13 @@
+#!/bin/sh
+# push 前にローカル CI(scripts/check.sh)を実行し、失敗したら push を中止する。
+# 有効化(クローンごとに一度): git config core.hooksPath .githooks
+# 緊急でスキップしたいときのみ: git push --no-verify
+repo_root=$(git rev-parse --show-toplevel)
+echo "[pre-push] ローカル CI を実行します..."
+if ! sh "$repo_root/scripts/check.sh"; then
+  echo "[pre-push] チェック失敗。push を中止しました。修正してから再度 push してください。" >&2
+  echo "[pre-push] (どうしてもスキップする場合のみ: git push --no-verify)" >&2
+  exit 1
+fi
+echo "[pre-push] OK。push を続行します。"
+exit 0

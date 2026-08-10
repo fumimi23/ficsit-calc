@@ -1,0 +1,15 @@
+# 依存・ビルド成果物
+node_modules/
+dist/
+.astro/
+
+# 環境変数・秘密（コミットしない）
+.env
+.env.*
+
+# 生のゲーム Docs はコミットしない（派生スナップショット data/recipes.json のみコミット）
+data/en-US.json
+data/Docs/
+
+# Claude Code の個人ローカル設定
+.claude/settings.local.json
