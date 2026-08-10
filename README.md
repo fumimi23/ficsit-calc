@@ -14,6 +14,7 @@ Satisfactory の生産チェーン計算機（**非公式ツール**）。作り
 ## 技術スタック
 
 - Astro + React アイランド + TypeScript（静的ビルド）。計算コアはフレームワーク非依存の純 TS モジュール
+- 計算コアの数値は BigInt ベースの分数（`src/lib/calc/fraction.ts`）で保持し、浮動小数点誤差なしで計算する（表示時に十進文字列化）
 - テスト: Vitest / lint + format: Biome
 
 ## 開発
