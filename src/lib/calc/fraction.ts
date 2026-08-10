@@ -115,7 +115,9 @@ export class Fraction {
 	/** 指定桁で四捨五入した十進文字列。末尾の 0 は落とす(例: 40/3 → 4 桁で "13.3333"、3/2 → "1.5") */
 	toDecimalString(maxFractionDigits = 6): string {
 		if (!Number.isInteger(maxFractionDigits) || maxFractionDigits < 0) {
-			throw new RangeError(`桁数は 0 以上の整数で指定してください: ${maxFractionDigits}`);
+			throw new RangeError(
+				`桁数は 0 以上の整数で指定してください: ${maxFractionDigits}`,
+			);
 		}
 		const scale = 10n ** BigInt(maxFractionDigits);
 		const abs = this.num < 0n ? -this.num : this.num;
