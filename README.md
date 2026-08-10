@@ -7,9 +7,10 @@ Satisfactory の生産チェーン計算機（**非公式ツール**）。作り
 
 ## データの出典と取り扱い
 
-- レシピデータは、ゲーム同梱でツール開発用に提供されているデータ（`CommunityResources/Docs/en-US.json`、Coffee Stain Studios 提供）から自前パーサーで抽出した派生スナップショット `data/recipes.json` です
+- レシピデータは、ゲーム同梱でツール開発用に提供されているデータ（`CommunityResources/Docs/` のロケール別 JSON、Coffee Stain Studios 提供）から自前パーサーで抽出した派生スナップショット `data/recipes.json` です（表示名は `en-US.json` と `ja.json` から日英両方を収録）
 - 本ツールは Coffee Stain Studios とは無関係の非公式ツールです
-- 生の `en-US.json` はリポジトリにコミットしません（`.gitignore` 済み）。抽出は計算に必要な最小限（ID・名前・数量・所要時間・機械・電力）に留め、説明文・フレーバーテキスト・画像アセットは含めません
+- 生の Docs ファイルはリポジトリにコミットしません（`.gitignore` 済み）。抽出は計算に必要な最小限（ID・名前・数量・所要時間・機械・電力・物質形態）に留め、説明文・フレーバーテキスト・画像アセットは含めません
+- v1 の収録範囲: デフォルトレシピのみ（代替レシピは除外）。可変電力の機械（粒子加速器・コンバーター・量子エンコーダー）とそのレシピは、機械単位の定格電力で表せないため v1 では除外しています
 
 ## 技術スタック
 
@@ -26,6 +27,16 @@ npm install
 npm run dev    # http://localhost:5273/ficsit-calc （ポートは 5273 固定）
 npm run build  # dist/ に静的ビルド
 ```
+
+### レシピデータの再生成
+
+`data/recipes.json` はコミット済みなので通常は不要。ゲームのアップデート後に更新する場合:
+
+```sh
+npm run generate-recipes -- "/mnt/e/Epic Games/Satisfactory/CommunityResources/Docs"
+```
+
+引数はゲームフォルダの `CommunityResources/Docs` ディレクトリ（`en-US.json` と `ja.json` を直接読む）。WSL からは Windows のドライブが `/mnt/<ドライブ文字>/` に見える。
 
 ## ローカル CI
 
