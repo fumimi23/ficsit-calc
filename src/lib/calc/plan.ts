@@ -1,4 +1,6 @@
+import { Fraction } from "./fraction";
 import type {
+	ExactNumeric,
 	ItemId,
 	MachineRequirement,
 	PlanNode,
@@ -18,24 +20,30 @@ export class UnknownItemError extends Error {
 
 export interface ProductionTarget {
 	itemId: ItemId;
-	/** 目標生産レート(個/分) */
-	ratePerMinute: number;
+	/** 目標生産レート(個/分)。"7.5" のような十進文字列でも指定できる(issue #6) */
+	ratePerMinute: ExactNumeric;
 }
+
+const ZERO = Fraction.of(0);
+const SIXTY = Fraction.of(60);
 
 /**
  * 目標アイテムと生産レート(個/分)から生産チェーンを逆算する。
  *
  * レシピグラフを目標から遡って再帰展開し、レシピを持たないアイテム(原料)で終端する。
- * 機械台数は小数のまま保持する(丸め・クロック提案は表示側の関心事)。
+ * 数値は誤差のない分数(Fraction)で保持し、機械台数は端数のまま返す
+ * (丸め・クロック提案は表示側の関心事)。
  * アイテムに複数レシピがある場合はデフォルト(alternate でない)レシピを使う。
  */
 export function planProduction(
 	data: RecipeData,
 	target: ProductionTarget,
 ): ProductionPlan {
-	if (!Number.isFinite(target.ratePerMinute) || target.ratePerMinute < 0) {
+	// 非有限・十進表記でない入力は Fraction.from が RangeError にする
+	const targetRate = Fraction.from(target.ratePerMinute);
+	if (targetRate.isNegative()) {
 		throw new RangeError(
-			`生産レートは 0 以上の数値で指定してください: ${target.ratePerMinute}`,
+			`生産レートは 0 以上で指定してください: ${target.ratePerMinute}`,
 		);
 	}
 
@@ -45,7 +53,7 @@ export function planProduction(
 
 	const expand = (
 		itemId: ItemId,
-		ratePerMinute: number,
+		ratePerMinute: Fraction,
 		stack: ItemId[],
 	): PlanNode => {
 		if (!(itemId in data.items)) {
@@ -62,9 +70,9 @@ export function planProduction(
 			// レシピを持たないアイテム = 原料。ここで終端する
 			const entry = rawMaterials.get(itemId) ?? {
 				item: itemId,
-				ratePerMinute: 0,
+				ratePerMinute: ZERO,
 			};
-			entry.ratePerMinute += ratePerMinute;
+			entry.ratePerMinute = entry.ratePerMinute.add(ratePerMinute);
 			rawMaterials.set(itemId, entry);
 			return { item: itemId, ratePerMinute, inputs: [] };
 		}
@@ -77,25 +85,32 @@ export function planProduction(
 		}
 
 		// findDefaultRecipe の条件より outputs に itemId が必ず含まれる
-		const outputAmount =
-			recipe.outputs.find((o) => o.item === itemId)?.amount ?? 1;
-		const craftsPerMinute = ratePerMinute / outputAmount;
-		const machineCount = (craftsPerMinute * recipe.durationSeconds) / 60;
-		const powerMW = machineCount * building.powerMW;
+		const outputAmount = Fraction.from(
+			recipe.outputs.find((o) => o.item === itemId)?.amount ?? 1,
+		);
+		const craftsPerMinute = ratePerMinute.div(outputAmount);
+		const machineCount = craftsPerMinute
+			.mul(Fraction.from(recipe.durationSeconds))
+			.div(SIXTY);
+		const powerMW = machineCount.mul(Fraction.from(building.powerMW));
 
 		const entry = machines.get(recipe.id) ?? {
 			recipeId: recipe.id,
 			building: recipe.building,
-			machineCount: 0,
-			powerMW: 0,
+			machineCount: ZERO,
+			powerMW: ZERO,
 		};
-		entry.machineCount += machineCount;
-		entry.powerMW += powerMW;
+		entry.machineCount = entry.machineCount.add(machineCount);
+		entry.powerMW = entry.powerMW.add(powerMW);
 		machines.set(recipe.id, entry);
 
 		const nextStack = [...stack, itemId];
 		const inputs = recipe.inputs.map((input) =>
-			expand(input.item, input.amount * craftsPerMinute, nextStack),
+			expand(
+				input.item,
+				Fraction.from(input.amount).mul(craftsPerMinute),
+				nextStack,
+			),
 		);
 
 		return {
@@ -111,10 +126,10 @@ export function planProduction(
 		};
 	};
 
-	const root = expand(target.itemId, target.ratePerMinute, []);
+	const root = expand(target.itemId, targetRate, []);
 	const totalPowerMW = [...machines.values()].reduce(
-		(sum, m) => sum + m.powerMW,
-		0,
+		(sum, m) => sum.add(m.powerMW),
+		ZERO,
 	);
 
 	return {
