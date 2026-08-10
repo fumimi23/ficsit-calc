@@ -8,6 +8,7 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"test": "vitest run --passWithNoTests",
+		"generate-recipes": "tsx scripts/generate-recipes.ts",
 		"check": "sh scripts/check.sh",
 		"fmt": "sh scripts/fmt.sh"
 	},
@@ -20,8 +21,10 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.10",
 		"@biomejs/biome": "^2.5.7",
+		"@types/node": "^26.2.0",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.4",
+		"tsx": "^4.23.12",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.10"
 	}

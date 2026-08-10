@@ -1,0 +1,4059 @@
+{
+	"items": {
+		"Desc_AlienDNACapsule_C": {
+			"name": "Alien DNA Capsule",
+			"nameJa": "エイリアンのDNAカプセル",
+			"form": "solid"
+		},
+		"Desc_AlienProtein_C": {
+			"name": "Alien Protein",
+			"nameJa": "エイリアンのタンパク質",
+			"form": "solid"
+		},
+		"Desc_AluminaSolution_C": {
+			"name": "Alumina Solution",
+			"nameJa": "アルミナ溶液",
+			"form": "liquid"
+		},
+		"Desc_AluminumCasing_C": {
+			"name": "Aluminum Casing",
+			"nameJa": "アルミ筐体",
+			"form": "solid"
+		},
+		"Desc_AluminumIngot_C": {
+			"name": "Aluminum Ingot",
+			"nameJa": "アルミのインゴット",
+			"form": "solid"
+		},
+		"Desc_AluminumPlateReinforced_C": {
+			"name": "Heat Sink",
+			"nameJa": "ヒートシンク",
+			"form": "solid"
+		},
+		"Desc_AluminumPlate_C": {
+			"name": "Alclad Aluminum Sheet",
+			"nameJa": "アルクラッド・アルミシート",
+			"form": "solid"
+		},
+		"Desc_AluminumScrap_C": {
+			"name": "Aluminum Scrap",
+			"nameJa": "アルミのスクラップ",
+			"form": "solid"
+		},
+		"Desc_Battery_C": {
+			"name": "Battery",
+			"nameJa": "バッテリー",
+			"form": "solid"
+		},
+		"Desc_Biofuel_C": {
+			"name": "Solid Biofuel",
+			"nameJa": "固体バイオ燃料",
+			"form": "solid"
+		},
+		"Desc_Cable_C": {
+			"name": "Cable",
+			"nameJa": "ケーブル",
+			"form": "solid"
+		},
+		"Desc_CandyCane_C": {
+			"name": "Candy Cane",
+			"nameJa": "キャンディケイン",
+			"form": "solid"
+		},
+		"Desc_CartridgeChaos_C": {
+			"name": "Turbo Rifle Ammo",
+			"nameJa": "ターボライフル弾",
+			"form": "solid"
+		},
+		"Desc_CartridgeSmartProjectile_C": {
+			"name": "Homing Rifle Ammo",
+			"nameJa": "ホーミングライフル弾",
+			"form": "solid"
+		},
+		"Desc_CartridgeStandard_C": {
+			"name": "Rifle Ammo",
+			"nameJa": "ライフル弾",
+			"form": "solid"
+		},
+		"Desc_Cement_C": {
+			"name": "Concrete",
+			"nameJa": "コンクリート",
+			"form": "solid"
+		},
+		"Desc_CircuitBoardHighSpeed_C": {
+			"name": "AI Limiter",
+			"nameJa": "AIリミッター",
+			"form": "solid"
+		},
+		"Desc_CircuitBoard_C": {
+			"name": "Circuit Board",
+			"nameJa": "回路基板",
+			"form": "solid"
+		},
+		"Desc_Coal_C": {
+			"name": "Coal",
+			"nameJa": "石炭",
+			"form": "solid"
+		},
+		"Desc_CompactedCoal_C": {
+			"name": "Compacted Coal",
+			"nameJa": "圧縮石炭",
+			"form": "solid"
+		},
+		"Desc_ComputerSuper_C": {
+			"name": "Supercomputer",
+			"nameJa": "スーパーコンピューター",
+			"form": "solid"
+		},
+		"Desc_Computer_C": {
+			"name": "Computer",
+			"nameJa": "コンピューター",
+			"form": "solid"
+		},
+		"Desc_CoolingSystem_C": {
+			"name": "Cooling System",
+			"nameJa": "冷却システム",
+			"form": "solid"
+		},
+		"Desc_CopperDust_C": {
+			"name": "Copper Powder",
+			"nameJa": "銅粉",
+			"form": "solid"
+		},
+		"Desc_CopperIngot_C": {
+			"name": "Copper Ingot",
+			"nameJa": "銅のインゴット",
+			"form": "solid"
+		},
+		"Desc_CopperSheet_C": {
+			"name": "Copper Sheet",
+			"nameJa": "銅板",
+			"form": "solid"
+		},
+		"Desc_CrystalOscillator_C": {
+			"name": "Crystal Oscillator",
+			"nameJa": "水晶発振器",
+			"form": "solid"
+		},
+		"Desc_CrystalShard_C": {
+			"name": "Power Shard",
+			"nameJa": "パワー・シャード",
+			"form": "solid"
+		},
+		"Desc_Crystal_C": {
+			"name": "Blue Power Slug",
+			"nameJa": "青のパワー・スラッグ",
+			"form": "solid"
+		},
+		"Desc_Crystal_mk2_C": {
+			"name": "Yellow Power Slug",
+			"nameJa": "黄のパワー・スラッグ",
+			"form": "solid"
+		},
+		"Desc_Crystal_mk3_C": {
+			"name": "Purple Power Slug",
+			"nameJa": "紫のパワー・スラッグ",
+			"form": "solid"
+		},
+		"Desc_DarkMatter_C": {
+			"name": "Dark Matter Crystal",
+			"nameJa": "ダークマターの結晶",
+			"form": "solid"
+		},
+		"Desc_ElectromagneticControlRod_C": {
+			"name": "Electromagnetic Control Rod",
+			"nameJa": "電磁制御棒",
+			"form": "solid"
+		},
+		"Desc_Fabric_C": {
+			"name": "Fabric",
+			"nameJa": "布地",
+			"form": "solid"
+		},
+		"Desc_FicsiteIngot_C": {
+			"name": "Ficsite Ingot",
+			"nameJa": "FICSITEのインゴット",
+			"form": "solid"
+		},
+		"Desc_FicsiteMesh_C": {
+			"name": "Ficsite Trigon",
+			"nameJa": "FICSITEの三角板",
+			"form": "solid"
+		},
+		"Desc_Filter_C": {
+			"name": "Gas Filter",
+			"nameJa": "ガスフィルター",
+			"form": "solid"
+		},
+		"Desc_Fireworks_Projectile_01_C": {
+			"name": "Sweet Fireworks",
+			"nameJa": "きれいな花火",
+			"form": "solid"
+		},
+		"Desc_Fireworks_Projectile_02_C": {
+			"name": "Fancy Fireworks",
+			"nameJa": "派手な花火",
+			"form": "solid"
+		},
+		"Desc_Fireworks_Projectile_03_C": {
+			"name": "Sparkly Fireworks",
+			"nameJa": "きらめく花火",
+			"form": "solid"
+		},
+		"Desc_FluidCanister_C": {
+			"name": "Empty Canister",
+			"nameJa": "空の容器",
+			"form": "solid"
+		},
+		"Desc_Fuel_C": {
+			"name": "Packaged Fuel",
+			"nameJa": "包装済み燃料",
+			"form": "solid"
+		},
+		"Desc_GasTank_C": {
+			"name": "Empty Fluid Tank",
+			"nameJa": "空の液体タンク",
+			"form": "solid"
+		},
+		"Desc_GenericBiomass_C": {
+			"name": "Biomass",
+			"nameJa": "バイオマス",
+			"form": "solid"
+		},
+		"Desc_GoldIngot_C": {
+			"name": "Caterium Ingot",
+			"nameJa": "カテリウムのインゴット",
+			"form": "solid"
+		},
+		"Desc_GunpowderMK2_C": {
+			"name": "Smokeless Powder",
+			"nameJa": "無煙火薬",
+			"form": "solid"
+		},
+		"Desc_Gunpowder_C": {
+			"name": "Black Powder",
+			"nameJa": "黒色火薬",
+			"form": "solid"
+		},
+		"Desc_HatcherParts_C": {
+			"name": "Hatcher Remains",
+			"nameJa": "ハッチャーの遺骸",
+			"form": "solid"
+		},
+		"Desc_HazmatFilter_C": {
+			"name": "Iodine-Infused Filter",
+			"nameJa": "ヨウ素充填フィルター",
+			"form": "solid"
+		},
+		"Desc_HeavyOilResidue_C": {
+			"name": "Heavy Oil Residue",
+			"nameJa": "廃重油",
+			"form": "liquid"
+		},
+		"Desc_HighSpeedConnector_C": {
+			"name": "High-Speed Connector",
+			"nameJa": "高速コネクター",
+			"form": "solid"
+		},
+		"Desc_HighSpeedWire_C": {
+			"name": "Quickwire",
+			"nameJa": "クイックワイヤー",
+			"form": "solid"
+		},
+		"Desc_HogParts_C": {
+			"name": "Hog Remains",
+			"nameJa": "ホッグの遺骸",
+			"form": "solid"
+		},
+		"Desc_IonizedFuel_C": {
+			"name": "Ionized Fuel",
+			"nameJa": "イオン燃料",
+			"form": "gas"
+		},
+		"Desc_IronIngot_C": {
+			"name": "Iron Ingot",
+			"nameJa": "鉄のインゴット",
+			"form": "solid"
+		},
+		"Desc_IronPlateReinforced_C": {
+			"name": "Reinforced Iron Plate",
+			"nameJa": "強化鉄板",
+			"form": "solid"
+		},
+		"Desc_IronPlate_C": {
+			"name": "Iron Plate",
+			"nameJa": "鉄板",
+			"form": "solid"
+		},
+		"Desc_IronRod_C": {
+			"name": "Iron Rod",
+			"nameJa": "鉄のロッド",
+			"form": "solid"
+		},
+		"Desc_IronScrew_C": {
+			"name": "Screws",
+			"nameJa": "ネジ",
+			"form": "solid"
+		},
+		"Desc_Leaves_C": {
+			"name": "Leaves",
+			"nameJa": "葉",
+			"form": "solid"
+		},
+		"Desc_LiquidBiofuel_C": {
+			"name": "Liquid Biofuel",
+			"nameJa": "液体バイオ燃料",
+			"form": "liquid"
+		},
+		"Desc_LiquidFuel_C": {
+			"name": "Fuel",
+			"nameJa": "燃料",
+			"form": "liquid"
+		},
+		"Desc_LiquidOil_C": {
+			"name": "Crude Oil",
+			"nameJa": "原油",
+			"form": "liquid"
+		},
+		"Desc_LiquidTurboFuel_C": {
+			"name": "Turbofuel",
+			"nameJa": "ターボ燃料",
+			"form": "liquid"
+		},
+		"Desc_ModularFrameFused_C": {
+			"name": "Fused Modular Frame",
+			"nameJa": "溶融モジュラー・フレーム",
+			"form": "solid"
+		},
+		"Desc_ModularFrameHeavy_C": {
+			"name": "Heavy Modular Frame",
+			"nameJa": "ヘビー・モジュラー・フレーム",
+			"form": "solid"
+		},
+		"Desc_ModularFrameLightweight_C": {
+			"name": "Radio Control Unit",
+			"nameJa": "無線制御ユニット",
+			"form": "solid"
+		},
+		"Desc_ModularFrame_C": {
+			"name": "Modular Frame",
+			"nameJa": "モジュラー・フレーム",
+			"form": "solid"
+		},
+		"Desc_MotorLightweight_C": {
+			"name": "Turbo Motor",
+			"nameJa": "ターボ・モーター",
+			"form": "solid"
+		},
+		"Desc_Motor_C": {
+			"name": "Motor",
+			"nameJa": "モーター",
+			"form": "solid"
+		},
+		"Desc_Mycelia_C": {
+			"name": "Mycelia",
+			"nameJa": "菌糸",
+			"form": "solid"
+		},
+		"Desc_NitricAcid_C": {
+			"name": "Nitric Acid",
+			"nameJa": "硝酸",
+			"form": "liquid"
+		},
+		"Desc_NitrogenGas_C": {
+			"name": "Nitrogen Gas",
+			"nameJa": "窒素ガス",
+			"form": "gas"
+		},
+		"Desc_NobeliskCluster_C": {
+			"name": "Cluster Nobelisk",
+			"nameJa": "クラスター・ノーベリスク",
+			"form": "solid"
+		},
+		"Desc_NobeliskExplosive_C": {
+			"name": "Nobelisk",
+			"nameJa": "ノーベリスク",
+			"form": "solid"
+		},
+		"Desc_NobeliskGas_C": {
+			"name": "Gas Nobelisk",
+			"nameJa": "ガス・ノーベリスク",
+			"form": "solid"
+		},
+		"Desc_NobeliskNuke_C": {
+			"name": "Nuke Nobelisk",
+			"nameJa": "ニューク・ノーベリスク",
+			"form": "solid"
+		},
+		"Desc_NobeliskShockwave_C": {
+			"name": "Pulse Nobelisk",
+			"nameJa": "パルス・ノーベリスク",
+			"form": "solid"
+		},
+		"Desc_NonFissibleUranium_C": {
+			"name": "Non-Fissile Uranium",
+			"nameJa": "非核分裂性ウラン",
+			"form": "solid"
+		},
+		"Desc_NuclearFuelRod_C": {
+			"name": "Uranium Fuel Rod",
+			"nameJa": "ウラン燃料棒",
+			"form": "solid"
+		},
+		"Desc_NuclearWaste_C": {
+			"name": "Uranium Waste",
+			"nameJa": "ウラン廃棄物",
+			"form": "solid"
+		},
+		"Desc_OreBauxite_C": {
+			"name": "Bauxite",
+			"nameJa": "ボーキサイト",
+			"form": "solid"
+		},
+		"Desc_OreCopper_C": {
+			"name": "Copper Ore",
+			"nameJa": "銅鉱石",
+			"form": "solid"
+		},
+		"Desc_OreGold_C": {
+			"name": "Caterium Ore",
+			"nameJa": "カテリウム鉱石",
+			"form": "solid"
+		},
+		"Desc_OreIron_C": {
+			"name": "Iron Ore",
+			"nameJa": "鉄鉱石",
+			"form": "solid"
+		},
+		"Desc_OreUranium_C": {
+			"name": "Uranium",
+			"nameJa": "ウラン",
+			"form": "solid"
+		},
+		"Desc_PackagedAlumina_C": {
+			"name": "Packaged Alumina Solution",
+			"nameJa": "包装済みアルミナ溶液",
+			"form": "solid"
+		},
+		"Desc_PackagedBiofuel_C": {
+			"name": "Packaged Liquid Biofuel",
+			"nameJa": "包装済み液体バイオ燃料",
+			"form": "solid"
+		},
+		"Desc_PackagedIonizedFuel_C": {
+			"name": "Packaged Ionized Fuel",
+			"nameJa": "包装済みイオン燃料",
+			"form": "solid"
+		},
+		"Desc_PackagedNitricAcid_C": {
+			"name": "Packaged Nitric Acid",
+			"nameJa": "容器入り硝酸",
+			"form": "solid"
+		},
+		"Desc_PackagedNitrogenGas_C": {
+			"name": "Packaged Nitrogen Gas",
+			"nameJa": "包装済み窒素ガス",
+			"form": "solid"
+		},
+		"Desc_PackagedOilResidue_C": {
+			"name": "Packaged Heavy Oil Residue",
+			"nameJa": "包装済み廃重油",
+			"form": "solid"
+		},
+		"Desc_PackagedOil_C": {
+			"name": "Packaged Oil",
+			"nameJa": "包装済み原油",
+			"form": "solid"
+		},
+		"Desc_PackagedRocketFuel_C": {
+			"name": "Packaged Rocket Fuel",
+			"nameJa": "包装済みロケット燃料",
+			"form": "solid"
+		},
+		"Desc_PackagedSulfuricAcid_C": {
+			"name": "Packaged Sulfuric Acid",
+			"nameJa": "包装済み硫酸",
+			"form": "solid"
+		},
+		"Desc_PackagedWater_C": {
+			"name": "Packaged Water",
+			"nameJa": "包装済み水",
+			"form": "solid"
+		},
+		"Desc_PetroleumCoke_C": {
+			"name": "Petroleum Coke",
+			"nameJa": "石油コークス",
+			"form": "solid"
+		},
+		"Desc_Plastic_C": {
+			"name": "Plastic",
+			"nameJa": "プラスチック",
+			"form": "solid"
+		},
+		"Desc_PlutoniumCell_C": {
+			"name": "Encased Plutonium Cell",
+			"nameJa": "被覆型プルトニウム・セル",
+			"form": "solid"
+		},
+		"Desc_PlutoniumFuelRod_C": {
+			"name": "Plutonium Fuel Rod",
+			"nameJa": "プルトニウム燃料棒",
+			"form": "solid"
+		},
+		"Desc_PlutoniumPellet_C": {
+			"name": "Plutonium Pellet",
+			"nameJa": "プルトニウム・ペレット",
+			"form": "solid"
+		},
+		"Desc_PolymerResin_C": {
+			"name": "Polymer Resin",
+			"nameJa": "合成樹脂",
+			"form": "solid"
+		},
+		"Desc_PressureConversionCube_C": {
+			"name": "Pressure Conversion Cube",
+			"nameJa": "圧力変換キューブ",
+			"form": "solid"
+		},
+		"Desc_QuantumOscillator_C": {
+			"name": "Superposition Oscillator",
+			"nameJa": "重ね合わせ発振器",
+			"form": "solid"
+		},
+		"Desc_QuartzCrystal_C": {
+			"name": "Quartz Crystal",
+			"nameJa": "石英結晶",
+			"form": "solid"
+		},
+		"Desc_RawQuartz_C": {
+			"name": "Raw Quartz",
+			"nameJa": "未加工石英",
+			"form": "solid"
+		},
+		"Desc_Rebar_Explosive_C": {
+			"name": "Explosive Rebar",
+			"nameJa": "爆砕鉄筋",
+			"form": "solid"
+		},
+		"Desc_Rebar_Spreadshot_C": {
+			"name": "Shatter Rebar",
+			"nameJa": "破砕鉄筋",
+			"form": "solid"
+		},
+		"Desc_Rebar_Stunshot_C": {
+			"name": "Stun Rebar",
+			"nameJa": "スタン鉄筋",
+			"form": "solid"
+		},
+		"Desc_RocketFuel_C": {
+			"name": "Rocket Fuel",
+			"nameJa": "ロケット燃料",
+			"form": "gas"
+		},
+		"Desc_Rotor_C": {
+			"name": "Rotor",
+			"nameJa": "ローター",
+			"form": "solid"
+		},
+		"Desc_Rubber_C": {
+			"name": "Rubber",
+			"nameJa": "ゴム",
+			"form": "solid"
+		},
+		"Desc_SAMFluctuator_C": {
+			"name": "SAM Fluctuator",
+			"nameJa": "SAM 変動機",
+			"form": "solid"
+		},
+		"Desc_SAMIngot_C": {
+			"name": "Reanimated SAM",
+			"nameJa": "活性SAM",
+			"form": "solid"
+		},
+		"Desc_SAM_C": {
+			"name": "SAM",
+			"nameJa": "SAM",
+			"form": "solid"
+		},
+		"Desc_Silica_C": {
+			"name": "Silica",
+			"nameJa": "シリカ",
+			"form": "solid"
+		},
+		"Desc_SingularityCell_C": {
+			"name": "Singularity Cell",
+			"nameJa": "シンギュラリティセル",
+			"form": "solid"
+		},
+		"Desc_Snow_C": {
+			"name": "FICSMAS Actual Snow",
+			"nameJa": "FICSMAS 本物の雪",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_10_C": {
+			"name": "Biochemical Sculptor",
+			"nameJa": "生化学スカルプター",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_11_C": {
+			"name": "Ballistic Warp Drive",
+			"nameJa": "弾道ワープドライブ",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_1_C": {
+			"name": "Smart Plating",
+			"nameJa": "スマート・プレート",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_2_C": {
+			"name": "Versatile Framework",
+			"nameJa": "多目的フレームワーク",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_3_C": {
+			"name": "Automated Wiring",
+			"nameJa": "自動ワイヤー",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_4_C": {
+			"name": "Modular Engine",
+			"nameJa": "モジュラーエンジン",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_5_C": {
+			"name": "Adaptive Control Unit",
+			"nameJa": "自律制御ユニット",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_6_C": {
+			"name": "Magnetic Field Generator",
+			"nameJa": "磁界発生装置",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_7_C": {
+			"name": "Assembly Director System",
+			"nameJa": "組立指揮システム",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_8_C": {
+			"name": "Thermal Propulsion Rocket",
+			"nameJa": "熱推進型ロケット",
+			"form": "solid"
+		},
+		"Desc_SpaceElevatorPart_9_C": {
+			"name": "Nuclear Pasta",
+			"nameJa": "核パスタ",
+			"form": "solid"
+		},
+		"Desc_SpikedRebar_C": {
+			"name": "Iron Rebar",
+			"nameJa": "鉄筋",
+			"form": "solid"
+		},
+		"Desc_SpitterParts_C": {
+			"name": "Spitter Remains",
+			"nameJa": "スピッターの遺骸",
+			"form": "solid"
+		},
+		"Desc_Stator_C": {
+			"name": "Stator",
+			"nameJa": "固定子",
+			"form": "solid"
+		},
+		"Desc_SteelIngot_C": {
+			"name": "Steel Ingot",
+			"nameJa": "鋼鉄のインゴット",
+			"form": "solid"
+		},
+		"Desc_SteelPipe_C": {
+			"name": "Steel Pipe",
+			"nameJa": "鋼管",
+			"form": "solid"
+		},
+		"Desc_SteelPlateReinforced_C": {
+			"name": "Encased Industrial Beam",
+			"nameJa": "コンクリート被覆型鋼梁",
+			"form": "solid"
+		},
+		"Desc_SteelPlate_C": {
+			"name": "Steel Beam",
+			"nameJa": "鋼梁",
+			"form": "solid"
+		},
+		"Desc_StingerParts_C": {
+			"name": "Stinger Remains",
+			"nameJa": "スティンガーの遺骸",
+			"form": "solid"
+		},
+		"Desc_Stone_C": {
+			"name": "Limestone",
+			"nameJa": "石灰岩",
+			"form": "solid"
+		},
+		"Desc_Sulfur_C": {
+			"name": "Sulfur",
+			"nameJa": "硫黄",
+			"form": "solid"
+		},
+		"Desc_SulfuricAcid_C": {
+			"name": "Sulfuric Acid",
+			"nameJa": "硫酸",
+			"form": "liquid"
+		},
+		"Desc_TurboFuel_C": {
+			"name": "Packaged Turbofuel",
+			"nameJa": "容器入りターボ燃料",
+			"form": "solid"
+		},
+		"Desc_UraniumCell_C": {
+			"name": "Encased Uranium Cell",
+			"nameJa": "被覆型ウラン・セル",
+			"form": "solid"
+		},
+		"Desc_Water_C": {
+			"name": "Water",
+			"nameJa": "水",
+			"form": "liquid"
+		},
+		"Desc_Wire_C": {
+			"name": "Wire",
+			"nameJa": "ワイヤー",
+			"form": "solid"
+		},
+		"Desc_Wood_C": {
+			"name": "Wood",
+			"nameJa": "木",
+			"form": "solid"
+		},
+		"Desc_XmasBow_C": {
+			"name": "FICSMAS Bow",
+			"nameJa": "FICSMAS リボン",
+			"form": "solid"
+		},
+		"Desc_XmasBranch_C": {
+			"name": "FICSMAS Tree Branch",
+			"nameJa": "FICSMAS 枝木",
+			"form": "solid"
+		}
+	},
+	"buildings": {
+		"Build_AssemblerMk1_C": {
+			"name": "Assembler",
+			"nameJa": "組立機",
+			"powerMW": 15
+		},
+		"Build_Blender_C": {
+			"name": "Blender",
+			"nameJa": "混合機",
+			"powerMW": 75
+		},
+		"Build_ConstructorMk1_C": {
+			"name": "Constructor",
+			"nameJa": "製作機",
+			"powerMW": 4
+		},
+		"Build_FoundryMk1_C": {
+			"name": "Foundry",
+			"nameJa": "鋳造炉",
+			"powerMW": 16
+		},
+		"Build_ManufacturerMk1_C": {
+			"name": "Manufacturer",
+			"nameJa": "製造機",
+			"powerMW": 55
+		},
+		"Build_OilRefinery_C": {
+			"name": "Refinery",
+			"nameJa": "精製機",
+			"powerMW": 30
+		},
+		"Build_Packager_C": {
+			"name": "Packager",
+			"nameJa": "充填機",
+			"powerMW": 10
+		},
+		"Build_SmelterMk1_C": {
+			"name": "Smelter",
+			"nameJa": "製錬炉",
+			"powerMW": 4
+		}
+	},
+	"recipes": [
+		{
+			"id": "Recipe_AILimiter_C",
+			"name": "AI Limiter",
+			"nameJa": "AIリミッター",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_HighSpeedWire_C",
+					"amount": 20
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CircuitBoardHighSpeed_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_AlienDNACapsule_C",
+			"name": "Alien DNA Capsule",
+			"nameJa": "エイリアンのDNAカプセル",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AlienProtein_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AlienDNACapsule_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Alternate_Turbofuel_C",
+			"name": "Turbofuel",
+			"nameJa": "ターボ燃料",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 16,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidFuel_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_CompactedCoal_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidTurboFuel_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_AluminaSolution_C",
+			"name": "Alumina Solution",
+			"nameJa": "アルミナ溶液",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_OreBauxite_C",
+					"amount": 12
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 18
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminaSolution_C",
+					"amount": 12
+				},
+				{
+					"item": "Desc_Silica_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_AluminumCasing_C",
+			"name": "Aluminum Casing",
+			"nameJa": "アルミ筐体",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumIngot_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_AluminumScrap_C",
+			"name": "Aluminum Scrap",
+			"nameJa": "アルミのスクラップ",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminaSolution_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_Coal_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminumScrap_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_AluminumSheet_C",
+			"name": "Alclad Aluminum Sheet",
+			"nameJa": "アルクラッド・アルミシート",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumIngot_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_CopperIngot_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminumPlate_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Recipe_Battery_C",
+			"name": "Battery",
+			"nameJa": "バッテリー",
+			"building": "Build_Blender_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 2.5
+				},
+				{
+					"item": "Desc_AluminaSolution_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Battery_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 1.5
+				}
+			]
+		},
+		{
+			"id": "Recipe_Biofuel_C",
+			"name": "Solid Biofuel",
+			"nameJa": "固体バイオ燃料",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 8
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Biofuel_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_Biomass_AlienProtein_C",
+			"name": "Biomass (Alien Protein)",
+			"nameJa": "バイオマス(エイリアンのタンパク質)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AlienProtein_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 100
+				}
+			]
+		},
+		{
+			"id": "Recipe_Biomass_Leaves_C",
+			"name": "Biomass (Leaves)",
+			"nameJa": "バイオマス(葉)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 5,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Leaves_C",
+					"amount": 10
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_Biomass_Mycelia_C",
+			"name": "Biomass (Mycelia)",
+			"nameJa": "バイオマス(菌糸)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Mycelia_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "Recipe_Biomass_Wood_C",
+			"name": "Biomass (Wood)",
+			"nameJa": "バイオマス(木)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Wood_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 20
+				}
+			]
+		},
+		{
+			"id": "Recipe_Cable_C",
+			"name": "Cable",
+			"nameJa": "ケーブル",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Wire_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Cable_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_CartridgeChaos_C",
+			"name": "Turbo Rifle Ammo",
+			"nameJa": "ターボライフル弾",
+			"building": "Build_Blender_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CartridgeStandard_C",
+					"amount": 25
+				},
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_LiquidTurboFuel_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CartridgeChaos_C",
+					"amount": 50
+				}
+			]
+		},
+		{
+			"id": "Recipe_CartridgeChaos_Packaged_C",
+			"name": "Turbo Rifle Ammo",
+			"nameJa": "ターボライフル弾",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CartridgeStandard_C",
+					"amount": 25
+				},
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_TurboFuel_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CartridgeChaos_C",
+					"amount": 50
+				}
+			]
+		},
+		{
+			"id": "Recipe_CartridgeSmart_C",
+			"name": "Homing Rifle Ammo",
+			"nameJa": "ホーミングライフル弾",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CartridgeStandard_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_HighSpeedConnector_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CartridgeSmartProjectile_C",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "Recipe_Cartridge_C",
+			"name": "Rifle Ammo",
+			"nameJa": "ライフル弾",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_GunpowderMK2_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CartridgeStandard_C",
+					"amount": 15
+				}
+			]
+		},
+		{
+			"id": "Recipe_CircuitBoard_C",
+			"name": "Circuit Board",
+			"nameJa": "回路基板",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 8,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CircuitBoard_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_ComputerSuper_C",
+			"name": "Supercomputer",
+			"nameJa": "スーパーコンピューター",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 32,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Computer_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_CircuitBoardHighSpeed_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_HighSpeedConnector_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 28
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_ComputerSuper_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Computer_C",
+			"name": "Computer",
+			"nameJa": "コンピューター",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CircuitBoard_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 8
+				},
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 16
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Computer_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Concrete_C",
+			"name": "Concrete",
+			"nameJa": "コンクリート",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Stone_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Cement_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_CoolingSystem_C",
+			"name": "Cooling System",
+			"nameJa": "冷却システム",
+			"building": "Build_Blender_C",
+			"durationSeconds": 10,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumPlateReinforced_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_NitrogenGas_C",
+					"amount": 25
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CoolingSystem_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_CopperDust_C",
+			"name": "Copper Powder",
+			"nameJa": "銅粉",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CopperIngot_C",
+					"amount": 30
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CopperDust_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_CopperSheet_C",
+			"name": "Copper Sheet",
+			"nameJa": "銅板",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CopperIngot_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_CrystalOscillator_C",
+			"name": "Crystal Oscillator",
+			"nameJa": "水晶発振器",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 120,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_QuartzCrystal_C",
+					"amount": 36
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 28
+				},
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CrystalOscillator_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_ElectromagneticControlRod_C",
+			"name": "Electromagnetic Control Rod",
+			"nameJa": "電磁制御棒",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 30,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Stator_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_CircuitBoardHighSpeed_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_ElectromagneticControlRod_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_EncasedIndustrialBeam_C",
+			"name": "Encased Industrial Beam",
+			"nameJa": "コンクリート被覆型鋼梁",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 10,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SteelPlate_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 6
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Fabric_C",
+			"name": "Fabric",
+			"nameJa": "布地",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Mycelia_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Fabric_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_FicsiteMesh_C",
+			"name": "Ficsite Trigon",
+			"nameJa": "FICSITEの三角板",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_FicsiteIngot_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_FicsiteMesh_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Recipe_FilterGasMask_C",
+			"name": "Gas Filter",
+			"nameJa": "ガスフィルター",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 8,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Fabric_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Coal_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Filter_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_FilterHazmat_C",
+			"name": "Iodine-Infused Filter",
+			"nameJa": "ヨウ素充填フィルター",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 16,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Filter_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_HighSpeedWire_C",
+					"amount": 8
+				},
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_HazmatFilter_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Fireworks_01_C",
+			"name": "Sweet Fireworks",
+			"nameJa": "きれいな花火",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_XmasBranch_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_CandyCane_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Fireworks_Projectile_01_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Fireworks_02_C",
+			"name": "Fancy Fireworks",
+			"nameJa": "派手な花火",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_XmasBranch_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_XmasBow_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Fireworks_Projectile_02_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Fireworks_03_C",
+			"name": "Sparkly Fireworks",
+			"nameJa": "きらめく花火",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_XmasBranch_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_Snow_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Fireworks_Projectile_03_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_FluidCanister_C",
+			"name": "Empty Canister",
+			"nameJa": "空の容器",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_Fuel_C",
+			"name": "Packaged Fuel",
+			"nameJa": "包装済み燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidFuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Fuel_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_FusedModularFrame_C",
+			"name": "Fused Modular Frame",
+			"nameJa": "溶融モジュラー・フレーム",
+			"building": "Build_Blender_C",
+			"durationSeconds": 40,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_ModularFrameHeavy_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 50
+				},
+				{
+					"item": "Desc_NitrogenGas_C",
+					"amount": 25
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_ModularFrameFused_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_GasTank_C",
+			"name": "Empty Fluid Tank",
+			"nameJa": "空の液体タンク",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumIngot_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_GunpowderMK2_C",
+			"name": "Smokeless Powder",
+			"nameJa": "無煙火薬",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Gunpowder_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GunpowderMK2_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_Gunpowder_C",
+			"name": "Black Powder",
+			"nameJa": "黒色火薬",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Coal_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_Sulfur_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Gunpowder_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_HeatSink_C",
+			"name": "Heat Sink",
+			"nameJa": "ヒートシンク",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 8,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumPlate_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminumPlateReinforced_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_HighSpeedConnector_C",
+			"name": "High-Speed Connector",
+			"nameJa": "高速コネクター",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 16,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_HighSpeedWire_C",
+					"amount": 56
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_CircuitBoard_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_HighSpeedConnector_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_IngotAluminum_C",
+			"name": "Aluminum Ingot",
+			"nameJa": "アルミのインゴット",
+			"building": "Build_FoundryMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumScrap_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_Silica_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminumIngot_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_IngotCaterium_C",
+			"name": "Caterium Ingot",
+			"nameJa": "カテリウムのインゴット",
+			"building": "Build_SmelterMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_OreGold_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_GoldIngot_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_IngotCopper_C",
+			"name": "Copper Ingot",
+			"nameJa": "銅のインゴット",
+			"building": "Build_SmelterMk1_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_OreCopper_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CopperIngot_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_IngotIron_C",
+			"name": "Iron Ingot",
+			"nameJa": "鉄のインゴット",
+			"building": "Build_SmelterMk1_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_OreIron_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IronIngot_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_IngotSAM_C",
+			"name": "Reanimated SAM",
+			"nameJa": "活性SAM",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SAM_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SAMIngot_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_IngotSteel_C",
+			"name": "Steel Ingot",
+			"nameJa": "鋼鉄のインゴット",
+			"building": "Build_FoundryMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_OreIron_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_Coal_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SteelIngot_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Recipe_IonizedFuel_C",
+			"name": "Ionized Fuel",
+			"nameJa": "イオン燃料",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_RocketFuel_C",
+					"amount": 16
+				},
+				{
+					"item": "Desc_CrystalShard_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IonizedFuel_C",
+					"amount": 16
+				},
+				{
+					"item": "Desc_CompactedCoal_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_IronPlateReinforced_C",
+			"name": "Reinforced Iron Plate",
+			"nameJa": "強化鉄板",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_IronScrew_C",
+					"amount": 12
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_IronPlate_C",
+			"name": "Iron Plate",
+			"nameJa": "鉄板",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronIngot_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_IronRod_C",
+			"name": "Iron Rod",
+			"nameJa": "鉄のロッド",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronIngot_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_LiquidBiofuel_C",
+			"name": "Liquid Biofuel",
+			"nameJa": "液体バイオ燃料",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Biofuel_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidBiofuel_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_LiquidFuel_C",
+			"name": "Fuel",
+			"nameJa": "燃料",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidOil_C",
+					"amount": 6
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidFuel_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_PolymerResin_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Recipe_ModularFrameHeavy_C",
+			"name": "Heavy Modular Frame",
+			"nameJa": "ヘビー・モジュラー・フレーム",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 30,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_ModularFrame_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_IronScrew_C",
+					"amount": 120
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_ModularFrameHeavy_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_ModularFrame_C",
+			"name": "Modular Frame",
+			"nameJa": "モジュラー・フレーム",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 12
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_ModularFrame_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_MotorTurbo_C",
+			"name": "Turbo Motor",
+			"nameJa": "ターボ・モーター",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 32,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CoolingSystem_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_ModularFrameLightweight_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Motor_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 24
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_MotorLightweight_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Motor_C",
+			"name": "Motor",
+			"nameJa": "モーター",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Stator_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Motor_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_NitricAcid_C",
+			"name": "Nitric Acid",
+			"nameJa": "硝酸",
+			"building": "Build_Blender_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NitrogenGas_C",
+					"amount": 12
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NitricAcid_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Recipe_NobeliskCluster_C",
+			"name": "Cluster Nobelisk",
+			"nameJa": "クラスター・ノーベリスク",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NobeliskExplosive_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_GunpowderMK2_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NobeliskCluster_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_NobeliskGas_C",
+			"name": "Gas Nobelisk",
+			"nameJa": "ガス・ノーベリスク",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NobeliskExplosive_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_GenericBiomass_C",
+					"amount": 10
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NobeliskGas_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_NobeliskNuke_C",
+			"name": "Nuke Nobelisk",
+			"nameJa": "ニューク・ノーベリスク",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 120,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NobeliskExplosive_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_UraniumCell_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_GunpowderMK2_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_CircuitBoardHighSpeed_C",
+					"amount": 6
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NobeliskNuke_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_NobeliskShockwave_C",
+			"name": "Pulse Nobelisk",
+			"nameJa": "パルス・ノーベリスク",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NobeliskExplosive_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_CrystalOscillator_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NobeliskShockwave_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_Nobelisk_C",
+			"name": "Nobelisk",
+			"nameJa": "ノーベリスク",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Gunpowder_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NobeliskExplosive_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_NonFissileUranium_C",
+			"name": "Non-Fissile Uranium",
+			"nameJa": "非核分裂性ウラン",
+			"building": "Build_Blender_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NuclearWaste_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_Silica_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_NitricAcid_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 6
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NonFissibleUranium_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 6
+				}
+			]
+		},
+		{
+			"id": "Recipe_NuclearFuelRod_C",
+			"name": "Uranium Fuel Rod",
+			"nameJa": "ウラン燃料棒",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 150,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_UraniumCell_C",
+					"amount": 50
+				},
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_ElectromagneticControlRod_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NuclearFuelRod_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedAlumina_C",
+			"name": "Packaged Alumina Solution",
+			"nameJa": "包装済みアルミナ溶液",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminaSolution_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedAlumina_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedBiofuel_C",
+			"name": "Packaged Liquid Biofuel",
+			"nameJa": "包装済み液体バイオ燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidBiofuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedBiofuel_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedCrudeOil_C",
+			"name": "Packaged Oil",
+			"nameJa": "包装済み原油",
+			"building": "Build_Packager_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidOil_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedOil_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedIonizedFuel_C",
+			"name": "Packaged Ionized Fuel",
+			"nameJa": "包装済みイオン燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IonizedFuel_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedIonizedFuel_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedNitricAcid_C",
+			"name": "Packaged Nitric Acid",
+			"nameJa": "容器入り硝酸",
+			"building": "Build_Packager_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NitricAcid_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedNitricAcid_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedNitrogen_C",
+			"name": "Packaged Nitrogen Gas",
+			"nameJa": "包装済み窒素ガス",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_NitrogenGas_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedNitrogenGas_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedOilResidue_C",
+			"name": "Packaged Heavy Oil Residue",
+			"nameJa": "包装済み廃重油",
+			"building": "Build_Packager_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedOilResidue_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedRocketFuel_C",
+			"name": "Packaged Rocket Fuel",
+			"nameJa": "包装済みロケット燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_RocketFuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedRocketFuel_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedSulfuricAcid_C",
+			"name": "Packaged Sulfuric Acid",
+			"nameJa": "包装済み硫酸",
+			"building": "Build_Packager_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedSulfuricAcid_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedTurboFuel_C",
+			"name": "Packaged Turbofuel",
+			"nameJa": "容器入りターボ燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidTurboFuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_TurboFuel_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PackagedWater_C",
+			"name": "Packaged Water",
+			"nameJa": "包装済み水",
+			"building": "Build_Packager_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Water_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PackagedWater_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PetroleumCoke_C",
+			"name": "Petroleum Coke",
+			"nameJa": "石油コークス",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PetroleumCoke_C",
+					"amount": 12
+				}
+			]
+		},
+		{
+			"id": "Recipe_Plastic_C",
+			"name": "Plastic",
+			"nameJa": "プラスチック",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidOil_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PlutoniumCell_C",
+			"name": "Encased Plutonium Cell",
+			"nameJa": "被覆型プルトニウム・セル",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PlutoniumPellet_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PlutoniumCell_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PlutoniumFuelRod_C",
+			"name": "Plutonium Fuel Rod",
+			"nameJa": "プルトニウム燃料棒",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 240,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PlutoniumCell_C",
+					"amount": 30
+				},
+				{
+					"item": "Desc_SteelPlate_C",
+					"amount": 18
+				},
+				{
+					"item": "Desc_ElectromagneticControlRod_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_AluminumPlateReinforced_C",
+					"amount": 10
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PlutoniumFuelRod_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PowerCrystalShard_1_C",
+			"name": "Power Shard (1)",
+			"nameJa": "パワー・シャード (1)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 8,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Crystal_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CrystalShard_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_PowerCrystalShard_2_C",
+			"name": "Power Shard (2)",
+			"nameJa": "パワー・シャード(2)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Crystal_mk2_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CrystalShard_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_PowerCrystalShard_3_C",
+			"name": "Power Shard (5)",
+			"nameJa": "パワー・シャード(5)",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Crystal_mk3_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_CrystalShard_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_PressureConversionCube_C",
+			"name": "Pressure Conversion Cube",
+			"nameJa": "圧力変換キューブ",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_ModularFrameFused_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_ModularFrameLightweight_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_PressureConversionCube_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Protein_Crab_C",
+			"name": "Hatcher Protein",
+			"nameJa": "ハッチャーのタンパク質",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_HatcherParts_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AlienProtein_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Protein_Hog_C",
+			"name": "Hog Protein",
+			"nameJa": "ホッグのタンパク質",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_HogParts_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AlienProtein_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Protein_Spitter_C",
+			"name": "Spitter Protein",
+			"nameJa": "スピッターのタンパク質",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpitterParts_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AlienProtein_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Protein_Stinger_C",
+			"name": "Stinger Protein",
+			"nameJa": "スティンガーのタンパク質",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_StingerParts_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AlienProtein_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_QuartzCrystal_C",
+			"name": "Quartz Crystal",
+			"nameJa": "石英結晶",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 8,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_RawQuartz_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_QuartzCrystal_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Recipe_Quickwire_C",
+			"name": "Quickwire",
+			"nameJa": "クイックワイヤー",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 5,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_GoldIngot_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_HighSpeedWire_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_RadioControlUnit_C",
+			"name": "Radio Control Unit",
+			"nameJa": "無線制御ユニット",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 48,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 32
+				},
+				{
+					"item": "Desc_CrystalOscillator_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_Computer_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_ModularFrameLightweight_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_Rebar_Explosive_C",
+			"name": "Explosive Rebar",
+			"nameJa": "爆砕鉄筋",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpikedRebar_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_GunpowderMK2_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Rebar_Explosive_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Rebar_Spreadshot_C",
+			"name": "Shatter Rebar",
+			"nameJa": "破砕鉄筋",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpikedRebar_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_QuartzCrystal_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Rebar_Spreadshot_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Rebar_Stunshot_C",
+			"name": "Stun Rebar",
+			"nameJa": "スタン鉄筋",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpikedRebar_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_HighSpeedWire_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Rebar_Stunshot_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_ResidualFuel_C",
+			"name": "Residual Fuel",
+			"nameJa": "残留燃料",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 6
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidFuel_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_ResidualPlastic_C",
+			"name": "Residual Plastic",
+			"nameJa": "残留プラスチック",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PolymerResin_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_ResidualRubber_C",
+			"name": "Residual Rubber",
+			"nameJa": "残留ゴム",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PolymerResin_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_RocketFuel_C",
+			"name": "Rocket Fuel",
+			"nameJa": "ロケット燃料",
+			"building": "Build_Blender_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidTurboFuel_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_NitricAcid_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_RocketFuel_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_CompactedCoal_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Rotor_C",
+			"name": "Rotor",
+			"nameJa": "ローター",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 15,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_IronScrew_C",
+					"amount": 25
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Rubber_C",
+			"name": "Rubber",
+			"nameJa": "ゴム",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_LiquidOil_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_SAMFluctuator_C",
+			"name": "SAM Fluctuator",
+			"nameJa": "SAM 変動機",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SAMIngot_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_Wire_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SAMFluctuator_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Screw_C",
+			"name": "Screws",
+			"nameJa": "ネジ",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IronScrew_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_Silica_C",
+			"name": "Silica",
+			"nameJa": "シリカ",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 8,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_RawQuartz_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Silica_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_SingularityCell_C",
+			"name": "Singularity Cell",
+			"nameJa": "シンギュラリティセル",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_9_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_DarkMatter_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 100
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 200
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SingularityCell_C",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_10_C",
+			"name": "Biochemical Sculptor",
+			"nameJa": "生化学スカルプター",
+			"building": "Build_Blender_C",
+			"durationSeconds": 120,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_7_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_FicsiteMesh_C",
+					"amount": 80
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 20
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_10_C",
+					"amount": 4
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_11_C",
+			"name": "Ballistic Warp Drive",
+			"nameJa": "弾道ワープドライブ",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_8_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_SingularityCell_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_QuantumOscillator_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_DarkMatter_C",
+					"amount": 40
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_11_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_1_C",
+			"name": "Smart Plating",
+			"nameJa": "スマート・プレート",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 30,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_1_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_2_C",
+			"name": "Versatile Framework",
+			"nameJa": "多目的フレームワーク",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_ModularFrame_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_SteelPlate_C",
+					"amount": 12
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_2_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_3_C",
+			"name": "Automated Wiring",
+			"nameJa": "自動ワイヤー",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 24,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Stator_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 20
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_3_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_4_C",
+			"name": "Modular Engine",
+			"nameJa": "モジュラーエンジン",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Motor_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_SpaceElevatorPart_1_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_4_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_5_C",
+			"name": "Adaptive Control Unit",
+			"nameJa": "自律制御ユニット",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 60,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_3_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_CircuitBoard_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_ModularFrameHeavy_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_Computer_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_5_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_6_C",
+			"name": "Magnetic Field Generator",
+			"nameJa": "磁界発生装置",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 120,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_2_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_ElectromagneticControlRod_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_6_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_7_C",
+			"name": "Assembly Director System",
+			"nameJa": "組立指揮システム",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 80,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_5_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_ComputerSuper_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_7_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpaceElevatorPart_8_C",
+			"name": "Thermal Propulsion Rocket",
+			"nameJa": "熱推進型ロケット",
+			"building": "Build_ManufacturerMk1_C",
+			"durationSeconds": 120,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_4_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_MotorLightweight_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_CoolingSystem_C",
+					"amount": 6
+				},
+				{
+					"item": "Desc_ModularFrameFused_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpaceElevatorPart_8_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_SpikedRebar_C",
+			"name": "Iron Rebar",
+			"nameJa": "鉄筋",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SpikedRebar_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_Stator_C",
+			"name": "Stator",
+			"nameJa": "固定子",
+			"building": "Build_AssemblerMk1_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_Wire_C",
+					"amount": 8
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Stator_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SteelBeam_C",
+			"name": "Steel Beam",
+			"nameJa": "鋼梁",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SteelIngot_C",
+					"amount": 4
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SteelPlate_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_SteelPipe_C",
+			"name": "Steel Pipe",
+			"nameJa": "鋼管",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_SteelIngot_C",
+					"amount": 3
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_SulfuricAcid_C",
+			"name": "Sulfuric Acid",
+			"nameJa": "硫酸",
+			"building": "Build_OilRefinery_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Sulfur_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_Water_C",
+					"amount": 5
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 5
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageAlumina_C",
+			"name": "Unpackage Alumina Solution",
+			"nameJa": "未包装アルミナ溶液",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedAlumina_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_AluminaSolution_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageBioFuel_C",
+			"name": "Unpackage Liquid Biofuel",
+			"nameJa": "未包装液体バイオ燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedBiofuel_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidBiofuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageFuel_C",
+			"name": "Unpackage Fuel",
+			"nameJa": "未包装燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_Fuel_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidFuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageIonizedFuel_C",
+			"name": "Unpackage Ionized Fuel",
+			"nameJa": "開封されたイオン燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedIonizedFuel_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_IonizedFuel_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageNitricAcid_C",
+			"name": "Unpackage Nitric Acid",
+			"nameJa": "未包装硝酸",
+			"building": "Build_Packager_C",
+			"durationSeconds": 3,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedNitricAcid_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NitricAcid_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageNitrogen_C",
+			"name": "Unpackage Nitrogen Gas",
+			"nameJa": "未包装窒素ガス",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedNitrogenGas_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_NitrogenGas_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageOilResidue_C",
+			"name": "Unpackage Heavy Oil Residue",
+			"nameJa": "未包装廃重油",
+			"building": "Build_Packager_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedOilResidue_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_HeavyOilResidue_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageOil_C",
+			"name": "Unpackage Oil",
+			"nameJa": "未包装原油",
+			"building": "Build_Packager_C",
+			"durationSeconds": 2,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedOil_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidOil_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageRocketFuel_C",
+			"name": "Unpackage Rocket Fuel",
+			"nameJa": "開封されたロケット燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedRocketFuel_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_RocketFuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_GasTank_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageSulfuricAcid_C",
+			"name": "Unpackage Sulfuric Acid",
+			"nameJa": "未包装硫酸",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedSulfuricAcid_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 1
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageTurboFuel_C",
+			"name": "Unpackage Turbofuel",
+			"nameJa": "未包装ターボ燃料",
+			"building": "Build_Packager_C",
+			"durationSeconds": 6,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_TurboFuel_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_LiquidTurboFuel_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UnpackageWater_C",
+			"name": "Unpackage Water",
+			"nameJa": "未包装の水",
+			"building": "Build_Packager_C",
+			"durationSeconds": 1,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_PackagedWater_C",
+					"amount": 2
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Water_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_FluidCanister_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_UraniumCell_C",
+			"name": "Encased Uranium Cell",
+			"nameJa": "被覆型ウラン・セル",
+			"building": "Build_Blender_C",
+			"durationSeconds": 12,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_OreUranium_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 8
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_UraniumCell_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_SulfuricAcid_C",
+					"amount": 2
+				}
+			]
+		},
+		{
+			"id": "Recipe_Wire_C",
+			"name": "Wire",
+			"nameJa": "ワイヤー",
+			"building": "Build_ConstructorMk1_C",
+			"durationSeconds": 4,
+			"alternate": false,
+			"inputs": [
+				{
+					"item": "Desc_CopperIngot_C",
+					"amount": 1
+				}
+			],
+			"outputs": [
+				{
+					"item": "Desc_Wire_C",
+					"amount": 2
+				}
+			]
+		}
+	]
+}

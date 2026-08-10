@@ -4,6 +4,7 @@
 		".astro/types.d.ts",
 		"src/**/*",
 		"tests/**/*",
+		"scripts/**/*.ts",
 		"vitest.config.ts"
 	],
 	"exclude": ["dist", "node_modules"],
