@@ -18,11 +18,18 @@ export type BuildingId = string;
 export type ExactNumeric = number | string;
 
 export interface ItemDef {
+	/** 英語表示名 */
 	name: string;
+	/** 日本語表示名。無ければ表示は name にフォールバック */
+	nameJa?: string;
+	/** 物質形態。liquid / gas のレシピ数量は m³ 単位に変換済み */
+	form?: "solid" | "liquid" | "gas";
 }
 
 export interface BuildingDef {
 	name: string;
+	/** 日本語表示名。無ければ表示は name にフォールバック */
+	nameJa?: string;
 	/** 定格消費電力(MW)。オーバークロックは v1 スコープ外 */
 	powerMW: ExactNumeric;
 }
@@ -36,6 +43,8 @@ export interface RecipeIngredient {
 export interface RecipeDef {
 	id: string;
 	name: string;
+	/** 日本語表示名。無ければ表示は name にフォールバック */
+	nameJa?: string;
 	/** 製造する機械 */
 	building: BuildingId;
 	/** 1 クラフトの所要時間(秒) */
