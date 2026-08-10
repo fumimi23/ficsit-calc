@@ -55,6 +55,35 @@ const syntheticDocs = JSON.stringify([
 				mProducedIn:
 					'("/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C")',
 			},
+			// Recipe_Alternate_Turbofuel_C と同じ「クラス名は旧仕様のままデフォルト化」パターン
+			{
+				ClassName: "Recipe_Alternate_LegacyName_C",
+				mDisplayName: "Legacy Default",
+				mIngredients: `(${itemClass("Desc_LiquidOil_C", 1000)})`,
+				mProduct: `(${itemClass("Desc_HeavyOilResidue_C", 2000)})`,
+				mManufactoringDuration: "4.000000",
+				mProducedIn:
+					'("/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C")',
+			},
+			{
+				ClassName: "Recipe_PureOil_C",
+				mDisplayName: "Alternate: Pure Oil",
+				mIngredients: `(${itemClass("Desc_LiquidOil_C", 1000)})`,
+				mProduct: `(${itemClass("Desc_Plastic_C", 1)})`,
+				mManufactoringDuration: "4.000000",
+				mProducedIn:
+					'("/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C")',
+			},
+			{
+				ClassName: "Recipe_Snow_C",
+				mDisplayName: "Snow",
+				mIngredients: `(${itemClass("Desc_LiquidOil_C", 1000)})`,
+				mProduct: `(${itemClass("Desc_Plastic_C", 1)})`,
+				mManufactoringDuration: "4.000000",
+				mProducedIn:
+					'("/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C")',
+				mRelevantEvents: "(EV_Christmas)",
+			},
 		],
 	},
 ]);
@@ -70,6 +99,19 @@ describe("parseDocs", () => {
 		]);
 		expect(data.items.Desc_LiquidOil_C?.form).toBe("liquid");
 		expect(data.items.Desc_Plastic_C?.form).toBe("solid");
+	});
+
+	it("代替判定は表示名で行う: クラス名が Recipe_Alternate_* でも表示名に Alternate: が無ければ収録される", () => {
+		const data = parseDocs(syntheticDocs);
+		expect(
+			data.recipes.some((r) => r.id === "Recipe_Alternate_LegacyName_C"),
+		).toBe(true);
+		expect(data.recipes.some((r) => r.id === "Recipe_PureOil_C")).toBe(false);
+	});
+
+	it("期間限定イベント(mRelevantEvents あり)のレシピは収録されない", () => {
+		const data = parseDocs(syntheticDocs);
+		expect(data.recipes.some((r) => r.id === "Recipe_Snow_C")).toBe(false);
 	});
 
 	it("可変電力の機械(粒子加速器)とそのレシピは v1 では除外される", () => {

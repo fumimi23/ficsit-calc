@@ -108,7 +108,13 @@ function requirePositive(value: unknown, label: string): void {
 	if (typeof value !== "number" && typeof value !== "string") {
 		throw new Error(`${label} が数値でも十進文字列でもありません: ${value}`);
 	}
-	const parsed = Fraction.from(value); // 十進表記でなければ RangeError
+	let parsed: Fraction;
+	try {
+		parsed = Fraction.from(value);
+	} catch {
+		// Fraction.from の RangeError をそのまま流すと、どのフィールドの違反かが分からなくなる
+		throw new Error(`${label} が十進表記ではありません: ${value}`);
+	}
 	if (parsed.isZero() || parsed.isNegative()) {
 		throw new Error(`${label} が正の値ではありません: ${value}`);
 	}

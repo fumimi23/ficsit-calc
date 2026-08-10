@@ -33,7 +33,10 @@ describe("Docs パーサー(issue #2)", () => {
 		expect(recipe?.building).toBe("Build_AssemblerMk1_C");
 		expect(recipe?.durationSeconds).toBe(60);
 		expect(recipe?.alternate).toBe(false);
-		expect(recipe?.inputs).toEqual([
+		// 入力の並び順は約束しない(受け入れ条件は「正しい入出力」であって順序ではない)
+		const byItem = (a: { item: string }, b: { item: string }) =>
+			a.item < b.item ? -1 : 1;
+		expect([...(recipe?.inputs ?? [])].sort(byItem)).toEqual([
 			{ item: "Desc_IronPlateReinforced_C", amount: 3 },
 			{ item: "Desc_IronRod_C", amount: 12 },
 		]);

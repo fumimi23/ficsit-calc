@@ -77,9 +77,15 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 			const id = entry.ClassName;
 			const name = requireString(entry.mDisplayName, `${id}.mDisplayName`);
 
-			// ClassName 規約(Recipe_Alternate_*)だけに頼らず表示名でも判定する
-			// (規約から外れた命名の代替レシピを取りこぼさないため)
-			if (id.startsWith("Recipe_Alternate_") || name.startsWith("Alternate:")) {
+			// ClassName 規約(Recipe_Alternate_*)では判定しない。ゲーム 1.0 でデフォルト化した
+			// のに旧クラス名が残るレシピ(Recipe_Alternate_Turbofuel_C)があり、表示名の
+			// "Alternate:" プレフィックスだけがスキマティックの解禁種別と全件一致するため
+			if (name.startsWith("Alternate:")) {
+				continue;
+			}
+
+			// 期間限定イベント(FICSMAS 等)のレシピは通常プレイで使えないため収録しない
+			if (asString(entry.mRelevantEvents)) {
 				continue;
 			}
 
@@ -127,15 +133,15 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		});
 	}
 
-	// 出力順を安定させる(生成のたびに diff が出ないように)
+	// 出力順を安定させる(生成のたびに diff が出ないように)。
+	// localeCompare は使わない(ICU/ロケール依存で環境により並びが変わりうるため)
+	const byKey = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 	return {
-		items: Object.fromEntries(
-			[...items].sort(([a], [b]) => a.localeCompare(b)),
-		),
+		items: Object.fromEntries([...items].sort(([a], [b]) => byKey(a, b))),
 		buildings: Object.fromEntries(
-			[...buildings].sort(([a], [b]) => a.localeCompare(b)),
+			[...buildings].sort(([a], [b]) => byKey(a, b)),
 		),
-		recipes: recipes.sort((a, b) => a.id.localeCompare(b.id)),
+		recipes: recipes.sort((a, b) => byKey(a.id, b.id)),
 	};
 }
 
