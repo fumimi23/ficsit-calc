@@ -12,10 +12,13 @@ export function PlanTree({ data, root }: { data: RecipeData; root: PlanNode }) {
 }
 
 function TreeItem({ data, node }: { data: RecipeData; node: PlanNode }) {
+	const isRaw = !node.production;
 	const label = `${itemLabel(data, node.item)} ${node.ratePerMinute.toDecimalString()} /分`;
 	return (
 		<li>
-			<span>{node.production ? label : `${label}（原料）`}</span>
+			<span className={isRaw ? `${styles.node} ${styles.raw}` : styles.node}>
+				{isRaw ? `${label}（原料）` : label}
+			</span>
 			{node.inputs.length > 0 && (
 				<ul>
 					{node.inputs.map((child) => (

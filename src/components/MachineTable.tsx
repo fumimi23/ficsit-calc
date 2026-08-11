@@ -17,20 +17,24 @@ export function MachineTable({
 				<tr>
 					<th>レシピ</th>
 					<th>機械</th>
-					<th>台数</th>
-					<th>電力</th>
+					<th className={styles.numeric}>台数</th>
+					<th className={styles.numeric}>電力</th>
 				</tr>
 			</thead>
 			<tbody>
 				{machines.map((machine) => (
 					<tr key={machine.recipeId}>
 						<td>{recipeLabel(data, machine.recipeId)}</td>
-						<td>{buildingLabel(data, machine.building)}</td>
-						<td>
+						<td className={styles.building}>
+							{buildingLabel(data, machine.building)}
+						</td>
+						<td className={styles.numeric}>
 							{machine.machineCount.toDecimalString()} 台（建設{" "}
 							{machine.machineCount.ceil().toString()} 台）
 						</td>
-						<td>{machine.powerMW.toDecimalString()} MW</td>
+						<td className={styles.numeric}>
+							{machine.powerMW.toDecimalString()} MW
+						</td>
 					</tr>
 				))}
 			</tbody>

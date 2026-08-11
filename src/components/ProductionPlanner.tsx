@@ -59,7 +59,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 		<div className={styles.planner}>
 			<div className={styles.controls}>
 				<label className={styles.field}>
-					アイテム
+					<span className={styles.fieldLabel}>アイテム</span>
 					<select
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
@@ -73,7 +73,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					</select>
 				</label>
 				<label className={styles.field}>
-					目標レート（個/分）
+					<span className={styles.fieldLabel}>目標レート（個/分）</span>
 					<input
 						type="text"
 						inputMode="decimal"
@@ -96,24 +96,27 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						<h2>機械一覧</h2>
 						<MachineTable data={data} machines={state.plan.machines} />
 					</section>
-					<section>
-						<h2>原料合計</h2>
-						<ItemRateList
-							data={data}
-							label="原料合計"
-							rates={state.plan.rawMaterials}
-						/>
-					</section>
-					{state.plan.byproducts.length > 0 && (
+					<div className={styles.rateColumns}>
 						<section>
-							<h2>余剰（副産物）</h2>
+							<h2>原料合計</h2>
 							<ItemRateList
 								data={data}
-								label="余剰（副産物）"
-								rates={state.plan.byproducts}
+								label="原料合計"
+								rates={state.plan.rawMaterials}
 							/>
 						</section>
-					)}
+						{state.plan.byproducts.length > 0 && (
+							<section>
+								<h2>余剰（副産物）</h2>
+								<ItemRateList
+									data={data}
+									label="余剰（副産物）"
+									rates={state.plan.byproducts}
+									variant="byproduct"
+								/>
+							</section>
+						)}
+					</div>
 					<p className={styles.total}>
 						総電力: {state.plan.totalPowerMW.toDecimalString()} MW
 					</p>

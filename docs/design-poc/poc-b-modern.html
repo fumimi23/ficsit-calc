@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ficsit-calc — 案B: モダンクリーン</title>
+<style>
+  /* ===== 案B: モダンクリーン（ライト既定 + prefers-color-scheme でダーク対応） ===== */
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef0f3;
+    --border: #e2e5ea;
+    --ink: #1c2430;
+    --ink-2: #5b6472;
+    --ink-3: #8b93a1;
+    --accent: #e06d10;        /* 控えめに効かせるオレンジ */
+    --accent-soft: #fdf0e4;
+    --raw: #2563eb;
+    --raw-soft: #e8effd;
+    --byproduct: #0d9264;
+    --byproduct-soft: #e2f6ee;
+    --shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418;
+      --surface: #1a1e24;
+      --surface-2: #22272e;
+      --border: #2e343d;
+      --ink: #e6e9ed;
+      --ink-2: #9aa3af;
+      --ink-3: #6c7684;
+      --accent: #f59e51;
+      --accent-soft: #33220f;
+      --raw: #7aa5f8;
+      --raw-soft: #17233c;
+      --byproduct: #55c795;
+      --byproduct-soft: #10291f;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    line-height: 1.6;
+  }
+
+  header { padding: 2rem 2rem 0; max-width: 68rem; margin: 0 auto; }
+  header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
+  header h1 span { color: var(--accent); }
+  header p { margin: 0.3rem 0 0; color: var(--ink-2); font-size: 0.92rem; }
+
+  main { max-width: 68rem; margin: 0 auto; padding: 1.25rem 2rem 4rem; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* 入力 */
+  .controls { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-block: 1.25rem; }
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .field > span { font-size: 0.82rem; font-weight: 600; color: var(--ink-2); }
+  .field select, .field input {
+    font: inherit;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.8rem;
+    min-width: 15rem;
+  }
+  .field select:focus, .field input:focus {
+    outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent;
+  }
+
+  /* サマリー */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1rem; margin-block: 1.5rem; }
+  .stat { padding: 1rem 1.25rem; }
+  .stat .label { font-size: 0.8rem; color: var(--ink-2); }
+  .stat .value { font-size: 1.7rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .stat .value small { font-size: 0.9rem; font-weight: 500; color: var(--ink-3); margin-left: 0.15rem; }
+  .stat.key .value { color: var(--accent); }
+
+  section { margin-block: 1.75rem; }
+  h2 { font-size: 1.05rem; font-weight: 700; margin-block: 0 0.75rem; }
+
+  /* テーブル */
+  .card.flush { padding: 0; overflow: hidden; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { padding: 0.65rem 1.25rem; text-align: left; }
+  thead th {
+    font-size: 0.78rem; font-weight: 600; color: var(--ink-2);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr + tr td { border-top: 1px solid var(--border); }
+  td.n, th.n { font-variant-numeric: tabular-nums; text-align: right; }
+  td .build { color: var(--ink-2); }
+  td .ceil { color: var(--ink-3); font-size: 0.85rem; }
+
+  /* レートチップ */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; padding: 0; margin: 0; list-style: none; }
+  .chips li {
+    display: inline-flex; align-items: baseline; gap: 0.5rem;
+    background: var(--raw-soft); color: var(--ink);
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: 0.95rem;
+  }
+  .chips li .dot { align-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--raw); }
+  .chips.byproducts li { background: var(--byproduct-soft); }
+  .chips.byproducts li .dot { background: var(--byproduct); }
+  .chips .rate { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .chips .unit { color: var(--ink-3); font-size: 0.8rem; }
+
+  /* ツリー */
+  .tree, .tree ul { list-style: none; margin: 0; padding: 0; }
+  .tree ul { padding-left: 1.75rem; position: relative; }
+  .tree ul::before {
+    content: ""; position: absolute; left: 0.6rem; top: 0; bottom: 0.9rem;
+    width: 2px; background: var(--border); border-radius: 1px;
+  }
+  .tree li { position: relative; margin-block: 0.55rem; }
+  .tree ul li::before {
+    content: ""; position: absolute; left: -1.15rem; top: 0.95rem;
+    width: 0.85rem; height: 2px; background: var(--border);
+  }
+  .node { display: inline-flex; align-items: baseline; gap: 0.55rem; }
+  .node .name { font-weight: 600; }
+  .node .qty { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .node .badge {
+    align-self: center;
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--raw);
+    background: var(--raw-soft);
+    border-radius: 999px;
+    padding: 0.05rem 0.55rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>ficsit<span>-</span>calc</h1>
+  <p>Satisfactory 生産チェーン計算機 — 目標アイテムとレートから生産チェーンを逆算します。</p>
+</header>
+<main>
+  <div class="controls card">
+    <label class="field">
+      <span>アイテム</span>
+      <select><option>ロケット燃料</option></select>
+    </label>
+    <label class="field">
+      <span>目標レート（個/分）</span>
+      <input type="text" value="600" />
+    </label>
+  </div>
+
+  <div class="stats">
+    <div class="stat card key">
+      <div class="label">総電力</div>
+      <div class="value">1508<small>MW</small></div>
+    </div>
+    <div class="stat card">
+      <div class="label">建設台数</div>
+      <div class="value">41<small>台</small></div>
+    </div>
+    <div class="stat card">
+      <div class="label">レシピ数</div>
+      <div class="value">6</div>
+    </div>
+    <div class="stat card">
+      <div class="label">原料</div>
+      <div class="value">5<small>種</small></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>機械一覧</h2>
+    <div class="card flush">
+      <table>
+        <thead>
+          <tr><th>レシピ</th><th>機械</th><th class="n">台数</th><th class="n">建設</th><th class="n">電力</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ロケット燃料</td><td class="build">混合機</td><td class="n">6</td><td class="n ceil">6 台</td><td class="n">450 MW</td></tr>
+          <tr><td>ターボ燃料</td><td class="build">精製機</td><td class="n">19.2</td><td class="n ceil">20 台</td><td class="n">576 MW</td></tr>
+          <tr><td>燃料</td><td class="build">精製機</td><td class="n">10.8</td><td class="n ceil">11 台</td><td class="n">324 MW</td></tr>
+          <tr><td>硝酸</td><td class="build">混合機</td><td class="n">2</td><td class="n ceil">2 台</td><td class="n">150 MW</td></tr>
+          <tr><td>鉄板</td><td class="build">製作機</td><td class="n">1</td><td class="n ceil">1 台</td><td class="n">4 MW</td></tr>
+          <tr><td>鉄のインゴット</td><td class="build">製錬炉</td><td class="n">1</td><td class="n ceil">1 台</td><td class="n">4 MW</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>原料合計</h2>
+    <ul class="chips">
+      <li><span class="dot"></span>原油 <span class="rate">648</span><span class="unit">/分</span></li>
+      <li><span class="dot"></span>圧縮石炭 <span class="rate">288</span><span class="unit">/分</span></li>
+      <li><span class="dot"></span>窒素ガス <span class="rate">240</span><span class="unit">/分</span></li>
+      <li><span class="dot"></span>水 <span class="rate">60</span><span class="unit">/分</span></li>
+      <li><span class="dot"></span>鉄鉱石 <span class="rate">30</span><span class="unit">/分</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>余剰（副産物）</h2>
+    <ul class="chips byproducts">
+      <li><span class="dot"></span>圧縮石炭 <span class="rate">60</span><span class="unit">/分</span></li>
+      <li><span class="dot"></span>合成樹脂 <span class="rate">324</span><span class="unit">/分</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>生産ツリー</h2>
+    <div class="card">
+      <ul class="tree">
+        <li>
+          <span class="node"><span class="name">ロケット燃料</span><span class="qty">600 /分</span></span>
+          <ul>
+            <li>
+              <span class="node"><span class="name">ターボ燃料</span><span class="qty">360 /分</span></span>
+              <ul>
+                <li>
+                  <span class="node"><span class="name">燃料</span><span class="qty">432 /分</span></span>
+                  <ul>
+                    <li><span class="node"><span class="name">原油</span><span class="qty">648 /分</span><span class="badge">原料</span></span></li>
+                  </ul>
+                </li>
+                <li><span class="node"><span class="name">圧縮石炭</span><span class="qty">288 /分</span><span class="badge">原料</span></span></li>
+              </ul>
+            </li>
+            <li>
+              <span class="node"><span class="name">硝酸</span><span class="qty">60 /分</span></span>
+              <ul>
+                <li><span class="node"><span class="name">窒素ガス</span><span class="qty">240 /分</span><span class="badge">原料</span></span></li>
+                <li><span class="node"><span class="name">水</span><span class="qty">60 /分</span><span class="badge">原料</span></span></li>
+                <li>
+                  <span class="node"><span class="name">鉄板</span><span class="qty">20 /分</span></span>
+                  <ul>
+                    <li>
+                      <span class="node"><span class="name">鉄のインゴット</span><span class="qty">30 /分</span></span>
+                      <ul>
+                        <li><span class="node"><span class="name">鉄鉱石</span><span class="qty">30 /分</span><span class="badge">原料</span></span></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+</body>
+</html>
