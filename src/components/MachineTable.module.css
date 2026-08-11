@@ -1,14 +1,37 @@
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24) */
 .table {
 	border-collapse: collapse;
+	width: 100%;
+	background: var(--surface);
+	border: 1.5px solid var(--frame);
 }
 
 .table th,
 .table td {
-	border: 1px solid #d1d5db;
-	padding: 0.4rem 0.8rem;
+	border: 1px solid var(--line);
+	padding: 0.55rem 0.9rem;
 	text-align: left;
 }
 
-.table th {
-	background: #f3f4f6;
+.table thead th {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: var(--ink);
+	background: var(--thead-bg);
+	border-bottom: 1.5px solid var(--frame);
+}
+
+.building {
+	color: var(--ink-2);
+}
+
+.numeric {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+td.numeric {
+	font-family: var(--font-mono);
+	font-size: 0.92rem;
 }

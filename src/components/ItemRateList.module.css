@@ -1,0 +1,30 @@
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24) */
+.rates {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-width: 26rem;
+	background: var(--surface);
+	border: 1.5px solid var(--frame);
+}
+
+.rates li {
+	padding: 0.45rem 0.9rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.rates li + li {
+	border-top: 1px solid var(--line);
+}
+
+/* 行頭マーカー: 原料 = 消費(—) / 副産物 = 産出(+)。装飾であり読み上げ・テキストには含めない */
+.rates li::before {
+	content: "— ";
+	color: var(--raw);
+	font-weight: 700;
+}
+
+.byproducts li::before {
+	content: "+ ";
+	color: var(--byproduct);
+}

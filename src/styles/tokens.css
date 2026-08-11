@@ -1,0 +1,85 @@
+/* デザイントークン(issue #24)。
+ * ビジュアルは「エンジニアリング図面」: ライト = 白方眼紙 + 製図ブルー、
+ * ダーク = 青焼き(紺紙 + 白線)。OS 設定(prefers-color-scheme)に追従して切り替える。
+ * タイポグラフィと余白のスケールは PoC 案A 由来(docs/design-poc/)。
+ * コンポーネントの CSS Modules は必ずここの var() を参照し、生の色値を持たない。 */
+:root {
+	color-scheme: light dark;
+
+	/* 紙面 */
+	--paper: #fafbfc;
+	--grid: rgb(37 78 136 / 0.07);
+	--grid-bold: rgb(37 78 136 / 0.13);
+	--sheet-bg: rgb(255 255 255 / 0.72);
+	--surface: #ffffff;
+
+	/* インク(文字) */
+	--ink: #24303e;
+	--ink-2: #5d6b7c;
+	--ink-3: #93a0af;
+
+	/* 罫線・図面枠 */
+	--line: #b9c6d4;
+	--line-strong: #7d90a5;
+	--frame: #24303e;
+
+	/* 製図インク(見出し・数値)と注記(強調) */
+	--accent: #1d5aa8;
+	--accent-note: #c45d10;
+	--danger: #b3261e;
+
+	/* 意味色: 原料 / 副産物 */
+	--raw: #1d5aa8;
+	--byproduct: #0d7a55;
+
+	--thead-bg: rgb(29 90 168 / 0.08);
+
+	--font-sans:
+		"Segoe UI", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+	--font-mono:
+		"Cascadia Code", "SFMono-Regular", Consolas, "Roboto Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--paper: #0f2f52;
+		--grid: rgb(214 232 250 / 0.06);
+		--grid-bold: rgb(214 232 250 / 0.12);
+		--sheet-bg: rgb(255 255 255 / 0.03);
+		--surface: rgb(255 255 255 / 0.045);
+
+		--ink: #e9f2fb;
+		--ink-2: #b0c7dd;
+		--ink-3: #7e9cba;
+
+		--line: #33608f;
+		--line-strong: #5d87b3;
+		--frame: #dbe9f7;
+
+		--accent: #8ecdff;
+		--accent-note: #ffb163;
+		--danger: #ff8a80;
+
+		--raw: #8ecdff;
+		--byproduct: #6fd3a8;
+
+		--thead-bg: rgb(142 205 255 / 0.12);
+	}
+}
+
+body {
+	margin: 0;
+	color: var(--ink);
+	font-family: var(--font-sans);
+	line-height: 1.55;
+	background:
+		linear-gradient(var(--grid-bold) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid-bold) 1px, transparent 1px),
+		linear-gradient(var(--grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid) 1px, transparent 1px), var(--paper);
+	background-size:
+		80px 80px,
+		80px 80px,
+		16px 16px,
+		16px 16px;
+}

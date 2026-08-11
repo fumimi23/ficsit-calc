@@ -1,44 +1,87 @@
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24) */
 .planner {
-	max-width: 60rem;
+	margin-top: 1.5rem;
 }
 
 .controls {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 1rem;
-	margin-block: 1rem;
+	gap: 1.25rem;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-left: 3px solid var(--accent);
+	padding: 1rem 1.25rem 1.2rem;
+	margin-block: 1.25rem 1.5rem;
 }
 
 .field {
 	display: flex;
 	flex-direction: column;
-	gap: 0.25rem;
-	font-weight: 600;
+	gap: 0.35rem;
+}
+
+.fieldLabel {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: var(--accent);
 }
 
 .field select,
 .field input {
 	font: inherit;
-	font-weight: 400;
-	padding: 0.4rem 0.6rem;
-	min-width: 14rem;
+	background: var(--surface);
+	color: var(--ink);
+	border: 1px solid var(--line-strong);
+	border-radius: 0;
+	padding: 0.5rem 0.7rem;
+	min-width: 15rem;
+}
+
+.field input {
+	font-family: var(--font-mono);
+	font-variant-numeric: tabular-nums;
+}
+
+.field select:focus,
+.field input:focus {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
 }
 
 .alert {
-	color: #b91c1c;
+	color: var(--danger);
 	font-weight: 600;
 }
 
 .results {
 	display: grid;
-	gap: 0.5rem;
+}
+
+.results section {
+	margin-block: 1rem;
 }
 
 .results h2 {
-	font-size: 1.1rem;
-	margin-block: 0.75rem 0.25rem;
+	font-size: 0.85rem;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	color: var(--accent);
+	margin-block: 1rem 0.7rem;
 }
 
+.results h2::before {
+	content: "▸ ";
+	color: var(--accent-note);
+}
+
+/* 総電力: 寸法注記風のヒーロー行 */
 .total {
+	border-left: 3px double var(--line-strong);
+	padding-left: 0.9rem;
+	margin-block: 1.25rem 0.5rem;
+	color: var(--accent-note);
+	font-size: 1.2rem;
 	font-weight: 700;
+	font-variant-numeric: tabular-nums;
 }

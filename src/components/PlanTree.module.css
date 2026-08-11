@@ -1,16 +1,40 @@
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24)
+ * ツリーの接続線は図面の引出線に見立てる */
 .tree,
 .tree ul {
 	list-style: none;
 	margin: 0;
-	padding-left: 1.25rem;
-	border-left: 1px solid #d1d5db;
+	padding: 0;
 }
 
-.tree {
-	border-left: none;
-	padding-left: 0;
+.tree ul {
+	padding-left: 1.7rem;
+	border-left: 1px solid var(--line-strong);
+	margin-left: 0.35rem;
 }
 
 .tree li {
-	margin-block: 0.2rem;
+	margin-block: 0.45rem;
+	position: relative;
+}
+
+.tree ul li::before {
+	content: "";
+	position: absolute;
+	left: -1.7rem;
+	top: 0.8rem;
+	width: 1.25rem;
+	height: 1px;
+	background: var(--line-strong);
+}
+
+.node {
+	display: inline-block;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.raw {
+	font-weight: 400;
+	color: var(--ink-2);
 }

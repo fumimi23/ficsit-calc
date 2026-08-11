@@ -59,7 +59,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 		<div className={styles.planner}>
 			<div className={styles.controls}>
 				<label className={styles.field}>
-					アイテム
+					<span className={styles.fieldLabel}>アイテム</span>
 					<select
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
@@ -73,7 +73,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					</select>
 				</label>
 				<label className={styles.field}>
-					目標レート（個/分）
+					<span className={styles.fieldLabel}>目標レート（個/分）</span>
 					<input
 						type="text"
 						inputMode="decimal"
@@ -111,6 +111,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 								data={data}
 								label="余剰（副産物）"
 								rates={state.plan.byproducts}
+								variant="byproduct"
 							/>
 						</section>
 					)}
