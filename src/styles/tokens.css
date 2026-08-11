@@ -12,6 +12,10 @@
 	--grid-bold: rgb(37 78 136 / 0.13);
 	--sheet-bg: rgb(255 255 255 / 0.72);
 	--surface: #ffffff;
+	/* フォームコントロール専用。select のポップアップ背景は select の背景色から
+	 * 推定されるため、半透明(--surface のダーク値)だと白扱いされて文字が消える。
+	 * 必ず不透明色にする */
+	--control-bg: #ffffff;
 
 	/* インク(文字) */
 	--ink: #24303e;
@@ -47,6 +51,8 @@
 		--grid-bold: rgb(214 232 250 / 0.12);
 		--sheet-bg: rgb(255 255 255 / 0.03);
 		--surface: rgb(255 255 255 / 0.045);
+		/* --surface(半透明白 4.5%)を紺紙に重ねた実効色を不透明化した値 */
+		--control-bg: #1a385a;
 
 		--ink: #e9f2fb;
 		--ink-2: #b0c7dd;
