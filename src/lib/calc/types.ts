@@ -49,13 +49,13 @@ export interface RecipeDef {
 	building: BuildingId;
 	/** 1 クラフトの所要時間(秒) */
 	durationSeconds: ExactNumeric;
-	/** 代替レシピか(v1 の計算では使わないが、データモデルとしては保持する) */
+	/** 代替レシピか。primary レシピの選択(select.ts)では候補にならない */
 	alternate: boolean;
 	inputs: RecipeIngredient[];
 	outputs: RecipeIngredient[];
 }
 
-/** レシピデータ一式。1 アイテムに複数レシピがありうる(v1 はデフォルトレシピのみ使う) */
+/** レシピデータ一式。1 アイテムに複数レシピがありうる(使うレシピは select.ts の規則で選ぶ) */
 export interface RecipeData {
 	items: Record<ItemId, ItemDef>;
 	buildings: Record<BuildingId, BuildingDef>;
@@ -65,39 +65,40 @@ export interface RecipeData {
 // ---- 逆算結果 ----
 // 数値はすべて誤差のない分数(Fraction)。表示には toDecimalString を使う。
 
-/** 生産チェーンの 1 ノード。production が無いノードは原料(レシピを持たないアイテム)の終端 */
+/** レシピ 1 つ分の機械の必要数。ツリーの 1 ノード分にも、レシピ単位の合算にも使う */
+export interface MachineRequirement {
+	recipeId: string;
+	building: BuildingId;
+	/** 機械台数。端数のまま保持する(丸め・クロック提案は表示側の関心事) */
+	machineCount: Fraction;
+	/** 消費電力(MW) = machineCount × 機械の定格 */
+	powerMW: Fraction;
+}
+
+/** 生産チェーンの 1 ノード。production が無いノードは原料(primary レシピを持たないアイテム)の終端 */
 export interface PlanNode {
 	item: ItemId;
 	/** このノードに要求される生産レート(個/分) */
 	ratePerMinute: Fraction;
-	production?: {
-		recipeId: string;
-		building: BuildingId;
-		/** 機械台数。端数のまま保持する(丸め・クロック提案は表示側の関心事) */
-		machineCount: Fraction;
-		/** このノード分の消費電力(MW) = machineCount × 機械の定格 */
-		powerMW: Fraction;
-	};
+	production?: MachineRequirement;
 	inputs: PlanNode[];
 }
 
-/** レシピ単位で合算した機械の必要数 */
-export interface MachineRequirement {
-	recipeId: string;
-	building: BuildingId;
-	machineCount: Fraction;
-	powerMW: Fraction;
-}
-
-export interface RawMaterialRequirement {
+/** アイテム別の合計レート。原料(rawMaterials)と余剰の副産物(byproducts)の両方に使う */
+export interface ItemRate {
 	item: ItemId;
 	ratePerMinute: Fraction;
 }
 
-/** 逆算の結果: 生産チェーンのツリーと、レシピ単位・原料単位の合算値 */
+/** 逆算の結果: 生産チェーンのツリーと、レシピ単位・アイテム単位の合算値 */
 export interface ProductionPlan {
 	root: PlanNode;
 	machines: MachineRequirement[];
-	rawMaterials: RawMaterialRequirement[];
+	rawMaterials: ItemRate[];
+	/**
+	 * 多出力レシピの第 2 以降の出力(余剰)。需要とは相殺しない(issue #5)。
+	 * 相殺・消費計画はロードマップ 4
+	 */
+	byproducts: ItemRate[];
 	totalPowerMW: Fraction;
 }
