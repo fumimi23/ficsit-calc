@@ -27,6 +27,15 @@ describe("Fraction", () => {
 		expect(() => Fraction.of(1, 0)).toThrow(RangeError);
 	});
 
+	it("ceil は天井の整数値を返す", () => {
+		expect(Fraction.of(3, 2).ceil()).toBe(2n);
+		expect(Fraction.of(2).ceil()).toBe(2n);
+		expect(Fraction.of(1, 3).ceil()).toBe(1n);
+		expect(Fraction.of(0).ceil()).toBe(0n);
+		expect(Fraction.of(-3, 2).ceil()).toBe(-1n);
+		expect(Fraction.of(-2).ceil()).toBe(-2n);
+	});
+
 	it("四則演算が厳密に成立する", () => {
 		const third = Fraction.of(1, 3);
 		expect(third.add(third).add(third)).toEqual(Fraction.of(1));

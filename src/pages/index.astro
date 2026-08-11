@@ -1,4 +1,6 @@
 ---
+// UI は React アイランド(PlannerApp)に閉じ、計算コアはフレームワーク非依存のまま保つ(issue #3)
+import { PlannerApp } from "../components/PlannerApp";
 ---
 
 <html lang="ja">
@@ -9,6 +11,7 @@
   </head>
   <body>
     <h1>ficsit-calc</h1>
-    <p>Satisfactory 生産チェーン計算機（開発中）</p>
+    <p>Satisfactory 生産チェーン計算機 — 目標アイテムとレートから生産チェーンを逆算します。</p>
+    <PlannerApp client:load />
   </body>
 </html>

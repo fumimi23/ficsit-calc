@@ -40,6 +40,9 @@ export class Fraction {
 
 	/**
 	 * 十進表記(number または "1.5" のような文字列)から正確に変換する。
+	 * 受理する表記は符号付き十進表記(`[+-]?整数部[.小数部]`、前後空白は無視)のみ。
+	 * 指数表記("1e-7")・整数部の省略(".5")・分数表記("1/3")は受理しない(約束: issue #8。
+	 * UI 入力のゆらぎは src/lib/ui/rate-input.ts の正規化で吸収する)。
 	 * number は String() の最短往復表現を経由するため、JSON や UI 入力に
 	 * 書かれた十進リテラルがそのまま分数になる(例: 0.1 → 1/10)。
 	 */
@@ -100,6 +103,14 @@ export class Fraction {
 
 	isNegative(): boolean {
 		return this.num < 0n;
+	}
+
+	/** 天井(切り上げ)の整数値。端数の機械台数から建設台数を出す用途など */
+	ceil(): bigint {
+		// BigInt の除算は 0 方向へ切り捨てるため、負数はそのままで天井になる
+		return this.num > 0n
+			? (this.num + this.den - 1n) / this.den
+			: this.num / this.den;
 	}
 
 	/** 近似値。グラフ描画など誤差が許容できる用途のみに使う */
