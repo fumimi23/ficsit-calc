@@ -71,7 +71,7 @@
 }
 
 .results h2::before {
-	content: "▸ ";
+	content: "▸ " / "";
 	color: var(--accent-note);
 }
 

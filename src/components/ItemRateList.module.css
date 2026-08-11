@@ -17,14 +17,15 @@
 	border-top: 1px solid var(--line);
 }
 
-/* 行頭マーカー: 原料 = 消費(—) / 副産物 = 産出(+)。装飾であり読み上げ・テキストには含めない */
+/* 行頭マーカー: 原料 = 消費(—) / 副産物 = 産出(+)。
+ * 生成コンテンツは読み上げられ得るため、代替テキスト構文(/ "")で装飾扱いにする */
 .rates li::before {
-	content: "— ";
+	content: "— " / "";
 	color: var(--raw);
 	font-weight: 700;
 }
 
 .byproducts li::before {
-	content: "+ ";
+	content: "+ " / "";
 	color: var(--byproduct);
 }
