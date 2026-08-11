@@ -96,25 +96,27 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						<h2>機械一覧</h2>
 						<MachineTable data={data} machines={state.plan.machines} />
 					</section>
-					<section>
-						<h2>原料合計</h2>
-						<ItemRateList
-							data={data}
-							label="原料合計"
-							rates={state.plan.rawMaterials}
-						/>
-					</section>
-					{state.plan.byproducts.length > 0 && (
+					<div className={styles.rateColumns}>
 						<section>
-							<h2>余剰（副産物）</h2>
+							<h2>原料合計</h2>
 							<ItemRateList
 								data={data}
-								label="余剰（副産物）"
-								rates={state.plan.byproducts}
-								variant="byproduct"
+								label="原料合計"
+								rates={state.plan.rawMaterials}
 							/>
 						</section>
-					)}
+						{state.plan.byproducts.length > 0 && (
+							<section>
+								<h2>余剰（副産物）</h2>
+								<ItemRateList
+									data={data}
+									label="余剰（副産物）"
+									rates={state.plan.byproducts}
+									variant="byproduct"
+								/>
+							</section>
+						)}
+					</div>
 					<p className={styles.total}>
 						総電力: {state.plan.totalPowerMW.toDecimalString()} MW
 					</p>

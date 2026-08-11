@@ -68,6 +68,18 @@
 	margin-block: 1rem;
 }
 
+/* 原料合計と余剰(副産物)は横並び。狭い画面では折り返して縦積みに戻る */
+.rateColumns {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 2.5rem;
+}
+
+.rateColumns section {
+	flex: 0 1 26rem;
+	min-width: 16rem;
+}
+
 .results h2 {
 	font-size: 0.85rem;
 	font-weight: 700;
