@@ -7,6 +7,13 @@
 	padding: 0;
 }
 
+/* ルートは図面枠パネル(機械一覧・レート一覧と同様式)。引出線を方眼に重ねない */
+.tree {
+	background: var(--surface);
+	border: 1.5px solid var(--frame);
+	padding: 0.9rem 1.25rem;
+}
+
 .tree ul {
 	padding-left: 1.7rem;
 	border-left: 1px solid var(--line-strong);
