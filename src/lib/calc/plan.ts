@@ -1,13 +1,13 @@
 import { Fraction } from "./fraction";
+import { type RecipeSelection, selectPrimaryRecipes } from "./select";
 import type {
 	ExactNumeric,
 	ItemId,
+	ItemRate,
 	MachineRequirement,
 	PlanNode,
 	ProductionPlan,
-	RawMaterialRequirement,
 	RecipeData,
-	RecipeDef,
 } from "./types";
 
 /** 存在しないアイテム ID を指定したときの明示的なエラー(issue #1) */
@@ -30,14 +30,17 @@ const SIXTY = Fraction.of(60);
 /**
  * 目標アイテムと生産レート(個/分)から生産チェーンを逆算する。
  *
- * レシピグラフを目標から遡って再帰展開し、レシピを持たないアイテム(原料)で終端する。
+ * レシピグラフを目標から遡って再帰展開し、レシピ選択(selection)に無いアイテム
+ * (真の原料のほか、副産物のみ・開封のみ等で primary レシピを持たないアイテム)で終端する。
+ * selection を省略すると selectPrimaryRecipes の規則(issue #5)で選ぶ。
+ * 多出力レシピの第 2 以降の出力は byproducts に余剰として集計し、需要とは相殺しない。
  * 数値は誤差のない分数(Fraction)で保持し、機械台数は端数のまま返す
  * (丸め・クロック提案は表示側の関心事)。
- * アイテムに複数レシピがある場合はデフォルト(alternate でない)レシピを使う。
  */
 export function planProduction(
 	data: RecipeData,
 	target: ProductionTarget,
+	selection: RecipeSelection = selectPrimaryRecipes(data),
 ): ProductionPlan {
 	// 非有限・十進表記でない入力は Fraction.from が RangeError にする
 	const targetRate = Fraction.from(target.ratePerMinute);
@@ -47,9 +50,20 @@ export function planProduction(
 		);
 	}
 
-	// レシピ単位・原料単位の合算。同一中間素材が複数の枝から要求されても重複なく合算する
+	// レシピ単位・アイテム単位の合算。同一中間素材が複数の枝から要求されても重複なく合算する
 	const machines = new Map<string, MachineRequirement>();
-	const rawMaterials = new Map<ItemId, RawMaterialRequirement>();
+	const rawMaterials = new Map<ItemId, ItemRate>();
+	const byproducts = new Map<ItemId, ItemRate>();
+
+	const addRate = (
+		acc: Map<ItemId, ItemRate>,
+		itemId: ItemId,
+		ratePerMinute: Fraction,
+	) => {
+		const entry = acc.get(itemId) ?? { item: itemId, ratePerMinute: ZERO };
+		entry.ratePerMinute = entry.ratePerMinute.add(ratePerMinute);
+		acc.set(itemId, entry);
+	};
 
 	const expand = (
 		itemId: ItemId,
@@ -65,15 +79,10 @@ export function planProduction(
 			);
 		}
 
-		const recipe = findDefaultRecipe(data, itemId);
+		const recipe = selection.get(itemId);
 		if (!recipe) {
-			// レシピを持たないアイテム = 原料。ここで終端する
-			const entry = rawMaterials.get(itemId) ?? {
-				item: itemId,
-				ratePerMinute: ZERO,
-			};
-			entry.ratePerMinute = entry.ratePerMinute.add(ratePerMinute);
-			rawMaterials.set(itemId, entry);
+			// primary レシピを持たないアイテム = 原料。ここで終端する
+			addRate(rawMaterials, itemId, ratePerMinute);
 			return { item: itemId, ratePerMinute, inputs: [] };
 		}
 
@@ -84,11 +93,14 @@ export function planProduction(
 			);
 		}
 
-		// findDefaultRecipe の条件より outputs に itemId が必ず含まれる
-		const outputAmount = Fraction.from(
-			recipe.outputs.find((o) => o.item === itemId)?.amount ?? 1,
-		);
-		const craftsPerMinute = ratePerMinute.div(outputAmount);
+		const output = recipe.outputs.find((o) => o.item === itemId);
+		if (!output) {
+			// selectPrimaryRecipes の結果では起きない。将来のユーザー選択(ロードマップ 3)の防波堤
+			throw new Error(
+				`選択されたレシピ ${recipe.id} は ${itemId} を産出しません`,
+			);
+		}
+		const craftsPerMinute = ratePerMinute.div(Fraction.from(output.amount));
 		const machineCount = craftsPerMinute
 			.mul(Fraction.from(recipe.durationSeconds))
 			.div(SIXTY);
@@ -103,6 +115,16 @@ export function planProduction(
 		entry.machineCount = entry.machineCount.add(machineCount);
 		entry.powerMW = entry.powerMW.add(powerMW);
 		machines.set(recipe.id, entry);
+
+		// 要求されたアイテム以外の出力は余剰(byproducts)。需要とは相殺しない(issue #5)
+		for (const other of recipe.outputs) {
+			if (other.item === itemId) continue;
+			addRate(
+				byproducts,
+				other.item,
+				Fraction.from(other.amount).mul(craftsPerMinute),
+			);
+		}
 
 		const nextStack = [...stack, itemId];
 		const inputs = recipe.inputs.map((input) =>
@@ -136,15 +158,7 @@ export function planProduction(
 		root,
 		machines: [...machines.values()],
 		rawMaterials: [...rawMaterials.values()],
+		byproducts: [...byproducts.values()],
 		totalPowerMW,
 	};
-}
-
-/** アイテムを産出するデフォルト(alternate でない)レシピを返す。無ければ null(= 原料) */
-function findDefaultRecipe(data: RecipeData, itemId: ItemId): RecipeDef | null {
-	return (
-		data.recipes.find(
-			(r) => !r.alternate && r.outputs.some((o) => o.item === itemId),
-		) ?? null
-	);
 }
