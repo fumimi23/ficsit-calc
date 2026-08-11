@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ficsit-calc — 案A: FICSIT インダストリアル</title>
+<style>
+  /* ===== 案A: Satisfactory 風インダストリアル（ダーク固定 + FICSIT オレンジ） ===== */
+  :root {
+    --bg: #17181c;
+    --surface: #1f2126;
+    --surface-2: #26282e;
+    --border: #34373f;
+    --border-strong: #4a4e58;
+    --ink: #e8e6e3;
+    --ink-2: #a8a5a0;
+    --ink-3: #75726d;
+    --accent: #fa9549;        /* FICSIT オレンジ */
+    --accent-dim: #b96a31;
+    --accent-ink: #1a1104;
+    --raw: #8ab4f8;           /* 原料の識別色 */
+    --byproduct: #7ed3a2;     /* 副産物の識別色 */
+    --danger: #f28b82;
+    --num: "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    line-height: 1.55;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ヘッダー: 工業ラベル風 */
+  header {
+    background: var(--surface);
+    border-bottom: 3px solid var(--accent);
+    padding: 1.1rem 2rem 1rem;
+  }
+  header .brand {
+    display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+    max-width: 72rem; margin: 0 auto;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+  header h1 .tld { color: var(--accent); }
+  header .tagline { color: var(--ink-2); font-size: 0.85rem; }
+  .stripe {
+    height: 8px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--accent) 0 12px,
+      transparent 12px 24px
+    );
+    opacity: 0.55;
+  }
+
+  main { max-width: 72rem; margin: 0 auto; padding: 1.5rem 2rem 4rem; }
+
+  /* 入力パネル */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.25rem 1.2rem;
+    margin-block: 1.25rem 1.5rem;
+  }
+  .field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .field > span {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .field select, .field input {
+    font: inherit;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    padding: 0.5rem 0.7rem;
+    min-width: 15rem;
+  }
+  .field select:focus, .field input:focus {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+
+  /* サマリータイル(stat tiles) */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 2px; margin-block: 1.5rem; }
+  .stat {
+    background: var(--surface-2);
+    border-top: 2px solid var(--border-strong);
+    padding: 0.8rem 1rem 0.9rem;
+  }
+  .stat.key { border-top-color: var(--accent); }
+  .stat .label {
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .stat .value { font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .stat .value small { font-size: 0.85rem; font-weight: 600; color: var(--ink-2); margin-left: 0.2rem; }
+
+  /* セクション見出し: 銘板風 */
+  section { margin-block: 2rem; }
+  h2 {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.85rem; font-weight: 800;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+    margin-block: 0 0.7rem;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  /* 機械一覧テーブル */
+  table { border-collapse: collapse; width: 100%; background: var(--surface); }
+  th, td { padding: 0.55rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th {
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-2); background: var(--surface-2);
+    border-bottom: 2px solid var(--border-strong);
+  }
+  td.n { font-variant-numeric: tabular-nums; text-align: right; }
+  th.n { text-align: right; }
+  tbody tr:hover { background: var(--surface-2); }
+  td .build { color: var(--ink-2); font-size: 0.88rem; }
+
+  /* レート一覧 */
+  ul.rates { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-width: 26rem; }
+  ul.rates li {
+    display: flex; justify-content: space-between; gap: 1rem;
+    background: var(--surface);
+    border-left: 3px solid var(--raw);
+    padding: 0.45rem 0.9rem;
+  }
+  ul.rates.byproducts li { border-left-color: var(--byproduct); }
+  ul.rates .rate { font-variant-numeric: tabular-nums; font-weight: 700; }
+  ul.rates .rate small { color: var(--ink-3); font-weight: 400; }
+
+  /* 生産ツリー: コンベアライン風の接続線 */
+  .tree, .tree ul { list-style: none; margin: 0; padding: 0; }
+  .tree ul { padding-left: 1.6rem; border-left: 2px solid var(--border-strong); margin-left: 0.55rem; }
+  .tree li { margin-block: 0.45rem; position: relative; }
+  .tree ul li::before {
+    content: ""; position: absolute; left: -1.6rem; top: 0.85rem;
+    width: 1.1rem; height: 2px; background: var(--border-strong);
+  }
+  .node {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.75rem;
+  }
+  .node .qty { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); }
+  .node .qty small { color: var(--ink-3); font-weight: 400; }
+  .node.raw { border-style: dashed; border-color: var(--raw); }
+  .node.raw .qty { color: var(--raw); }
+  .tag {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+    padding: 0.05rem 0.4rem; border-radius: 2px;
+    background: var(--raw); color: #10131a;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>ficsit-calc<span class="tld">_</span></h1>
+    <span class="tagline">Satisfactory 生産チェーン計算機 — 目標アイテムとレートから生産チェーンを逆算します。</span>
+  </div>
+</header>
+<div class="stripe"></div>
+<main>
+  <div class="controls">
+    <label class="field">
+      <span>アイテム</span>
+      <select><option>ロケット燃料</option></select>
+    </label>
+    <label class="field">
+      <span>目標レート（個/分）</span>
+      <input type="text" value="600" />
+    </label>
+  </div>
+
+  <div class="stats">
+    <div class="stat key">
+      <div class="label">総電力</div>
+      <div class="value">1508<small>MW</small></div>
+    </div>
+    <div class="stat">
+      <div class="label">建設台数</div>
+      <div class="value">41<small>台</small></div>
+    </div>
+    <div class="stat">
+      <div class="label">レシピ数</div>
+      <div class="value">6</div>
+    </div>
+    <div class="stat">
+      <div class="label">原料</div>
+      <div class="value">5<small>種</small></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>機械一覧</h2>
+    <table>
+      <thead>
+        <tr><th>レシピ</th><th>機械</th><th class="n">台数</th><th class="n">建設</th><th class="n">電力</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ロケット燃料</td><td class="build">混合機</td><td class="n">6</td><td class="n">6 台</td><td class="n">450 MW</td></tr>
+        <tr><td>ターボ燃料</td><td class="build">精製機</td><td class="n">19.2</td><td class="n">20 台</td><td class="n">576 MW</td></tr>
+        <tr><td>燃料</td><td class="build">精製機</td><td class="n">10.8</td><td class="n">11 台</td><td class="n">324 MW</td></tr>
+        <tr><td>硝酸</td><td class="build">混合機</td><td class="n">2</td><td class="n">2 台</td><td class="n">150 MW</td></tr>
+        <tr><td>鉄板</td><td class="build">製作機</td><td class="n">1</td><td class="n">1 台</td><td class="n">4 MW</td></tr>
+        <tr><td>鉄のインゴット</td><td class="build">製錬炉</td><td class="n">1</td><td class="n">1 台</td><td class="n">4 MW</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>原料合計</h2>
+    <ul class="rates">
+      <li><span>原油</span><span class="rate">648 <small>/分</small></span></li>
+      <li><span>圧縮石炭</span><span class="rate">288 <small>/分</small></span></li>
+      <li><span>窒素ガス</span><span class="rate">240 <small>/分</small></span></li>
+      <li><span>水</span><span class="rate">60 <small>/分</small></span></li>
+      <li><span>鉄鉱石</span><span class="rate">30 <small>/分</small></span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>余剰（副産物）</h2>
+    <ul class="rates byproducts">
+      <li><span>圧縮石炭</span><span class="rate">60 <small>/分</small></span></li>
+      <li><span>合成樹脂</span><span class="rate">324 <small>/分</small></span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>生産ツリー</h2>
+    <ul class="tree">
+      <li>
+        <span class="node"><span>ロケット燃料</span><span class="qty">600 <small>/分</small></span></span>
+        <ul>
+          <li>
+            <span class="node"><span>ターボ燃料</span><span class="qty">360 <small>/分</small></span></span>
+            <ul>
+              <li>
+                <span class="node"><span>燃料</span><span class="qty">432 <small>/分</small></span></span>
+                <ul>
+                  <li><span class="node raw"><span>原油</span><span class="qty">648 <small>/分</small></span><span class="tag">原料</span></span></li>
+                </ul>
+              </li>
+              <li><span class="node raw"><span>圧縮石炭</span><span class="qty">288 <small>/分</small></span><span class="tag">原料</span></span></li>
+            </ul>
+          </li>
+          <li>
+            <span class="node"><span>硝酸</span><span class="qty">60 <small>/分</small></span></span>
+            <ul>
+              <li><span class="node raw"><span>窒素ガス</span><span class="qty">240 <small>/分</small></span><span class="tag">原料</span></span></li>
+              <li><span class="node raw"><span>水</span><span class="qty">60 <small>/分</small></span><span class="tag">原料</span></span></li>
+              <li>
+                <span class="node"><span>鉄板</span><span class="qty">20 <small>/分</small></span></span>
+                <ul>
+                  <li>
+                    <span class="node"><span>鉄のインゴット</span><span class="qty">30 <small>/分</small></span></span>
+                    <ul>
+                      <li><span class="node raw"><span>鉄鉱石</span><span class="qty">30 <small>/分</small></span><span class="tag">原料</span></span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>
