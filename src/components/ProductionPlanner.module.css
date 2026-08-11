@@ -30,7 +30,7 @@
 .field select,
 .field input {
 	font: inherit;
-	background: var(--control-bg);
+	background: var(--surface);
 	color: var(--ink);
 	border: 1px solid var(--line-strong);
 	border-radius: 0;
@@ -40,7 +40,7 @@
 
 /* ポップアップを自前で塗るブラウザ(Firefox 等)向けの明示指定 */
 .field select option {
-	background: var(--control-bg);
+	background: var(--surface);
 	color: var(--ink);
 }
 
