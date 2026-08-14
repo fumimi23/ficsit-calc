@@ -47,6 +47,24 @@ describe("アイテム検索(issue #19)", () => {
 		expect(within(select).queryAllByRole("option")).toHaveLength(0);
 	});
 
+	it("未選択のとき、絞り込んでもどの行も選択状態にならない", async () => {
+		// React は controlled select の value に一致する option が無いと先頭の
+		// option に選択状態を立てるため、受け皿が無いと未選択でも先頭行が
+		// 選択色になる(ブラウザ手動確認での指摘)
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+
+		const select = screen.getByLabelText<HTMLSelectElement>("アイテム");
+		const noneSelected = () =>
+			within(select)
+				.getAllByRole("option")
+				.every((option) => !(option as HTMLOptionElement).selected);
+
+		expect(noneSelected()).toBe(true); // 初期表示
+		await user.type(screen.getByLabelText("アイテム検索"), "ネジ");
+		expect(noneSelected()).toBe(true); // 絞り込み後も未選択のまま
+	});
+
 	it("クリアボタンを押すと検索欄が空になり、絞り込みが解除される", async () => {
 		// ブラウザ手動確認でのユーザー要望(PR #40)。ネイティブの内蔵クリアは
 		// ブラウザ依存(Firefox には無い)なので、明示のボタンを約束にする

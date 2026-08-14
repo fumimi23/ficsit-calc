@@ -130,6 +130,10 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
 					>
+						{/* 未選択(value="")の受け皿。React は一致する option が無い controlled
+						    select で先頭の option に選択状態を立てるため、これが無いと未選択でも
+						    先頭行が選択色になる。hidden で見せず disabled でキー操作からも外す */}
+						<option value="" disabled hidden />
 						{visibleOptions.map((option) => (
 							<option key={option.id} value={option.id}>
 								{option.label}
