@@ -109,7 +109,7 @@
 .clearButton:disabled {
 	color: var(--ink-3);
 	border-color: var(--line);
-	cursor: default;
+	cursor: not-allowed;
 }
 
 .field select:focus,
