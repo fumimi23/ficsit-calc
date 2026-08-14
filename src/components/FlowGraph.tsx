@@ -39,6 +39,9 @@ export function FlowGraph({
 			const { default: mermaid } = await import("mermaid");
 			mermaid.initialize({
 				startOnLoad: false,
+				// 既定値だが明示する: dangerouslySetInnerHTML の安全性はこの設定
+				// (DOMPurify によるラベルのサニタイズ)に依存している
+				securityLevel: "strict",
 				theme: "base",
 				themeVariables: {
 					fontFamily: themeToken("--font-sans", "sans-serif"),
