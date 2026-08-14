@@ -71,17 +71,20 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	return (
 		<div className={styles.planner}>
 			<div className={styles.controls}>
-				{/* label で包まず htmlFor で関連付ける。0 件メッセージを label 内に置くと
-				    検索欄のアクセシブルネームに混入するため(PR #40 レビュー指摘) */}
+				{/* 検索欄はリストを操作する道具なので、リストの真上に置いて
+				    「アイテム」1 ブロックにまとめる(ブラウザ手動確認での指摘)。
+				    可視ラベルはブロックに 1 つだけ置いて select に関連付け、検索欄の
+				    アクセシブルネームは aria-label で与える(label 要素に足すと
+				    0 件メッセージ等が名前に混入しやすい — PR #40 レビュー指摘) */}
 				<div className={styles.field}>
-					<label className={styles.fieldLabel} htmlFor="item-search-input">
-						アイテム検索
+					<label className={styles.fieldLabel} htmlFor="item-select">
+						アイテム
 					</label>
 					<div className={styles.searchRow}>
 						<input
-							id="item-search-input"
 							ref={searchInputRef}
 							type="search"
+							aria-label="アイテム検索"
 							placeholder="名前で絞り込み（例: 鉄 / iron）"
 							value={itemQuery}
 							onChange={(event) => setItemQuery(event.target.value)}
@@ -107,12 +110,10 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					<span role="status" className={styles.noMatch}>
 						{matchedIds.size === 0 ? "該当するアイテムがありません" : ""}
 					</span>
-				</div>
-				<label className={styles.field}>
-					<span className={styles.fieldLabel}>アイテム</span>
 					{/* 閉じたドロップダウンだと検索欄にフォーカスした時点で候補が見えなくなる
 					    (ブラウザ手動確認での指摘)ため、size で常時表示のリストボックスにする */}
 					<select
+						id="item-select"
 						size={8}
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
@@ -123,7 +124,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 							</option>
 						))}
 					</select>
-				</label>
+				</div>
 				<label className={styles.field}>
 					<span className={styles.fieldLabel}>目標レート（個/分）</span>
 					<input

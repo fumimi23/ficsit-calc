@@ -74,6 +74,11 @@
 	gap: 0.4rem;
 }
 
+/* リストは真上の検索欄の行と同じ幅にそろえる(1 ブロックに見せる) */
+.field select {
+	width: 100%;
+}
+
 /* 自前のクリアボタンを置くので、WebKit 系の内蔵クリア(✕)は消して二重表示を避ける */
 .searchRow input::-webkit-search-cancel-button {
 	-webkit-appearance: none;
