@@ -80,9 +80,7 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 			// ClassName 規約(Recipe_Alternate_*)では判定しない。ゲーム 1.0 でデフォルト化した
 			// のに旧クラス名が残るレシピ(Recipe_Alternate_Turbofuel_C)があり、表示名の
 			// "Alternate:" プレフィックスだけがスキマティックの解禁種別と全件一致するため
-			if (name.startsWith("Alternate:")) {
-				continue;
-			}
+			const alternate = name.startsWith("Alternate:");
 
 			// 期間限定イベント(FICSMAS 等)のレシピは通常プレイで使えないため収録しない
 			if (asString(entry.mRelevantEvents)) {
@@ -112,7 +110,7 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 						`${id}.mManufactoringDuration`,
 					),
 				),
-				alternate: false,
+				alternate,
 				inputs: toIngredients("mIngredients"),
 				outputs: toIngredients("mProduct"),
 			});
