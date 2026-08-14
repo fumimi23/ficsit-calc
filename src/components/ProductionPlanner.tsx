@@ -57,7 +57,11 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 		prevQueryRef.current = itemQuery.trim();
 		if (!select || !selected) return;
 		if (queryCleared) {
-			select.scrollTop = selected.offsetTop;
+			// option.offsetTop は select ではなく offsetParent(ページ側の祖先)基準
+			// なので使えない。画面上の位置差分からスクロール量を決める
+			select.scrollTop +=
+				selected.getBoundingClientRect().top -
+				select.getBoundingClientRect().top;
 		} else {
 			// jsdom には scrollIntoView が無いので optional call にする
 			selected.scrollIntoView?.({ block: "nearest" });
