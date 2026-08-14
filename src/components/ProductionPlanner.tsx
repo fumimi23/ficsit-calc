@@ -70,20 +70,25 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	return (
 		<div className={styles.planner}>
 			<div className={styles.controls}>
-				<label className={styles.field}>
-					<span className={styles.fieldLabel}>アイテム検索</span>
+				{/* label で包まず htmlFor で関連付ける。0 件メッセージを label 内に置くと
+				    検索欄のアクセシブルネームに混入するため(PR #40 レビュー指摘) */}
+				<div className={styles.field}>
+					<label className={styles.fieldLabel} htmlFor="item-search-input">
+						アイテム検索
+					</label>
 					<input
+						id="item-search-input"
 						type="search"
 						placeholder="名前で絞り込み（例: 鉄 / iron）"
 						value={itemQuery}
 						onChange={(event) => setItemQuery(event.target.value)}
 					/>
-					{matchedIds.size === 0 && (
-						<span role="status" className={styles.noMatch}>
-							該当するアイテムがありません
-						</span>
-					)}
-				</label>
+					{/* ライブリージョンは常時マウントしテキストだけ切り替える。
+					    後から要素ごと現れると読み上げを取りこぼすスクリーンリーダーがある */}
+					<span role="status" className={styles.noMatch}>
+						{matchedIds.size === 0 ? "該当するアイテムがありません" : ""}
+					</span>
+				</div>
 				<label className={styles.field}>
 					<span className={styles.fieldLabel}>アイテム</span>
 					<select

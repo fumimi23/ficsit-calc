@@ -3,7 +3,7 @@
 import type { ItemDef, ItemId } from "../calc/types";
 
 /**
- * query に部分一致するアイテムの ID を items の定義順で返す。
+ * query に部分一致するアイテムの ID を返す(返却順は約束しない)。
  * 日本語名(nameJa)・英語名(name)の両方が対象で、英語は大文字小文字を無視する。
  * 空(空白のみ)の query は「絞り込みなし」として全件を返す
  */

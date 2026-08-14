@@ -39,10 +39,31 @@ describe("アイテム検索(issue #19)", () => {
 		render(<ProductionPlanner data={fixtureData} />);
 		await user.type(screen.getByLabelText("アイテム検索"), "存在しない名前");
 
-		screen.getByRole("status");
+		// ライブリージョンは常時マウントなので、存在ではなく中身で判定する
+		// (文言そのものは約束しない)
+		expect(screen.getByRole("status").textContent).not.toBe("");
 		// 選択リストはプレースホルダーだけになる
 		const select = screen.getByLabelText("アイテム");
 		expect(within(select).getAllByRole("option")).toHaveLength(1);
+	});
+
+	it("選択済みのアイテムは、検索で絞り込みから外れても選択肢に残り、計画も表示され続ける", async () => {
+		// issue の受け入れ条件ではなく PR #40 での設計判断。select の表示が
+		// プレースホルダーに戻ると表示中の計画と食い違うため、選択済みは残すと約束する
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-plate");
+		await user.type(screen.getByLabelText(/目標レート/), "30");
+		await user.type(screen.getByLabelText("アイテム検索"), "ネジ");
+
+		const select = screen.getByLabelText<HTMLSelectElement>("アイテム");
+		expect(select.value).toBe("iron-plate");
+		const labels = within(select)
+			.getAllByRole("option")
+			.map((option) => option.textContent);
+		expect(labels).toContain("鉄板"); // 選択済みとして残る
+		expect(labels).toContain("ネジ"); // 検索のマッチ分
+		screen.getByRole("table"); // 計画は表示され続ける
 	});
 
 	it("絞り込み後にアイテムを選択すると、従来どおり計画が表示される", async () => {

@@ -11,9 +11,15 @@ const items: Record<ItemId, ItemDef> = {
 	"copper-ingot": { name: "Copper Ingot", nameJa: "銅のインゴット" },
 };
 
+// 返却順は約束しない(利用側は集合として扱う)ため、比較前にソートして順序を消す
+const sorted = (ids: readonly ItemId[]) => [...ids].sort();
+
 describe("アイテム検索の絞り込み(issue #19)", () => {
 	it("日本語名に部分一致するアイテムだけが返る", () => {
-		expect(filterItemIds(items, "鉄")).toEqual(["iron-ore", "iron-plate"]);
+		expect(sorted(filterItemIds(items, "鉄"))).toEqual([
+			"iron-ore",
+			"iron-plate",
+		]);
 	});
 
 	it("英語名にも部分一致し、大文字小文字は無視される", () => {
@@ -22,8 +28,12 @@ describe("アイテム検索の絞り込み(issue #19)", () => {
 	});
 
 	it("空(空白のみ)のクエリでは全アイテムが返る", () => {
-		expect(filterItemIds(items, "")).toEqual(Object.keys(items));
-		expect(filterItemIds(items, "   ")).toEqual(Object.keys(items));
+		expect(sorted(filterItemIds(items, ""))).toEqual(
+			sorted(Object.keys(items)),
+		);
+		expect(sorted(filterItemIds(items, "   "))).toEqual(
+			sorted(Object.keys(items)),
+		);
 	});
 
 	it("どの名前にもマッチしないとき、空配列が返る", () => {
