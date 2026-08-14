@@ -38,15 +38,78 @@
 	min-width: 15rem;
 }
 
-/* ポップアップを自前で塗るブラウザ(Firefox 等)向けの明示指定 */
+/* リストボックス(size 指定)の行。色はテーマ任せにせず図面トークンで明示する */
 .field select option {
 	background: var(--surface);
 	color: var(--ink);
+	padding: 0.15rem 0.35rem;
+}
+
+/* フォーカスが外れると選択行が UA 標準の薄いグレーになり判別できない
+   (ブラウザ手動確認での指摘)。UA は選択行の background-color を上書きするが
+   background-image は尊重するため、単色グラデーションで塗る */
+.field select option:checked {
+	background-image: linear-gradient(var(--accent), var(--accent));
+	color: var(--surface);
 }
 
 .field input {
 	font-family: var(--font-mono);
 	font-variant-numeric: tabular-nums;
+}
+
+/* 検索欄は日本語を打つので等幅・数字揃えの対象外 */
+.field input[type="search"] {
+	font-family: var(--font-sans);
+	font-variant-numeric: normal;
+}
+
+.noMatch {
+	font-size: 0.8rem;
+	color: var(--ink-2);
+}
+
+.searchRow {
+	display: flex;
+	gap: 0.4rem;
+}
+
+/* リストは真上の検索欄の行と同じ幅にそろえる(1 ブロックに見せる) */
+.field select {
+	width: 100%;
+}
+
+/* 自前のクリアボタンを置くので、WebKit 系の内蔵クリア(✕)は消して二重表示を避ける */
+.searchRow input::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.clearButton {
+	font: inherit;
+	background: var(--surface);
+	color: var(--ink-2);
+	border: 1px solid var(--line-strong);
+	border-radius: 0;
+	padding: 0 0.6rem;
+	cursor: pointer;
+}
+
+.clearButton:hover {
+	color: var(--ink);
+	border-color: var(--ink-2);
+}
+
+.clearButton:focus {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}
+
+/* :hover より後に置く(disabled 中のホバーで色が戻らないように) */
+.clearButton:disabled {
+	color: var(--ink-3);
+	border-color: var(--line);
+	cursor: not-allowed;
 }
 
 .field select:focus,
