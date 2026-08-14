@@ -1,7 +1,7 @@
 // 生産チェーン計算機のコンテナ(issue #3)。
 // 入力の状態管理と planProduction の呼び出しを担い、表示は部品に委譲する。
 // RecipeData は props で受け取る(テストは fixture を注入する)。
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
@@ -23,6 +23,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	const [itemQuery, setItemQuery] = useState("");
 	const [rateText, setRateText] = useState("");
 	const searchInputRef = useRef<HTMLInputElement>(null);
+	const itemSelectRef = useRef<HTMLSelectElement>(null);
 
 	const selection = useMemo(() => selectPrimaryRecipes(data), [data]);
 	const itemOptions = useMemo(
@@ -41,6 +42,16 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	const visibleOptions = itemOptions.filter(
 		(option) => matchedIds.has(option.id) || option.id === itemId,
 	);
+
+	// 絞り込みの変化でリストが作り直されてもスクロール位置は変わらないため、
+	// 選択行が表示窓の外に出て見えなくなることがある(例: 検索して選択→クリアで
+	// 全件に戻る)。リストの中身が変わるたびに選択行を表示範囲へ入れる
+	// biome-ignore lint/correctness/useExhaustiveDependencies: matchedIds はリスト再構築の検知用
+	useEffect(() => {
+		const selected = itemSelectRef.current?.selectedOptions[0];
+		// jsdom には scrollIntoView が無いので optional call にする
+		selected?.scrollIntoView?.({ block: "nearest" });
+	}, [itemId, matchedIds]);
 
 	const state: PlanState = useMemo(() => {
 		// 未選択・未入力はエラーではなく単に結果なし
@@ -114,6 +125,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					    (ブラウザ手動確認での指摘)ため、size で常時表示のリストボックスにする */}
 					<select
 						id="item-select"
+						ref={itemSelectRef}
 						size={8}
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
