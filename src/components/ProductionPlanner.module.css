@@ -61,6 +61,37 @@
 	color: var(--ink-2);
 }
 
+.searchRow {
+	display: flex;
+	gap: 0.4rem;
+}
+
+/* 自前のクリアボタンを置くので、WebKit 系の内蔵クリア(✕)は消して二重表示を避ける */
+.searchRow input::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.clearButton {
+	font: inherit;
+	background: var(--surface);
+	color: var(--ink-2);
+	border: 1px solid var(--line-strong);
+	border-radius: 0;
+	padding: 0 0.6rem;
+	cursor: pointer;
+}
+
+.clearButton:hover {
+	color: var(--ink);
+	border-color: var(--ink-2);
+}
+
+.clearButton:focus {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}
+
 .field select:focus,
 .field input:focus {
 	outline: 2px solid var(--accent);

@@ -47,6 +47,22 @@ describe("アイテム検索(issue #19)", () => {
 		expect(within(select).getAllByRole("option")).toHaveLength(1);
 	});
 
+	it("クリアボタンを押すと検索欄が空になり、絞り込みが解除される", async () => {
+		// ブラウザ手動確認でのユーザー要望(PR #40)。ネイティブの内蔵クリアは
+		// ブラウザ依存(Firefox には無い)なので、明示のボタンを約束にする
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.type(screen.getByLabelText("アイテム検索"), "ネジ");
+		await user.click(screen.getByRole("button", { name: "検索をクリア" }));
+
+		expect(screen.getByLabelText<HTMLInputElement>("アイテム検索").value).toBe(
+			"",
+		);
+		// プレースホルダー + 全 6 アイテムに戻る
+		const select = screen.getByLabelText("アイテム");
+		expect(within(select).getAllByRole("option")).toHaveLength(7);
+	});
+
 	it("選択済みのアイテムは、検索で絞り込みから外れても選択肢に残り、計画も表示され続ける", async () => {
 		// issue の受け入れ条件ではなく PR #40 での設計判断。select の表示が
 		// プレースホルダーに戻ると表示中の計画と食い違うため、選択済みは残すと約束する

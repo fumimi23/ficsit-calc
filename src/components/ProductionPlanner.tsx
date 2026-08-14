@@ -1,7 +1,7 @@
 // 生産チェーン計算機のコンテナ(issue #3)。
 // 入力の状態管理と planProduction の呼び出しを担い、表示は部品に委譲する。
 // RecipeData は props で受け取る(テストは fixture を注入する)。
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
@@ -22,6 +22,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	const [itemId, setItemId] = useState("");
 	const [itemQuery, setItemQuery] = useState("");
 	const [rateText, setRateText] = useState("");
+	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	const selection = useMemo(() => selectPrimaryRecipes(data), [data]);
 	const itemOptions = useMemo(
@@ -76,13 +77,31 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					<label className={styles.fieldLabel} htmlFor="item-search-input">
 						アイテム検索
 					</label>
-					<input
-						id="item-search-input"
-						type="search"
-						placeholder="名前で絞り込み（例: 鉄 / iron）"
-						value={itemQuery}
-						onChange={(event) => setItemQuery(event.target.value)}
-					/>
+					<div className={styles.searchRow}>
+						<input
+							id="item-search-input"
+							ref={searchInputRef}
+							type="search"
+							placeholder="名前で絞り込み（例: 鉄 / iron）"
+							value={itemQuery}
+							onChange={(event) => setItemQuery(event.target.value)}
+						/>
+						{/* ネイティブの内蔵クリア(✕)はブラウザ依存(Firefox には無い)なので
+						    明示のボタンを置く(ブラウザ手動確認でのユーザー要望) */}
+						{itemQuery !== "" && (
+							<button
+								type="button"
+								aria-label="検索をクリア"
+								className={styles.clearButton}
+								onClick={() => {
+									setItemQuery("");
+									searchInputRef.current?.focus();
+								}}
+							>
+								✕
+							</button>
+						)}
+					</div>
 					{/* ライブリージョンは常時マウントしテキストだけ切り替える。
 					    後から要素ごと現れると読み上げを取りこぼすスクリーンリーダーがある */}
 					<span role="status" className={styles.noMatch}>
