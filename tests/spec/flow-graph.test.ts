@@ -17,7 +17,7 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 
 		expect(planToMermaid(fixtureData, plan)).toBe(
 			[
-				"flowchart LR",
+				"flowchart TD",
 				'\trecipe_reinforced_iron_plate["強化鉄板<br/>組立機 × 1"]',
 				'\trecipe_iron_plate["鉄板<br/>構築機 × 1.5"]',
 				'\trecipe_iron_ingot["鉄インゴット<br/>製錬炉 × 2"]',
@@ -90,7 +90,7 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 
 		expect(planToMermaid(byproductData, plan)).toBe(
 			[
-				"flowchart LR",
+				"flowchart TD",
 				'\trecipe_plastic["プラスチック<br/>精製機 × 1"]',
 				'\traw_crude(["原油（原料）"])',
 				'\tsurplus_residue(["廃重油（余剰）"])',
@@ -110,7 +110,7 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 
 		expect(planToMermaid(fixtureData, plan)).toBe(
 			[
-				"flowchart LR",
+				"flowchart TD",
 				'\traw_iron_ore(["鉄鉱石（原料）"])',
 				'\ttarget_iron_ore(["鉄鉱石（目標）"])',
 				'\traw_iron_ore -- "鉄鉱石 10 /分" --> target_iron_ore',
