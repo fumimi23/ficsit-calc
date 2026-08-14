@@ -90,20 +90,20 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 							onChange={(event) => setItemQuery(event.target.value)}
 						/>
 						{/* ネイティブの内蔵クリア(✕)はブラウザ依存(Firefox には無い)なので
-						    明示のボタンを置く(ブラウザ手動確認でのユーザー要望) */}
-						{itemQuery !== "" && (
-							<button
-								type="button"
-								aria-label="検索をクリア"
-								className={styles.clearButton}
-								onClick={() => {
-									setItemQuery("");
-									searchInputRef.current?.focus();
-								}}
-							>
-								✕
-							</button>
-						)}
+						    明示のボタンを置く。出没させると検索行の幅が変わって段差が出る
+						    ため常時表示し、空のときは disabled にする(ブラウザ手動確認での要望) */}
+						<button
+							type="button"
+							aria-label="検索をクリア"
+							className={styles.clearButton}
+							disabled={itemQuery === ""}
+							onClick={() => {
+								setItemQuery("");
+								searchInputRef.current?.focus();
+							}}
+						>
+							✕
+						</button>
 					</div>
 					{/* ライブリージョンは常時マウントしテキストだけ切り替える。
 					    後から要素ごと現れると読み上げを取りこぼすスクリーンリーダーがある */}

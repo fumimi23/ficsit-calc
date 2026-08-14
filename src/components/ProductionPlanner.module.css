@@ -105,6 +105,13 @@
 	outline-offset: 1px;
 }
 
+/* :hover より後に置く(disabled 中のホバーで色が戻らないように) */
+.clearButton:disabled {
+	color: var(--ink-3);
+	border-color: var(--line);
+	cursor: default;
+}
+
 .field select:focus,
 .field input:focus {
 	outline: 2px solid var(--accent);
