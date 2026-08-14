@@ -44,14 +44,25 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	);
 
 	// 絞り込みの変化でリストが作り直されてもスクロール位置は変わらないため、
-	// 選択行が表示窓の外に出て見えなくなることがある(例: 検索して選択→クリアで
-	// 全件に戻る)。リストの中身が変わるたびに選択行を表示範囲へ入れる
+	// 選択行が表示窓の外に出て見えなくなることがある。リストの中身が変わる
+	// たびに選択行を表示範囲へ入れる。検索をクリアして全件に戻った瞬間だけは
+	// 「見える」では足りず選択行を窓の一番上に置く(ブラウザ手動確認での要望)。
+	// クリック選択の直後まで一番上へ飛ばすと画面が跳ねるので、遷移を区別する
+	const prevQueryRef = useRef("");
 	// biome-ignore lint/correctness/useExhaustiveDependencies: matchedIds はリスト再構築の検知用
 	useEffect(() => {
-		const selected = itemSelectRef.current?.selectedOptions[0];
-		// jsdom には scrollIntoView が無いので optional call にする
-		selected?.scrollIntoView?.({ block: "nearest" });
-	}, [itemId, matchedIds]);
+		const select = itemSelectRef.current;
+		const selected = select?.selectedOptions[0];
+		const queryCleared = prevQueryRef.current !== "" && itemQuery.trim() === "";
+		prevQueryRef.current = itemQuery.trim();
+		if (!select || !selected) return;
+		if (queryCleared) {
+			select.scrollTop = selected.offsetTop;
+		} else {
+			// jsdom には scrollIntoView が無いので optional call にする
+			selected.scrollIntoView?.({ block: "nearest" });
+		}
+	}, [itemId, matchedIds, itemQuery]);
 
 	const state: PlanState = useMemo(() => {
 		// 未選択・未入力はエラーではなく単に結果なし
