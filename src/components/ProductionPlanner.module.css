@@ -64,6 +64,13 @@
 	display: grid;
 }
 
+/* グリッドアイテムの自動最小幅(min-width: auto)は内容幅を下回れないため、
+ * 接続図のような幅広の子がいるとセクションごと紙面からはみ出し、
+ * 子自身の overflow スクロールが一生発動しない。下限を外して紙面幅に収める */
+.results > * {
+	min-width: 0;
+}
+
 .results section {
 	margin-block: 1rem;
 }
