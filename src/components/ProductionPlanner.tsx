@@ -6,6 +6,7 @@ import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
 import { normalizeRateInput } from "../lib/ui/rate-input";
+import { FlowGraph } from "./FlowGraph";
 import { ItemRateList } from "./ItemRateList";
 import { MachineTable } from "./MachineTable";
 import { PlanTree } from "./PlanTree";
@@ -123,6 +124,10 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					<section>
 						<h2>生産ツリー</h2>
 						<PlanTree data={data} root={state.plan.root} />
+					</section>
+					<section>
+						<h2>接続図</h2>
+						<FlowGraph data={data} plan={state.plan} />
 					</section>
 				</div>
 			)}

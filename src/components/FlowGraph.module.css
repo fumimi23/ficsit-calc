@@ -1,0 +1,20 @@
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24)
+ * 接続図は図面枠パネル(生産ツリーと同様式)。図の自然幅を保ち横スクロールで見せる */
+.figure {
+	margin: 0;
+	background: var(--surface);
+	border: 1.5px solid var(--frame);
+	padding: 0.9rem 1.25rem;
+	overflow-x: auto;
+}
+
+.note {
+	color: var(--ink-2);
+	margin: 0;
+}
+
+.alert {
+	color: var(--danger);
+	font-weight: 600;
+	margin: 0;
+}

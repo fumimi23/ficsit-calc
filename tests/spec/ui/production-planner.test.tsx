@@ -3,12 +3,27 @@
 // 受け入れ条件をコンポーネント spec として固定する。fixture(tests/fixtures/recipes.ts)を
 // props で注入し、ゲームデータ更新で UI の約束が揺れないようにする。
 // 「静的配信で動作する」(受け入れ条件 3)は自動化せず、ブラウザでの手動確認とする。
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+	cleanup,
+	render,
+	screen,
+	waitFor,
+	within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProductionPlanner } from "../../../src/components/ProductionPlanner";
 import type { RecipeData } from "../../../src/lib/calc/types";
 import { fixtureData } from "../../fixtures/recipes";
+
+// mermaid の実描画は jsdom では動かない(SVG 計測 API が無い)ためモックする。
+// 描画結果の見た目はブラウザ手動確認(issue #18)。変換規則は tests/spec/flow-graph.test.ts が固定する
+vi.mock("mermaid", () => ({
+	default: {
+		initialize: vi.fn(),
+		render: vi.fn(async () => ({ svg: "<svg><title>flow</title></svg>" })),
+	},
+}));
 
 afterEach(cleanup);
 
@@ -81,6 +96,13 @@ describe("Web UI 最小版(issue #3)", () => {
 		screen.getByRole("alert");
 		expect(screen.queryByRole("table")).toBeNull();
 		expect(screen.queryByRole("list", { name: "原料合計" })).toBeNull();
+	});
+
+	it("計画結果に接続図(フローグラフ)が SVG で表示される(issue #18)", async () => {
+		await enterTarget(fixtureData, "reinforced-iron-plate", "5");
+
+		const figure = await screen.findByRole("figure", { name: "接続図" });
+		await waitFor(() => expect(figure.querySelector("svg")).not.toBeNull());
 	});
 
 	it("副産物が出るチェーンでは余剰(byproducts)が表示される", async () => {
