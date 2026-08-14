@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
+import { filterItemIds } from "../lib/ui/item-search";
 import { normalizeRateInput } from "../lib/ui/rate-input";
 import { FlowGraph } from "./FlowGraph";
 import { ItemRateList } from "./ItemRateList";
@@ -19,6 +20,7 @@ type PlanState =
 
 export function ProductionPlanner({ data }: { data: RecipeData }) {
 	const [itemId, setItemId] = useState("");
+	const [itemQuery, setItemQuery] = useState("");
 	const [rateText, setRateText] = useState("");
 
 	const selection = useMemo(() => selectPrimaryRecipes(data), [data]);
@@ -28,6 +30,15 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 				.map(([id, def]) => ({ id, label: def.nameJa ?? def.name }))
 				.sort((a, b) => a.label.localeCompare(b.label, "ja")),
 		[data],
+	);
+	const matchedIds = useMemo(
+		() => new Set(filterItemIds(data.items, itemQuery)),
+		[data, itemQuery],
+	);
+	// 選択済みアイテムは検索から外れても option に残す。外すと select の表示が
+	// プレースホルダーに戻り、表示中の計画と食い違うため
+	const visibleOptions = itemOptions.filter(
+		(option) => matchedIds.has(option.id) || option.id === itemId,
 	);
 
 	const state: PlanState = useMemo(() => {
@@ -60,13 +71,27 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 		<div className={styles.planner}>
 			<div className={styles.controls}>
 				<label className={styles.field}>
+					<span className={styles.fieldLabel}>アイテム検索</span>
+					<input
+						type="search"
+						placeholder="名前で絞り込み（例: 鉄 / iron）"
+						value={itemQuery}
+						onChange={(event) => setItemQuery(event.target.value)}
+					/>
+					{matchedIds.size === 0 && (
+						<span role="status" className={styles.noMatch}>
+							該当するアイテムがありません
+						</span>
+					)}
+				</label>
+				<label className={styles.field}>
 					<span className={styles.fieldLabel}>アイテム</span>
 					<select
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
 					>
 						<option value="">-- 選択してください --</option>
-						{itemOptions.map((option) => (
+						{visibleOptions.map((option) => (
 							<option key={option.id} value={option.id}>
 								{option.label}
 							</option>

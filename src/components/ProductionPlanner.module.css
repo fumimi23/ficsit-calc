@@ -49,6 +49,17 @@
 	font-variant-numeric: tabular-nums;
 }
 
+/* 検索欄は日本語を打つので等幅・数字揃えの対象外 */
+.field input[type="search"] {
+	font-family: var(--font-sans);
+	font-variant-numeric: normal;
+}
+
+.noMatch {
+	font-size: 0.8rem;
+	color: var(--ink-2);
+}
+
 .field select:focus,
 .field input:focus {
 	outline: 2px solid var(--accent);
