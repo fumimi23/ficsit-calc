@@ -117,7 +117,6 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
 					>
-						<option value="">-- 選択してください --</option>
 						{visibleOptions.map((option) => (
 							<option key={option.id} value={option.id}>
 								{option.label}

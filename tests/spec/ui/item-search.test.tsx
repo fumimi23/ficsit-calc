@@ -28,8 +28,8 @@ describe("アイテム検索(issue #19)", () => {
 		const labels = within(select)
 			.getAllByRole("option")
 			.map((option) => option.textContent);
-		// プレースホルダー + 部分一致した 2 件(表示順は約束しない)
-		expect(labels).toHaveLength(3);
+		// 部分一致した 2 件だけになる(表示順は約束しない)
+		expect(labels).toHaveLength(2);
 		expect(labels).toContain("鉄板");
 		expect(labels).toContain("強化鉄板");
 	});
@@ -42,9 +42,9 @@ describe("アイテム検索(issue #19)", () => {
 		// ライブリージョンは常時マウントなので、存在ではなく中身で判定する
 		// (文言そのものは約束しない)
 		expect(screen.getByRole("status").textContent).not.toBe("");
-		// 選択リストはプレースホルダーだけになる
+		// 選択リストは空になる
 		const select = screen.getByLabelText("アイテム");
-		expect(within(select).getAllByRole("option")).toHaveLength(1);
+		expect(within(select).queryAllByRole("option")).toHaveLength(0);
 	});
 
 	it("クリアボタンを押すと検索欄が空になり、絞り込みが解除される", async () => {
@@ -58,9 +58,9 @@ describe("アイテム検索(issue #19)", () => {
 		expect(screen.getByLabelText<HTMLInputElement>("アイテム検索").value).toBe(
 			"",
 		);
-		// プレースホルダー + 全 6 アイテムに戻る
+		// 全 6 アイテムに戻る
 		const select = screen.getByLabelText("アイテム");
-		expect(within(select).getAllByRole("option")).toHaveLength(7);
+		expect(within(select).getAllByRole("option")).toHaveLength(6);
 	});
 
 	it("選択済みのアイテムは、検索で絞り込みから外れても選択肢に残り、計画も表示され続ける", async () => {
