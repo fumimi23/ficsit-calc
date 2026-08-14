@@ -42,7 +42,7 @@ describe("デフォルトレシピ解決(issue #5)", () => {
 		expect(canisterNode?.production?.recipeId).toBe("Recipe_FluidCanister_C");
 	});
 
-	it("主産物として作るレシピが無いアイテム(廃重油 = 副産物のみ、圧縮石炭 = 副産物のみ)は原料ノードとして終端する", () => {
+	it("主産物として作るデフォルトレシピが無いアイテム(廃重油 = 副産物のみ、圧縮石炭 = 副産物と代替のみ)は原料ノードとして終端する", () => {
 		for (const itemId of ["Desc_HeavyOilResidue_C", "Desc_CompactedCoal_C"]) {
 			const plan = planProduction(data, { itemId, ratePerMinute: 30 });
 			expect(plan.root.production).toBeUndefined();

@@ -101,12 +101,14 @@ describe("parseDocs", () => {
 		expect(data.items.Desc_Plastic_C?.form).toBe("solid");
 	});
 
-	it("代替判定は表示名で行う: クラス名が Recipe_Alternate_* でも表示名に Alternate: が無ければ収録される", () => {
+	it("代替判定は表示名で行う: クラス名が Recipe_Alternate_* でも表示名に Alternate: が無ければデフォルト扱い", () => {
 		const data = parseDocs(syntheticDocs);
-		expect(
-			data.recipes.some((r) => r.id === "Recipe_Alternate_LegacyName_C"),
-		).toBe(true);
-		expect(data.recipes.some((r) => r.id === "Recipe_PureOil_C")).toBe(false);
+		const legacy = data.recipes.find(
+			(r) => r.id === "Recipe_Alternate_LegacyName_C",
+		);
+		expect(legacy?.alternate).toBe(false);
+		const pureOil = data.recipes.find((r) => r.id === "Recipe_PureOil_C");
+		expect(pureOil?.alternate).toBe(true);
 	});
 
 	it("期間限定イベント(mRelevantEvents あり)のレシピは収録されない", () => {

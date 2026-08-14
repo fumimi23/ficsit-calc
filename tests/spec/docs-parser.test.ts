@@ -49,13 +49,30 @@ describe("Docs パーサー(issue #2)", () => {
 		expect(data.buildings.Build_AssemblerMk1_C?.nameJa).toBe("組立機");
 	});
 
-	it("代替レシピ(alternate)は既定で除外される", () => {
+	// issue #12: 「代替レシピは既定で除外される」(issue #2)の意図された撤回。
+	// レシピ選択(ロードマップ 3)の前提として alternate も収録し、フラグで区別する
+	it("代替レシピが alternate: true で収録され、通常レシピと同じ入出力・機械・所要時間を持つ", () => {
 		const data = parseFixture();
-		// fixture には Recipe_Alternate_Screw_C(Alternate: Cast Screws)が含まれている
-		expect(data.recipes.some((r) => r.id === "Recipe_Alternate_Screw_C")).toBe(
-			false,
+
+		const recipe = data.recipes.find(
+			(r) => r.id === "Recipe_Alternate_Screw_C",
 		);
-		expect(data.recipes.every((r) => r.alternate === false)).toBe(true);
+		expect(recipe).toBeDefined();
+		expect(recipe?.alternate).toBe(true);
+		expect(recipe?.name).toBe("Alternate: Cast Screws");
+		expect(recipe?.nameJa).toBe("代替: 鋳造ネジ");
+		expect(recipe?.building).toBe("Build_ConstructorMk1_C");
+		expect(recipe?.durationSeconds).toBe(24);
+		expect(recipe?.inputs).toEqual([{ item: "Desc_IronIngot_C", amount: 5 }]);
+		expect(recipe?.outputs).toEqual([{ item: "Desc_IronScrew_C", amount: 20 }]);
+	});
+
+	it("デフォルトレシピには alternate: true が立たない(表示名 Alternate: プレフィックスで判定)", () => {
+		const data = parseFixture();
+		const modularFrame = data.recipes.find(
+			(r) => r.id === "Recipe_ModularFrame_C",
+		);
+		expect(modularFrame?.alternate).toBe(false);
 	});
 
 	it("手作業で作った建築物専用レシピ等、製造機械に紐づかないレシピは含まれない", () => {
