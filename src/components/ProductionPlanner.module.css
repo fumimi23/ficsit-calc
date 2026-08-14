@@ -45,6 +45,15 @@
 	padding: 0.15rem 0.35rem;
 }
 
+/* フォーカスが外れると選択行が UA 標準の薄いグレーになり判別できない
+   (ブラウザ手動確認での指摘)。UA は選択行の background-color を上書きするが
+   background-image は尊重するため、単色グラデーションで塗る。
+   値が空のプレースホルダー行は「選択済み」に見せない */
+.field select option:checked:not([value=""]) {
+	background-image: linear-gradient(var(--accent), var(--accent));
+	color: var(--surface);
+}
+
 .field input {
 	font-family: var(--font-mono);
 	font-variant-numeric: tabular-nums;
