@@ -49,13 +49,15 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	// 「見える」では足りず選択行を窓の一番上に置く(ブラウザ手動確認での要望)。
 	// クリック選択の直後まで一番上へ飛ばすと画面が跳ねるので、遷移を区別する
 	const prevQueryRef = useRef("");
-	// biome-ignore lint/correctness/useExhaustiveDependencies: matchedIds はリスト再構築の検知用
+	// biome-ignore lint/correctness/useExhaustiveDependencies: itemId / matchedIds はリスト再構築の検知用
 	useEffect(() => {
 		const select = itemSelectRef.current;
 		const selected = select?.selectedOptions[0];
 		const queryCleared = prevQueryRef.current !== "" && itemQuery.trim() === "";
 		prevQueryRef.current = itemQuery.trim();
-		if (!select || !selected) return;
+		// 未選択時の selectedOptions[0] は不可視の受け皿 option。display:none の
+		// rect は全ゼロで scrollTop 計算が無関係な位置へ飛ぶため、スクロールしない
+		if (!select || !selected || selected.hidden) return;
 		if (queryCleared) {
 			// option.offsetTop は select ではなく offsetParent(ページ側の祖先)基準
 			// なので使えない。画面上の位置差分からスクロール量を決める
