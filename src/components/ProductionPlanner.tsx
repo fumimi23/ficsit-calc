@@ -91,7 +91,10 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 				</div>
 				<label className={styles.field}>
 					<span className={styles.fieldLabel}>アイテム</span>
+					{/* 閉じたドロップダウンだと検索欄にフォーカスした時点で候補が見えなくなる
+					    (ブラウザ手動確認での指摘)ため、size で常時表示のリストボックスにする */}
 					<select
+						size={8}
 						value={itemId}
 						onChange={(event) => setItemId(event.target.value)}
 					>

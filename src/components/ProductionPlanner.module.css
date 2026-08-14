@@ -38,10 +38,11 @@
 	min-width: 15rem;
 }
 
-/* ポップアップを自前で塗るブラウザ(Firefox 等)向けの明示指定 */
+/* リストボックス(size 指定)の行。色はテーマ任せにせず図面トークンで明示する */
 .field select option {
 	background: var(--surface);
 	color: var(--ink);
+	padding: 0.15rem 0.35rem;
 }
 
 .field input {
