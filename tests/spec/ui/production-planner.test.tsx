@@ -31,7 +31,11 @@ async function enterTarget(data: RecipeData, itemId: string, rate: string) {
 	const user = userEvent.setup();
 	render(<ProductionPlanner data={data} />);
 	await user.selectOptions(screen.getByLabelText("アイテム"), itemId);
-	await user.type(screen.getByLabelText(/目標レート/), rate);
+	const rateInput = screen.getByLabelText(/目標レート/);
+	// アイテム選択で 1 台分レートが自動入力される(issue #48)ので、type の前に空にする。
+	// クリアしないと type は末尾への追記になり、指定した rate とは別の値が入る
+	await user.clear(rateInput);
+	await user.type(rateInput, rate);
 	return user;
 }
 
@@ -225,5 +229,78 @@ describe("建設コストの表示(issue #21)", () => {
 		expect(
 			screen.queryByRole("list", { name: "建設コスト（機械分）" }),
 		).toBeNull();
+	});
+});
+
+// issue #48: アイテムを選んだ時点で「まず 1 台分」の計画が出るようにする。
+// 1 台分レートの算出そのものは tests/spec/machine-rate.test.ts(純関数)が固定する。
+describe("1 台分レートの自動入力(issue #48)", () => {
+	it("primary レシピを持つアイテムを選択したとき、目標レート欄に 1 台分のレートが入力され、計画が表示される", async () => {
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-plate");
+
+		// 鉄板は 6 秒で 2 枚 → 構築機 1 台で 20/分
+		expect(screen.getByLabelText<HTMLInputElement>(/目標レート/).value).toBe(
+			"20",
+		);
+		const rawList = screen.getByRole("list", { name: "原料合計" });
+		within(rawList).getByText("鉄鉱石: 30 /分");
+		screen.getByText("総電力: 8 MW");
+	});
+
+	it("自動入力された値を書き換えたとき、書き換えた値で計画が再計算される", async () => {
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-plate");
+		const rateInput = screen.getByLabelText<HTMLInputElement>(/目標レート/);
+		// 「自動入力された値を」書き換える筋書きなので、書き換え前の値も押さえる
+		expect(rateInput.value).toBe("20");
+		await user.clear(rateInput);
+		await user.type(rateInput, "30");
+
+		const rawList = screen.getByRole("list", { name: "原料合計" });
+		within(rawList).getByText("鉄鉱石: 45 /分");
+	});
+
+	it("原料を選択したとき、目標レート欄は変更されない", async () => {
+		// 原料には「1 台分」が無い。既定値(例: 60)を入れるとその値が根拠のある
+		// レートに見えてしまうため、空のままにすると決めた(issue #48)
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-ore");
+
+		expect(screen.getByLabelText<HTMLInputElement>(/目標レート/).value).toBe(
+			"",
+		);
+		expect(screen.queryByRole("table")).toBeNull();
+	});
+
+	it("レート入力済みの状態で原料に切り替えたとき、目標レート欄の値は保持される", async () => {
+		// 消してしまうと、原料を覗いた後に元のアイテムへ戻すたび入力し直しになる
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-plate");
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-ore");
+
+		expect(screen.getByLabelText<HTMLInputElement>(/目標レート/).value).toBe(
+			"20",
+		);
+	});
+
+	it("別アイテムに切り替えたとき、目標レート欄は新アイテムの 1 台分レートで上書きされる", async () => {
+		// 手入力後は上書きしない案もあったが、挙動の予測しやすさを優先して常に上書きする(issue #48)
+		const user = userEvent.setup();
+		render(<ProductionPlanner data={fixtureData} />);
+		await user.selectOptions(screen.getByLabelText("アイテム"), "iron-plate");
+		const rateInput = screen.getByLabelText(/目標レート/);
+		await user.clear(rateInput);
+		await user.type(rateInput, "30");
+		await user.selectOptions(screen.getByLabelText("アイテム"), "screw");
+
+		// ネジは 6 秒で 4 個 → 40/分
+		expect(screen.getByLabelText<HTMLInputElement>(/目標レート/).value).toBe(
+			"40",
+		);
 	});
 });
