@@ -18,6 +18,10 @@ const coalGenerator = (override: Partial<GeneratorDef> = {}): GeneratorDef => ({
 			supplemental: { item: "water", amountPerMJ: "0.01" },
 		},
 	],
+	constructionCost: [
+		{ item: "reinforced-iron-plate", amount: 20 },
+		{ item: "iron-rod", amount: 10 },
+	],
 	...override,
 });
 

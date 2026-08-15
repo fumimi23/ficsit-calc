@@ -113,7 +113,13 @@ describe("Web UI 最小版(issue #3)", () => {
 				plastic: { name: "プラスチック" },
 				residue: { name: "廃重油", form: "liquid" },
 			},
-			buildings: { refinery: { name: "精製機", powerMW: 30 } },
+			buildings: {
+				refinery: {
+					name: "精製機",
+					powerMW: 30,
+					constructionCost: [{ item: "plastic", amount: 1 }],
+				},
+			},
 			recipes: [
 				{
 					id: "plastic",
@@ -179,5 +185,45 @@ describe("必要発電機リスト(issue #20)", () => {
 		await enterTarget(fixtureData, "iron-plate", "30");
 
 		expect(screen.queryByRole("table", { name: "必要発電機" })).toBeNull();
+	});
+});
+
+// issue #21: 建設コスト — 建設台数(切り上げ)に基づく建設素材の合計を表示する。
+// 合算そのものは tests/spec/construction.test.ts(純関数)が固定する。
+describe("建設コストの表示(issue #21)", () => {
+	it("計画を表示したとき、建設コスト（機械分）に切り上げ台数ベースの素材合計が表示される", async () => {
+		// 鉄板 30/分 → 構築機 1.5 台(建設 2)・製錬炉 1.5 台(建設 2)。
+		// 構築機 2 台 = 強化鉄板 4 + 鉄のロッド 16、製錬炉 2 台 = 鉄のロッド 10
+		await enterTarget(generatorFixtureData, "iron-plate", "30");
+
+		const costs = screen.getByRole("list", { name: "建設コスト（機械分）" });
+		within(costs).getByText("強化鉄板: 4 個");
+		within(costs).getByText("鉄のロッド: 26 個");
+	});
+
+	it("必要発電機の表に、種別ごとの建設コストが表示される", async () => {
+		// 発電機は「石炭なら n 台 / 燃料式なら m 台」の代替案なので、コストも種別ごとに併記する
+		await enterTarget(generatorFixtureData, "iron-plate", "30");
+
+		const table = screen.getByRole("table", { name: "必要発電機" });
+
+		// 石炭発電機 1 台 = 強化鉄板 20 + 鉄のロッド 10
+		const coalRow = within(table).getByText("石炭発電機").closest("tr");
+		expect(coalRow?.textContent).toContain("強化鉄板: 20 個");
+		expect(coalRow?.textContent).toContain("鉄のロッド: 10 個");
+
+		// 燃料式発電機 1 台 = 鉄板 15 + ネジ 50
+		const fuelRow = within(table).getByText("燃料式発電機").closest("tr");
+		expect(fuelRow?.textContent).toContain("鉄板: 15 個");
+		expect(fuelRow?.textContent).toContain("ネジ: 50 個");
+	});
+
+	it("原料だけの計画では、建設コスト（機械分）が表示されない", async () => {
+		// 鉄鉱石は原料(レシピを持たない)なので機械が要らず、建てるものが無い
+		await enterTarget(generatorFixtureData, "iron-ore", "30");
+
+		expect(
+			screen.queryByRole("list", { name: "建設コスト（機械分）" }),
+		).toBeNull();
 	});
 });

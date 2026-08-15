@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { Fraction } from "../../src/lib/calc/fraction";
-import type { ExactNumeric } from "../../src/lib/calc/types";
+import type { ExactNumeric, RecipeIngredient } from "../../src/lib/calc/types";
 import { validateRecipeData } from "../../src/lib/calc/validate";
 import { decodeDocs, parseDocs } from "../../src/lib/docs/parse-docs";
 
@@ -155,5 +155,74 @@ describe("Docs パーサー: 発電機の収録(issue #20)", () => {
 		}
 		expect(data.items.Desc_Coal_C?.name).toBe("Coal");
 		expect(data.items.Desc_Water_C?.form).toBe("liquid");
+	});
+});
+
+// issue #21: 建設コスト計算 — 機械・発電機の建設素材を Build Gun の建設レシピから収録する。
+describe("Docs パーサー: 建設素材の収録(issue #21)", () => {
+	// 並び順も ExactNumeric の表現も約束しないので、アイテム順に揃えた既約分数文字列で比べる
+	const costOf = (list: RecipeIngredient[] | undefined) =>
+		[...(list ?? [])]
+			.map((c) => ({
+				item: c.item,
+				amount: Fraction.from(c.amount).toString(),
+			}))
+			.sort((a, b) => (a.item < b.item ? -1 : 1));
+
+	it("機械の建設素材が Build Gun の建設レシピから収録される", () => {
+		const data = parseFixture();
+
+		expect(
+			costOf(data.buildings.Build_ConstructorMk1_C?.constructionCost),
+		).toEqual([
+			{ item: "Desc_Cable_C", amount: "8" },
+			{ item: "Desc_IronPlateReinforced_C", amount: "2" },
+		]);
+	});
+
+	it("建設レシピの対応はレシピ ClassName ではなく product で決まる", () => {
+		// 罠: 製錬炉の建設レシピは Recipe_SmelterBasicMk1_C で、Recipe_SmelterMk1_C は鋳造炉のもの。
+		// ClassName 規約で対応付けると製錬炉に鋳造炉のコストが付く
+		const data = parseFixture();
+
+		expect(costOf(data.buildings.Build_SmelterMk1_C?.constructionCost)).toEqual(
+			[
+				{ item: "Desc_IronRod_C", amount: "5" },
+				{ item: "Desc_Wire_C", amount: "8" },
+			],
+		);
+	});
+
+	it("発電機にも建設素材が収録される", () => {
+		const data = parseFixture();
+
+		const coal = data.generators.find((g) => g.id === "Build_GeneratorCoal_C");
+		expect(costOf(coal?.constructionCost)).toEqual([
+			{ item: "Desc_Cable_C", amount: "30" },
+			{ item: "Desc_IronPlateReinforced_C", amount: "20" },
+			{ item: "Desc_Rotor_C", amount: "10" },
+		]);
+	});
+
+	it("建設素材のアイテムがアイテム辞書に収録される", () => {
+		// 製造レシピからしか items を作らないと、建設専用の素材の表示名が引けず参照整合性も壊れる
+		const data = parseFixture();
+
+		expect(data.items.Desc_Cable_C?.name).toBe("Cable");
+		expect(data.items.Desc_Cable_C?.nameJa).toBe("ケーブル");
+		expect(data.items.Desc_Rotor_C).toBeDefined();
+		expect(data.items.Desc_Wire_C).toBeDefined();
+	});
+
+	it("建設レシピ自体は製造レシピとして収録されない", () => {
+		// 建設レシピは Build Gun で「建てる」ものなので、生産チェーンの候補に出してはいけない
+		const data = parseFixture();
+
+		expect(data.recipes.some((r) => r.id === "Recipe_ConstructorMk1_C")).toBe(
+			false,
+		);
+		expect(data.recipes.some((r) => r.id === "Recipe_SmelterMk1_C")).toBe(
+			false,
+		);
 	});
 });
