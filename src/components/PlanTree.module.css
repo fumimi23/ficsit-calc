@@ -45,3 +45,27 @@
 	font-weight: 400;
 	color: var(--ink-2);
 }
+
+/* レシピ切り替え(issue #22)。行頭の名前部分そのものがドロップダウンになるので、
+   ドロップダウンの無い行と字面がそろうようフォントは継承する */
+.picker {
+	font: inherit;
+	background: var(--surface);
+	color: var(--ink);
+	border: 1px solid var(--line-strong);
+	border-radius: 0;
+	margin-right: 0.45rem;
+	padding: 0.05rem 0.25rem;
+	max-width: 18rem;
+}
+
+.picker:focus {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}
+
+/* 名前がドロップダウン側へ移った行の残り。主役はドロップダウンなので添え物にする */
+.rate {
+	font-weight: 400;
+	color: var(--ink-2);
+}

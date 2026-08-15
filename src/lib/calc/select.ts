@@ -40,6 +40,68 @@ export function selectPrimaryRecipes(data: RecipeData): RecipeSelection {
 	return selection;
 }
 
+/**
+ * アイテム → そのアイテムを第 1 出力とするレシピ一覧(issue #22)。
+ * デフォルト → alternate の順、各グループ内はレシピ ID の辞書順。
+ * primary 選択(上記 (a)(b))と違って alternate も開封形も除外しない
+ * — 「代替レシピを使う」「開封して取り出す」はどちらもプレイヤーの選択肢として
+ * 実在するため。開封形を選んだ結果の循環は planProduction のエラーで受ける。
+ * 候補が 1 本も無いアイテム(副産物・入力としてしか現れないアイテム)はキーを持たない。
+ */
+export function candidateRecipesByItem(
+	data: RecipeData,
+): ReadonlyMap<ItemId, readonly RecipeDef[]> {
+	const candidates = new Map<ItemId, RecipeDef[]>();
+	for (const recipe of data.recipes) {
+		const firstOutput = recipe.outputs[0];
+		if (!firstOutput) continue;
+		const list = candidates.get(firstOutput.item) ?? [];
+		list.push(recipe);
+		candidates.set(firstOutput.item, list);
+	}
+	for (const list of candidates.values()) {
+		list.sort((x, y) => {
+			if (x.alternate !== y.alternate) return x.alternate ? 1 : -1;
+			return x.id < y.id ? -1 : 1;
+		});
+	}
+	return candidates;
+}
+
+/** ユーザーが選び直したレシピ: アイテム → 使うレシピの ID(issue #22) */
+export type RecipeOverrides = ReadonlyMap<ItemId, string>;
+
+/** 上書きが候補規則(第 1 出力一致)を満たさないときの明示的なエラー(issue #22) */
+export class InvalidRecipeOverrideError extends Error {
+	constructor(itemId: ItemId, recipeId: string) {
+		super(`レシピが ${itemId} の候補ではありません: ${recipeId}`);
+		this.name = "InvalidRecipeOverrideError";
+	}
+}
+
+/**
+ * primary 選択(selectPrimaryRecipes)を基底に、ユーザーの上書きを重ねた選択を返す(issue #22)。
+ * primary レシピを持たないアイテム(alternate でしか作れない・開封でしか作れない等)への
+ * 上書きは、選択マップへの追加になる = 原料終端だったノードからチェーンが伸びる。
+ * 候補でないレシピ ID は InvalidRecipeOverrideError で弾く。UI は候補しか出さないので
+ * 通常は起きないが、planProduction の「産出しません」より手前で原因の分かる型にする。
+ */
+export function mergeRecipeSelection(
+	data: RecipeData,
+	overrides: RecipeOverrides,
+): RecipeSelection {
+	const candidates = candidateRecipesByItem(data);
+	const merged = new Map(selectPrimaryRecipes(data));
+	for (const [itemId, recipeId] of overrides) {
+		const recipe = candidates.get(itemId)?.find((r) => r.id === recipeId);
+		if (!recipe) {
+			throw new InvalidRecipeOverrideError(itemId, recipeId);
+		}
+		merged.set(itemId, recipe);
+	}
+	return merged;
+}
+
 /** 開封形 = 入力がすべて固体で、出力に液体/気体を含むレシピ */
 function isUnpackaging(data: RecipeData, recipe: RecipeDef): boolean {
 	return (
