@@ -127,6 +127,25 @@ describe("Docs パーサー: 発電機の収録(issue #20)", () => {
 		expect(fuel?.fuels[0]?.supplemental).toBeUndefined();
 	});
 
+	it("原子力発電所が定格 2500MW・ウラン燃料棒(750000MJ)・水の副資材(0.0016 m³/MJ)付きで収録される", () => {
+		// 燃料式とは別の NativeClass(FGBuildableGeneratorNuclear)から拾う経路を通す
+		const data = parseFixture();
+
+		const nuclear = data.generators.find(
+			(g) => g.id === "Build_GeneratorNuclear_C",
+		);
+		expect(nuclear).toBeDefined();
+		expect(nuclear?.name).toBe("Nuclear Power Plant");
+		expect(nuclear?.nameJa).toBe("原子力発電所");
+		expectValue(nuclear?.powerMW, "2500");
+		// 固体燃料なので m³ 換算(×1000)は掛からない
+		expect(nuclear?.fuels[0]?.item).toBe("Desc_NuclearFuelRod_C");
+		expectValue(nuclear?.fuels[0]?.energyMJ, "750000");
+		expect(nuclear?.fuels[0]?.supplemental?.item).toBe("Desc_Water_C");
+		// 1.6 L/MJ ÷ 1000 = 0.0016 m³/MJ(2500MW で水 240 m³/分 = ゲーム内の既知値)
+		expectValue(nuclear?.fuels[0]?.supplemental?.amountPerMJ, "0.0016");
+	});
+
 	it("発電機の燃料・副資材のアイテムがアイテム辞書に収録される", () => {
 		// レシピからしか items を作らないと、燃料アイテムの表示名が引けず参照整合性も壊れる
 		const data = parseFixture();

@@ -1,6 +1,10 @@
 // 横断不変条件: 個別機能ではなくデータセット全体を ∀ 検査する。
-// validateRecipeData が検査する内容 = スキーマ準拠・参照整合性(レシピの入出力アイテムは
-// アイテム辞書に、機械はビルディング辞書に存在)・正の電力/所要時間/数量・レシピ ID の一意性。
+// validateRecipeData が検査する内容 =
+//   スキーマ準拠 /
+//   参照整合性(レシピの入出力アイテムと発電機の燃料・副資材はアイテム辞書に、
+//     レシピの機械はビルディング辞書に存在) /
+//   正の値(電力・定格出力・所要時間・数量・エネルギー値・副資材比率) /
+//   ID の一意性(レシピ・発電機) / 発電機は燃料を 1 つ以上持つ。
 import { describe, expect, it } from "vitest";
 import recipesJson from "../../data/recipes.json";
 import { validateRecipeData } from "../../src/lib/calc/validate";
