@@ -103,7 +103,7 @@ describe("ノードごとのレシピ切り替え(issue #22)", () => {
 		expect(within(raw).queryByText(/圧縮石炭/)).toBeNull();
 		screen.getByText("総電力: 18 MW");
 
-		// 原料終端のノードには「原料として扱う」既定の選択肢がある
+		// 原料終端のノードには「〜（原料）」の既定の選択肢(value="")がある
 		await user.selectOptions(
 			screen.getByRole("combobox", { name: "圧縮石炭のレシピ" }),
 			"",
