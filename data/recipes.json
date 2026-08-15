@@ -755,42 +755,158 @@
 		"Build_AssemblerMk1_C": {
 			"name": "Assembler",
 			"nameJa": "組立機",
-			"powerMW": 15
+			"powerMW": 15,
+			"constructionCost": [
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 8
+				},
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 4
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 10
+				}
+			]
 		},
 		"Build_Blender_C": {
 			"name": "Blender",
 			"nameJa": "混合機",
-			"powerMW": 75
+			"powerMW": 75,
+			"constructionCost": [
+				{
+					"item": "Desc_Computer_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_ModularFrameHeavy_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Motor_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_AluminumCasing_C",
+					"amount": 50
+				}
+			]
 		},
 		"Build_ConstructorMk1_C": {
 			"name": "Constructor",
 			"nameJa": "製作機",
-			"powerMW": 4
+			"powerMW": 4,
+			"constructionCost": [
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 8
+				}
+			]
 		},
 		"Build_FoundryMk1_C": {
 			"name": "Foundry",
 			"nameJa": "鋳造炉",
-			"powerMW": 16
+			"powerMW": 16,
+			"constructionCost": [
+				{
+					"item": "Desc_ModularFrame_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 20
+				}
+			]
 		},
 		"Build_ManufacturerMk1_C": {
 			"name": "Manufacturer",
 			"nameJa": "製造機",
-			"powerMW": 55
+			"powerMW": 55,
+			"constructionCost": [
+				{
+					"item": "Desc_Motor_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_ModularFrame_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 50
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 50
+				}
+			]
 		},
 		"Build_OilRefinery_C": {
 			"name": "Refinery",
 			"nameJa": "精製機",
-			"powerMW": 30
+			"powerMW": 30,
+			"constructionCost": [
+				{
+					"item": "Desc_Motor_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 30
+				},
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 20
+				}
+			]
 		},
 		"Build_Packager_C": {
 			"name": "Packager",
 			"nameJa": "充填機",
-			"powerMW": 10
+			"powerMW": 10,
+			"constructionCost": [
+				{
+					"item": "Desc_SteelPlate_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Plastic_C",
+					"amount": 10
+				}
+			]
 		},
 		"Build_SmelterMk1_C": {
 			"name": "Smelter",
 			"nameJa": "製錬炉",
-			"powerMW": 4
+			"powerMW": 4,
+			"constructionCost": [
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_Wire_C",
+					"amount": 8
+				}
+			]
 		}
 	},
 	"recipes": [
@@ -6654,6 +6770,20 @@
 					"item": "Desc_PackagedBiofuel_C",
 					"energyMJ": 750
 				}
+			],
+			"constructionCost": [
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_IronRod_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_Wire_C",
+					"amount": 25
+				}
 			]
 		},
 		{
@@ -6686,6 +6816,20 @@
 						"amountPerMJ": 0.01
 					}
 				}
+			],
+			"constructionCost": [
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 30
+				}
 			]
 		},
 		{
@@ -6713,6 +6857,28 @@
 				{
 					"item": "Desc_IonizedFuel_C",
 					"energyMJ": 5000
+				}
+			],
+			"constructionCost": [
+				{
+					"item": "Desc_Motor_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 30
+				},
+				{
+					"item": "Desc_Rubber_C",
+					"amount": 50
+				},
+				{
+					"item": "Desc_HighSpeedWire_C",
+					"amount": 50
 				}
 			]
 		},
@@ -6745,6 +6911,28 @@
 						"item": "Desc_Water_C",
 						"amountPerMJ": 0.0016
 					}
+				}
+			],
+			"constructionCost": [
+				{
+					"item": "Desc_ComputerSuper_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_ModularFrameHeavy_C",
+					"amount": 25
+				},
+				{
+					"item": "Desc_AluminumPlate_C",
+					"amount": 100
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 200
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 250
 				}
 			]
 		}

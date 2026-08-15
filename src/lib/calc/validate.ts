@@ -37,6 +37,11 @@ export function validateRecipeData(value: unknown): RecipeData {
 		const building = asRecord(raw, `buildings.${id}`);
 		requireName(building, `buildings.${id}`);
 		requirePositive(building.powerMW, `buildings.${id}.powerMW`);
+		requireConstructionCost(
+			building.constructionCost,
+			items,
+			`buildings.${id}.constructionCost`,
+		);
 	}
 
 	const recipeIds = new Set<string>();
@@ -92,6 +97,11 @@ export function validateRecipeData(value: unknown): RecipeData {
 		generatorIds.add(id);
 		requireName(generator, id);
 		requirePositive(generator.powerMW, `${id}.powerMW`);
+		requireConstructionCost(
+			generator.constructionCost,
+			items,
+			`${id}.constructionCost`,
+		);
 		// 燃料の無い発電機は必要燃料を出せず、リストに載せる意味が無い
 		if (!Array.isArray(generator.fuels) || generator.fuels.length === 0) {
 			throw new Error(`${id}.fuels が空でない配列ではありません`);
@@ -144,6 +154,25 @@ function requireKnownItem(
 	const itemId = requireNonEmpty(value, label);
 	if (!(itemId in items)) {
 		throw new Error(`${label} のアイテムがアイテム辞書にありません: ${itemId}`);
+	}
+}
+
+/**
+ * 建設素材(issue #21)を検証する。欠落・空を通すと建設コストが黙って過少表示されるので、
+ * 発電機の fuels と同じく「非空の配列」を要求する。
+ */
+function requireConstructionCost(
+	value: unknown,
+	items: Record<string, unknown>,
+	label: string,
+): void {
+	if (!Array.isArray(value) || value.length === 0) {
+		throw new Error(`${label} が空でない配列ではありません`);
+	}
+	for (const [i, entry] of value.entries()) {
+		const ingredient = asRecord(entry, `${label}[${i}]`);
+		requireKnownItem(ingredient.item, items, `${label}[${i}].item`);
+		requirePositive(ingredient.amount, `${label}[${i}].amount`);
 	}
 }
 

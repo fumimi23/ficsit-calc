@@ -2,12 +2,14 @@
 // 入力の状態管理と planProduction の呼び出しを担い、表示は部品に委譲する。
 // RecipeData は props で受け取る(テストは fixture を注入する)。
 import { useEffect, useMemo, useRef, useState } from "react";
+import { sumMachineConstructionCost } from "../lib/calc/construction";
 import { planGenerators } from "../lib/calc/generators";
 import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
 import { filterItemIds } from "../lib/ui/item-search";
 import { normalizeRateInput } from "../lib/ui/rate-input";
+import { ConstructionCostList } from "./ConstructionCostList";
 import { FlowGraph } from "./FlowGraph";
 import { GeneratorTable } from "./GeneratorTable";
 import { ItemRateList } from "./ItemRateList";
@@ -97,6 +99,15 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 			};
 		}
 	}, [data, selection, itemId, rateText]);
+
+	// 機械が 1 台も要らない計画(原料だけ)では建てるものが無いのでセクションごと出さない
+	const constructionCost = useMemo(
+		() =>
+			state.kind === "ready"
+				? sumMachineConstructionCost(data, state.plan.machines)
+				: [],
+		[data, state],
+	);
 
 	// 総電力 0(原料だけの計画)や発電機を持たないデータでは行が 1 つも立たない。
 	// 0 台の表を出すと「発電機ゼロ台で足りる」と読めてしまうのでセクションごと出さない
@@ -194,6 +205,17 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						<h2>機械一覧</h2>
 						<MachineTable data={data} machines={state.plan.machines} />
 					</section>
+					{constructionCost.length > 0 && (
+						<section>
+							{/* 発電機分を含まないことが見出しから読み取れるようにする */}
+							<h2>建設コスト（機械分）</h2>
+							<ConstructionCostList
+								data={data}
+								label="建設コスト（機械分）"
+								quantities={constructionCost}
+							/>
+						</section>
+					)}
 					<div className={styles.rateColumns}>
 						<section>
 							<h2>原料合計</h2>

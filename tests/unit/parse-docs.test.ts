@@ -84,6 +84,16 @@ const syntheticDocs = JSON.stringify([
 					'("/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C")',
 				mRelevantEvents: "(EV_Christmas)",
 			},
+			// 収録した機械には建設レシピが要る(無ければパーサーがエラーにする)
+			{
+				ClassName: "Recipe_OilRefinery_C",
+				mDisplayName: "Refinery",
+				mIngredients: `(${itemClass("Desc_Plastic_C", 10)})`,
+				mProduct: `(${itemClass("Desc_OilRefinery_C", 1)})`,
+				mManufactoringDuration: "1.000000",
+				mProducedIn:
+					'("/Game/FactoryGame/Equipment/BuildGun/BP_BuildGun.BP_BuildGun_C")',
+			},
 		],
 	},
 ]);
@@ -108,6 +118,26 @@ const generatorDocs = (supplementalClass: string) =>
 					mDisplayName: "Water",
 					mForm: "RF_LIQUID",
 					mEnergyValue: "0.000000",
+				},
+				{
+					ClassName: "Desc_IronPlateReinforced_C",
+					mDisplayName: "Reinforced Iron Plate",
+					mForm: "RF_SOLID",
+				},
+			],
+		},
+		{
+			NativeClass: nativeClass("FGRecipe"),
+			Classes: [
+				// 収録した発電機には建設レシピが要る(無ければパーサーがエラーにする)
+				{
+					ClassName: "Recipe_GeneratorCoal_C",
+					mDisplayName: "Coal-Powered Generator",
+					mIngredients: `(${itemClass("Desc_IronPlateReinforced_C", 20)})`,
+					mProduct: `(${itemClass("Desc_GeneratorCoal_C", 1)})`,
+					mManufactoringDuration: "1.000000",
+					mProducedIn:
+						'("/Game/FactoryGame/Equipment/BuildGun/BP_BuildGun.BP_BuildGun_C")',
 				},
 			],
 		},
