@@ -24,5 +24,5 @@ mkdirSync("data", { recursive: true });
 const outPath = join("data", "recipes.json");
 writeFileSync(outPath, `${JSON.stringify(data, null, "\t")}\n`);
 console.log(
-	`${outPath} を生成しました: items ${Object.keys(data.items).length} / buildings ${Object.keys(data.buildings).length} / recipes ${data.recipes.length}`,
+	`${outPath} を生成しました: items ${Object.keys(data.items).length} / buildings ${Object.keys(data.buildings).length} / recipes ${data.recipes.length} / generators ${data.generators.length}`,
 );

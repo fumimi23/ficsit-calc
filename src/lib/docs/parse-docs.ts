@@ -151,22 +151,29 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 					: undefined;
 
 			const fuels = parseFuelEntries(entry.mFuel, id).map(
-				({ fuelClass, supplementalClass }): GeneratorFuelDef => {
+				({ fuelClass, supplementalClass }, i): GeneratorFuelDef => {
 					referencedItems.add(fuelClass);
-					if (supplementalPerMJ !== undefined && supplementalClass) {
-						referencedItems.add(supplementalClass);
+					if (supplementalPerMJ === undefined) {
+						return {
+							item: fuelClass,
+							energyMJ: fuelEnergyMJ(fuelClass, descriptors),
+						};
 					}
+					// 副資材必須なのにクラスが空、は Docs 側の不整合。黙って落とすと
+					// 水需要が過少表示になるだけで気づけないので、燃料のエネルギー値と同じく大声で失敗する
+					if (!supplementalClass) {
+						throw new Error(
+							`副資材が必須なのに副資材クラスが空です: ${id}.mFuel[${i}].mSupplementalResourceClass`,
+						);
+					}
+					referencedItems.add(supplementalClass);
 					return {
 						item: fuelClass,
 						energyMJ: fuelEnergyMJ(fuelClass, descriptors),
-						...(supplementalPerMJ !== undefined && supplementalClass
-							? {
-									supplemental: {
-										item: supplementalClass,
-										amountPerMJ: supplementalPerMJ,
-									},
-								}
-							: {}),
+						supplemental: {
+							item: supplementalClass,
+							amountPerMJ: supplementalPerMJ,
+						},
 					};
 				},
 			);

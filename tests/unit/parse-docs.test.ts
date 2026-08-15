@@ -88,6 +88,49 @@ const syntheticDocs = JSON.stringify([
 	},
 ]);
 
+/**
+ * 発電機 1 種だけの合成 Docs。燃料側の mSupplementalResourceClass を差し替えられるようにして、
+ * 「副資材必須(True)なのにクラスが空」という Docs 側の不整合を作れるようにする
+ */
+const generatorDocs = (supplementalClass: string) =>
+	JSON.stringify([
+		{
+			NativeClass: nativeClass("FGItemDescriptor"),
+			Classes: [
+				{
+					ClassName: "Desc_Coal_C",
+					mDisplayName: "Coal",
+					mForm: "RF_SOLID",
+					mEnergyValue: "300.000000",
+				},
+				{
+					ClassName: "Desc_Water_C",
+					mDisplayName: "Water",
+					mForm: "RF_LIQUID",
+					mEnergyValue: "0.000000",
+				},
+			],
+		},
+		{
+			NativeClass: nativeClass("FGBuildableGeneratorFuel"),
+			Classes: [
+				{
+					ClassName: "Build_GeneratorCoal_C",
+					mDisplayName: "Coal-Powered Generator",
+					mPowerProduction: "75.000000",
+					mFuel: [
+						{
+							mFuelClass: "Desc_Coal_C",
+							mSupplementalResourceClass: supplementalClass,
+						},
+					],
+					mRequiresSupplementalResource: "True",
+					mSupplementalToPowerRatio: "10.000000",
+				},
+			],
+		},
+	]);
+
 describe("parseDocs", () => {
 	it("液体・気体の数量はリットルから m³ に変換される(÷1000)", () => {
 		const data = parseDocs(syntheticDocs);
@@ -139,6 +182,17 @@ describe("parseDocs", () => {
 		).toBe(false);
 		// 発電機はビルディング(製造機械)辞書にも混ざらない
 		expect(data.buildings.Build_GeneratorCoal_C).toBeUndefined();
+	});
+
+	it("mRequiresSupplementalResource が True なのに副資材クラスが空の燃料があるとき、エラーになる", () => {
+		// 黙って supplemental を落とすと水の需要が過少表示になるだけで気づけない。
+		// 空クラスをそのまま流すとアイテム辞書の構築側でも落ちるので、どのフィールドが
+		// 不整合かまで見て「この検査が効いていること」を確かめる(unit 層なので文言に寄せてよい)
+		expect(() => parseDocs(generatorDocs(""))).toThrow(
+			/mSupplementalResourceClass/,
+		);
+		// クラスさえ埋まっていれば同じ Docs は通る(落ちる理由がこの不整合だけだと確かめる)
+		expect(() => parseDocs(generatorDocs("Desc_Water_C"))).not.toThrow();
 	});
 
 	it("ja テキストを渡さないとき nameJa は付かない", () => {
