@@ -273,6 +273,16 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 
 			{state.kind === "ready" && (
 				<div className={styles.results}>
+					{/* レシピ切り替えの操作場所なので、入力欄のすぐ下に置く
+					    (ブラウザ手動確認での指摘: 結果の最下部だと入力欄から遠い) */}
+					<section>
+						<h2>生産ツリー</h2>
+						<PlanTree
+							data={data}
+							root={state.plan.root}
+							picker={{ candidates, primary, onSelect: selectRecipe }}
+						/>
+					</section>
 					<section>
 						<h2>機械一覧</h2>
 						<MachineTable data={data} machines={state.plan.machines} />
@@ -321,14 +331,6 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 							/>
 						</section>
 					)}
-					<section>
-						<h2>生産ツリー</h2>
-						<PlanTree
-							data={data}
-							root={state.plan.root}
-							picker={{ candidates, primary, onSelect: selectRecipe }}
-						/>
-					</section>
 					<section>
 						<h2>接続図</h2>
 						<FlowGraph data={data} plan={state.plan} />
