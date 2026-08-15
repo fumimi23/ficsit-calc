@@ -9,8 +9,8 @@ const FORMS = new Set(["solid", "liquid", "gas"]);
 
 /**
  * 値が RecipeData のスキーマに準拠していることを検証して返す。違反は Error。
- * 検査内容: 構造と型 / 参照整合性(レシピの入出力アイテム・機械が辞書に存在) /
- * 数値の正当性(電力・所要時間・数量が正の ExactNumeric) / レシピ ID の一意性。
+ * 検査内容: 構造と型 / 参照整合性(レシピの入出力アイテム・機械・発電機の燃料が辞書に存在) /
+ * 数値の正当性(電力・所要時間・数量・エネルギー値が正の ExactNumeric) / ID の一意性。
  */
 export function validateRecipeData(value: unknown): RecipeData {
 	const root = asRecord(value, "recipes.json");
@@ -18,6 +18,9 @@ export function validateRecipeData(value: unknown): RecipeData {
 	const buildings = asRecord(root.buildings, "buildings");
 	if (!Array.isArray(root.recipes)) {
 		throw new Error("recipes が配列ではありません");
+	}
+	if (!Array.isArray(root.generators)) {
+		throw new Error("generators が配列ではありません");
 	}
 
 	for (const [id, raw] of Object.entries(items)) {
@@ -79,6 +82,35 @@ export function validateRecipeData(value: unknown): RecipeData {
 		}
 	}
 
+	const generatorIds = new Set<string>();
+	for (const raw of root.generators) {
+		const generator = asRecord(raw, "generators の要素");
+		const id = requireNonEmpty(generator.id, "generators[].id");
+		if (generatorIds.has(id)) {
+			throw new Error(`発電機 ID が重複しています: ${id}`);
+		}
+		generatorIds.add(id);
+		requireName(generator, id);
+		requirePositive(generator.powerMW, `${id}.powerMW`);
+		// 燃料の無い発電機は必要燃料を出せず、リストに載せる意味が無い
+		if (!Array.isArray(generator.fuels) || generator.fuels.length === 0) {
+			throw new Error(`${id}.fuels が空でない配列ではありません`);
+		}
+		for (const [i, entry] of generator.fuels.entries()) {
+			const label = `${id}.fuels[${i}]`;
+			const fuel = asRecord(entry, label);
+			requireKnownItem(fuel.item, items, `${label}.item`);
+			requirePositive(fuel.energyMJ, `${label}.energyMJ`);
+			if (fuel.supplemental === undefined) continue;
+			const supplemental = asRecord(fuel.supplemental, `${label}.supplemental`);
+			requireKnownItem(supplemental.item, items, `${label}.supplemental.item`);
+			requirePositive(
+				supplemental.amountPerMJ,
+				`${label}.supplemental.amountPerMJ`,
+			);
+		}
+	}
+
 	return value as RecipeData;
 }
 
@@ -100,6 +132,18 @@ function requireName(entry: Record<string, unknown>, label: string): void {
 	requireNonEmpty(entry.name, `${label}.name`);
 	if (entry.nameJa !== undefined) {
 		requireNonEmpty(entry.nameJa, `${label}.nameJa`);
+	}
+}
+
+/** アイテム ID として妥当で、かつアイテム辞書に存在することを検証する(参照整合性) */
+function requireKnownItem(
+	value: unknown,
+	items: Record<string, unknown>,
+	label: string,
+): void {
+	const itemId = requireNonEmpty(value, label);
+	if (!(itemId in items)) {
+		throw new Error(`${label} のアイテムがアイテム辞書にありません: ${itemId}`);
 	}
 }
 

@@ -1,0 +1,50 @@
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24) */
+.table {
+	border-collapse: collapse;
+	width: 100%;
+	background: var(--surface);
+	border: 1.5px solid var(--frame);
+}
+
+.table th,
+.table td {
+	border: 1px solid var(--line);
+	padding: 0.55rem 0.9rem;
+	text-align: left;
+}
+
+.table thead th {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: var(--ink);
+	background: var(--thead-bg);
+	border-bottom: 1.5px solid var(--frame);
+}
+
+/* rowSpan でまとめたセルは行の中央に置く(どの行にも等しくかかることを示す) */
+.table td[rowspan] {
+	vertical-align: middle;
+}
+
+.numeric {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+td.numeric {
+	font-family: var(--font-mono);
+	font-size: 0.92rem;
+}
+
+/* 副資材は燃料より従属的な情報なので一段落とす */
+.supplemental {
+	color: var(--ink-2);
+}
+
+/* アイテム名と数値を同じセルに並べるので、数値側だけ等幅・数字揃えにする */
+.rate {
+	font-family: var(--font-mono);
+	font-size: 0.92rem;
+	font-variant-numeric: tabular-nums;
+}
