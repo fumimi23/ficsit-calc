@@ -17,7 +17,11 @@ const syntheticData: RecipeData = {
 		scrap: { name: "Scrap" },
 	},
 	buildings: {
-		maker: { name: "Maker", powerMW: 4 },
+		maker: {
+			name: "Maker",
+			powerMW: 4,
+			constructionCost: [{ item: "scrap", amount: 1 }],
+		},
 	},
 	recipes: [
 		// goo: 開封形(固体 packaged-goo → 液体 goo)と精製(液体 crude → goo)の 2 候補。

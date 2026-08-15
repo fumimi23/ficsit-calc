@@ -1,6 +1,8 @@
 // 必要発電機リスト(issue #20)。総電力を賄う台数と、その電力を維持する燃料/副資材を並べる。
 // 燃料を複数燃やせる発電機は燃料ごとに行を分ける(どれで賄うかはプレイヤーの選択)。
 // 台数は切り上げだが燃料は実負荷ベースなので、台数 × 定格からは逆算できない値になる。
+// 建設コスト(issue #21)も種別ごとに併記する: 種別は代替案の並記なので合算しない。
+import { generatorConstructionCost } from "../lib/calc/construction";
 import type { GeneratorRequirement } from "../lib/calc/generators";
 import type { ItemRate, RecipeData } from "../lib/calc/types";
 import { generatorLabel, itemLabel } from "../lib/ui/display";
@@ -22,6 +24,7 @@ export function GeneratorTable({
 					<th className={styles.numeric}>台数</th>
 					<th>燃料</th>
 					<th>副資材</th>
+					<th>建設コスト</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -54,11 +57,41 @@ export function GeneratorTable({
 									"—"
 								)}
 							</td>
+							{/* 建設コストも燃料の選び方に依らないので台数と同じくまとめる */}
+							{index === 0 && (
+								<td rowSpan={requirement.fuelOptions.length}>
+									<CostCell data={data} requirement={requirement} />
+								</td>
+							)}
 						</tr>
 					)),
 				)}
 			</tbody>
 		</table>
+	);
+}
+
+function CostCell({
+	data,
+	requirement,
+}: {
+	data: RecipeData;
+	requirement: GeneratorRequirement;
+}) {
+	const cost = generatorConstructionCost(data, requirement);
+	// 台数 0(素材なし)で空欄にすると「まだ調べていない」に見える
+	if (cost.length === 0) return <>—</>;
+	return (
+		<ul className={styles.cost}>
+			{cost.map((quantity) => (
+				<li key={quantity.item}>
+					{itemLabel(data, quantity.item)}:{" "}
+					<span className={styles.quantity}>
+						{quantity.amount.toDecimalString()} 個
+					</span>
+				</li>
+			))}
+		</ul>
 	);
 }
 

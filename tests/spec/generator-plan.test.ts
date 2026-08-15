@@ -83,6 +83,10 @@ describe("必要発電機の算出(issue #20)", () => {
 							supplemental: { item: "water", amountPerMJ: "0.01" },
 						},
 					],
+					constructionCost: [
+						{ item: "reinforced-iron-plate", amount: 20 },
+						{ item: "iron-rod", amount: 10 },
+					],
 				},
 			],
 		};

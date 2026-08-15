@@ -26,6 +26,9 @@ const GENERATOR_NATIVE_CLASSES = [
 	".FGBuildableGeneratorNuclear'",
 ];
 
+/** 建設レシピ(Build Gun で建てるレシピ)の mProducedIn に現れるクラス */
+const BUILD_GUN_CLASS = "BP_BuildGun_C";
+
 /** UTF-16LE(BOM 付き)の Docs ファイルを文字列に復号する */
 export function decodeDocs(buffer: Uint8Array): string {
 	// BOM の手動除去はしない(TextDecoder が既定で取り除く)
@@ -57,6 +60,51 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		}
 	}
 
+	// 参照されたアイテムはレシピ・発電機・建設素材から集める(items はこの集合から作る)
+	const referencedItems = new Set<string>();
+
+	// 建設レシピは製造レシピとは別枠。product の ClassName で索引しておき、
+	// 機械・発電機の側から引く(recipes には入れない: Build Gun で建てるものであって
+	// 生産チェーンの候補ではない)
+	const constructionRecipes = new Map<string, DocsEntry[]>();
+	for (const group of groups) {
+		if (!group.NativeClass.endsWith(".FGRecipe'")) continue;
+		for (const entry of group.Classes) {
+			// 期間限定イベント(FICSMAS 等)の建設物は通常プレイで建てられない
+			if (asString(entry.mRelevantEvents)) continue;
+			const producedIn = parseClassNameList(asString(entry.mProducedIn) ?? "");
+			if (!producedIn.includes(BUILD_GUN_CLASS)) continue;
+			for (const { item } of parseItemAmounts(asString(entry.mProduct) ?? "")) {
+				const sameProduct = constructionRecipes.get(item) ?? [];
+				sameProduct.push(entry);
+				constructionRecipes.set(item, sameProduct);
+			}
+		}
+	}
+
+	/**
+	 * Build_X_C 1 台分の建設素材。対応付けは product(Desc_X_C)で行う。
+	 * レシピ ClassName の規約で引いてはいけない: 鋳造炉の建設レシピが Recipe_SmelterMk1_C で、
+	 * 製錬炉(Recipe_SmelterBasicMk1_C)のものと取り違える
+	 */
+	const constructionCostOf = (buildableId: string): RecipeIngredient[] => {
+		const productClass = buildableId.replace(/^Build_/, "Desc_");
+		const found = constructionRecipes.get(productClass) ?? [];
+		// 0 件なら建設コストが欠落し、複数件ならどれが正か決められない。
+		// どちらも黙って通すと建設コストが静かに間違う
+		if (found.length !== 1) {
+			throw new Error(
+				`建設レシピが 1 件に定まりません(${found.length} 件): ${buildableId}`,
+			);
+		}
+		return parseItemAmounts(asString(found[0]?.mIngredients) ?? "").map(
+			({ item, amount }) => {
+				referencedItems.add(item);
+				return { item, amount: convertAmount(item, amount, descriptors) };
+			},
+		);
+	};
+
 	const buildings = new Map<string, BuildingDef>();
 	for (const group of groups) {
 		// endsWith の末尾クォートまで含めた一致により、FGBuildableManufacturerVariablePower
@@ -75,12 +123,12 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 						`${entry.ClassName}.mPowerConsumption`,
 					),
 				),
+				constructionCost: constructionCostOf(entry.ClassName),
 			});
 		}
 	}
 
 	const recipes: RecipeDef[] = [];
-	const referencedItems = new Set<string>();
 	for (const group of groups) {
 		if (!group.NativeClass.endsWith(".FGRecipe'")) continue;
 		for (const entry of group.Classes) {
@@ -186,6 +234,7 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 					requireString(entry.mPowerProduction, `${id}.mPowerProduction`),
 				),
 				fuels,
+				constructionCost: constructionCostOf(id),
 			});
 		}
 	}

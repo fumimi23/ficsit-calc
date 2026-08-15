@@ -42,8 +42,16 @@ td.numeric {
 	color: var(--ink-2);
 }
 
+/* 建設コストは 1 行 1 素材。表のセル内なので余白は行間だけに絞る */
+.cost {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
 /* アイテム名と数値を同じセルに並べるので、数値側だけ等幅・数字揃えにする */
-.rate {
+.rate,
+.quantity {
 	font-family: var(--font-mono);
 	font-size: 0.92rem;
 	font-variant-numeric: tabular-nums;

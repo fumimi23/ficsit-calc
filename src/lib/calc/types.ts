@@ -32,6 +32,11 @@ export interface BuildingDef {
 	nameJa?: string;
 	/** 定格消費電力(MW)。オーバークロックは v1 スコープ外 */
 	powerMW: ExactNumeric;
+	/**
+	 * 1 台建てるのに必要な建設素材(issue #21)。Docs の Build Gun 建設レシピ由来。
+	 * optional にしないのは、欠落を許すと建設コストが黙って過少表示されるため
+	 */
+	constructionCost: RecipeIngredient[];
 }
 
 /** 発電機 ID(例: "Build_GeneratorCoal_C")。RecipeData.generators の要素の id */
@@ -65,6 +70,8 @@ export interface GeneratorDef {
 	/** 定格出力(MW)。オーバークロックは v1 スコープ外 */
 	powerMW: ExactNumeric;
 	fuels: GeneratorFuelDef[];
+	/** 1 台建てるのに必要な建設素材(issue #21)。BuildingDef と同じく必須 */
+	constructionCost: RecipeIngredient[];
 }
 
 export interface RecipeIngredient {

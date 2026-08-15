@@ -11,10 +11,30 @@ export const fixtureData: RecipeData = {
 		screw: { name: "ネジ" },
 		"reinforced-iron-plate": { name: "強化鉄板" },
 	},
+	// 建設素材(issue #21)は items に既にあるアイテムだけで組む。
+	// 新しいアイテムを足すと「全 6 アイテムに戻る」を約束している item-search の UI テストが壊れる
 	buildings: {
-		smelter: { name: "製錬炉", powerMW: 4 },
-		constructor: { name: "構築機", powerMW: 4 },
-		assembler: { name: "組立機", powerMW: 15 },
+		smelter: {
+			name: "製錬炉",
+			powerMW: 4,
+			constructionCost: [{ item: "iron-rod", amount: 5 }],
+		},
+		constructor: {
+			name: "構築機",
+			powerMW: 4,
+			constructionCost: [
+				{ item: "reinforced-iron-plate", amount: 2 },
+				{ item: "iron-rod", amount: 8 },
+			],
+		},
+		assembler: {
+			name: "組立機",
+			powerMW: 15,
+			constructionCost: [
+				{ item: "reinforced-iron-plate", amount: 8 },
+				{ item: "screw", amount: 20 },
+			],
+		},
 	},
 	recipes: [
 		{
@@ -95,6 +115,10 @@ export const generatorFixtureData: RecipeData = {
 					supplemental: { item: "water", amountPerMJ: "0.01" },
 				},
 			],
+			constructionCost: [
+				{ item: "reinforced-iron-plate", amount: 20 },
+				{ item: "iron-rod", amount: 10 },
+			],
 		},
 		{
 			id: "fuel-generator",
@@ -102,6 +126,10 @@ export const generatorFixtureData: RecipeData = {
 			powerMW: 250,
 			// 液体燃料は Docs では 0.75 MJ/L。数量の m³ 換算(×1000)後は 750 MJ/m³
 			fuels: [{ item: "fuel", energyMJ: 750 }],
+			constructionCost: [
+				{ item: "iron-plate", amount: 15 },
+				{ item: "screw", amount: 50 },
+			],
 		},
 	],
 };

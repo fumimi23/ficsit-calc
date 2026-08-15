@@ -30,4 +30,23 @@ describe("invariants: レシピデータ", () => {
 		expect(ids).toContain("Build_GeneratorNuclear_C");
 		expect(ids).not.toContain("Build_GeneratorGeoThermal_C");
 	});
+
+	// issue #21: 1 機種でも建設素材が欠けると建設コストが黙って過少表示になる。
+	// 参照整合性と正の数量は validateRecipeData 側(上の 1 本目)が全件を見る
+	it("コミット済み data/recipes.json の全機械・全発電機が建設素材を持つ", () => {
+		const data = validateRecipeData(recipesJson);
+		const costs = [
+			...Object.entries(data.buildings).map(([id, building]) => ({
+				id,
+				cost: building.constructionCost,
+			})),
+			...data.generators.map((g) => ({ id: g.id, cost: g.constructionCost })),
+		];
+
+		expect(costs.length).toBeGreaterThan(0);
+		for (const { id, cost } of costs) {
+			expect(cost, id).toBeDefined();
+			expect(cost?.length ?? 0, id).toBeGreaterThan(0);
+		}
+	});
 });

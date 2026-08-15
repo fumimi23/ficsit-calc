@@ -67,7 +67,13 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 				plastic: { name: "プラスチック" },
 				residue: { name: "廃重油", form: "liquid" },
 			},
-			buildings: { refinery: { name: "精製機", powerMW: 30 } },
+			buildings: {
+				refinery: {
+					name: "精製機",
+					powerMW: 30,
+					constructionCost: [{ item: "plastic", amount: 1 }],
+				},
+			},
 			recipes: [
 				{
 					id: "plastic",
