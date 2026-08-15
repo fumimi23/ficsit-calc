@@ -50,12 +50,16 @@ describe("ノードごとのレシピ切り替え(issue #22)", () => {
 		// 「バイオマス（木）」: 0.5 台 / 木材 15 個/分 / 2MW
 		const table = screen.getByRole("table");
 		within(table).getByText("バイオマス（木）");
-		within(table).getByText("0.5 台（建設 1 台）");
+		// 建設台数の併記そのものは production-planner.test.tsx の管轄なので、
+		// ここで固定するのは台数の値だけにする
+		within(table).getByText(/0\.5 台/);
 		expect(within(table).queryByText("バイオマス（葉）")).toBeNull();
 		within(screen.getByRole("list", { name: "原料合計" })).getByText(
 			"木材: 15 /分",
 		);
 		screen.getByText("総電力: 2 MW");
+		// ツリーの枝も新しいレシピの入力(葉 → 木材)に張り替わる
+		within(screen.getByRole("list", { name: "生産ツリー" })).getByText(/木材/);
 	});
 
 	it("候補が 1 つしか無いノードと、候補が 1 つも無い原料ノードには、レシピ選択が現れない", async () => {
