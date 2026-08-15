@@ -34,11 +34,11 @@ export function sumMachineConstructionCost(
 				`機械がビルディング辞書にありません: ${machine.building}`,
 			);
 		}
-		addCost(
-			totals,
-			building.constructionCost,
-			Fraction.of(machine.machineCount.ceil()),
-		);
+		const count = machine.machineCount.ceil();
+		// 0 個の素材行を出すと「建てるのに素材が要る」と読めてしまう
+		// (レート 0 の計画では全機械の建設台数が 0 になる)
+		if (count === 0n) continue;
+		addCost(totals, building.constructionCost, Fraction.of(count));
 	}
 	return toQuantities(totals);
 }
