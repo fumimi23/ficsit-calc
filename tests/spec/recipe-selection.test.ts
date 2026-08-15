@@ -93,6 +93,7 @@ const syntheticData: RecipeData = {
 			outputs: [{ item: "widget", amount: 1 }],
 		},
 	],
+	generators: [],
 };
 
 describe("primary レシピの選択規則(issue #5)", () => {

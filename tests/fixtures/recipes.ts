@@ -66,4 +66,42 @@ export const fixtureData: RecipeData = {
 			outputs: [{ item: "reinforced-iron-plate", amount: 1 }],
 		},
 	],
+	// 発電機は generatorFixtureData 側に置く(理由は下のコメント)
+	generators: [],
+};
+
+// 発電機入りの fixture(issue #20)。fixtureData 自体に足さないのは、
+// アイテム件数を数える既存の UI テスト(tests/spec/ui/item-search.test.tsx の
+// 「全 6 アイテムに戻る」)が fixtureData のアイテム数を約束にしているため。
+// 鉄板 30/分 = 総電力 12MW を発電側の検算に使う。
+export const generatorFixtureData: RecipeData = {
+	...fixtureData,
+	items: {
+		...fixtureData.items,
+		coal: { name: "石炭" },
+		water: { name: "水", form: "liquid" },
+		fuel: { name: "燃料", form: "liquid" },
+	},
+	generators: [
+		{
+			id: "coal-generator",
+			name: "石炭発電機",
+			powerMW: 75,
+			fuels: [
+				{
+					item: "coal",
+					energyMJ: 300,
+					// Docs の mSupplementalToPowerRatio(10 L/MJ)を m³/MJ にしたもの
+					supplemental: { item: "water", amountPerMJ: "0.01" },
+				},
+			],
+		},
+		{
+			id: "fuel-generator",
+			name: "燃料式発電機",
+			powerMW: 250,
+			// 液体燃料は Docs では 0.75 MJ/L。数量の m³ 換算(×1000)後は 750 MJ/m³
+			fuels: [{ item: "fuel", energyMJ: 750 }],
+		},
+	],
 };

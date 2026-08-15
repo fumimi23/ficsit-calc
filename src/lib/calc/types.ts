@@ -34,6 +34,39 @@ export interface BuildingDef {
 	powerMW: ExactNumeric;
 }
 
+/** 発電機 ID(例: "Build_GeneratorCoal_C")。RecipeData.generators の要素の id */
+export type GeneratorId = string;
+
+/**
+ * 発電機が燃やせる燃料 1 種(issue #20)。
+ * 複数燃料の発電機(石炭発電機の石炭 / 圧縮石炭 / 石油コークス等)を代表 1 種に畳まないのは、
+ * どれで賄うかがプレイヤーの選択であり、レートも燃料ごとに変わるため。
+ */
+export interface GeneratorFuelDef {
+	item: ItemId;
+	/** 燃料 1 単位(固体 = 個、液体・気体 = m³)あたりのエネルギー(MJ) */
+	energyMJ: ExactNumeric;
+	/**
+	 * 副資材(石炭発電機の水など)。消費は台数ではなく発電量に比例するので、
+	 * 台数あたりではなく発電 1 MJ あたりの量(m³/MJ)で持つ
+	 */
+	supplemental?: { item: ItemId; amountPerMJ: ExactNumeric };
+}
+
+/**
+ * 発電機 1 種(issue #20)。
+ * 地熱発電機は含めない: 出力が間欠泉の純度に依存し、定格 1 つでは表せないため。
+ */
+export interface GeneratorDef {
+	id: GeneratorId;
+	name: string;
+	/** 日本語表示名。無ければ表示は name にフォールバック */
+	nameJa?: string;
+	/** 定格出力(MW)。オーバークロックは v1 スコープ外 */
+	powerMW: ExactNumeric;
+	fuels: GeneratorFuelDef[];
+}
+
 export interface RecipeIngredient {
 	item: ItemId;
 	/** 1 クラフトあたりの個数 */
@@ -60,6 +93,8 @@ export interface RecipeData {
 	items: Record<ItemId, ItemDef>;
 	buildings: Record<BuildingId, BuildingDef>;
 	recipes: RecipeDef[];
+	/** 発電機の一覧(issue #20)。総電力から必要台数・必要燃料を出すのに使う */
+	generators: GeneratorDef[];
 }
 
 // ---- 逆算結果 ----

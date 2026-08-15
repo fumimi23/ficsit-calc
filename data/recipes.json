@@ -190,6 +190,11 @@
 			"nameJa": "FICSITEの三角板",
 			"form": "solid"
 		},
+		"Desc_FicsoniumFuelRod_C": {
+			"name": "Ficsonium Fuel Rod",
+			"nameJa": "FICSONIUM燃料棒",
+			"form": "solid"
+		},
 		"Desc_Filter_C": {
 			"name": "Gas Filter",
 			"nameJa": "ガスフィルター",
@@ -6614,6 +6619,132 @@
 				{
 					"item": "Desc_Wire_C",
 					"amount": 2
+				}
+			]
+		}
+	],
+	"generators": [
+		{
+			"id": "Build_GeneratorBiomass_Automated_C",
+			"name": "Biomass Burner",
+			"nameJa": "バイオマス・バーナー",
+			"powerMW": 30,
+			"fuels": [
+				{
+					"item": "Desc_Leaves_C",
+					"energyMJ": 15
+				},
+				{
+					"item": "Desc_Wood_C",
+					"energyMJ": 100
+				},
+				{
+					"item": "Desc_Mycelia_C",
+					"energyMJ": 20
+				},
+				{
+					"item": "Desc_GenericBiomass_C",
+					"energyMJ": 180
+				},
+				{
+					"item": "Desc_Biofuel_C",
+					"energyMJ": 450
+				},
+				{
+					"item": "Desc_PackagedBiofuel_C",
+					"energyMJ": 750
+				}
+			]
+		},
+		{
+			"id": "Build_GeneratorCoal_C",
+			"name": "Coal-Powered Generator",
+			"nameJa": "石炭発電機",
+			"powerMW": 75,
+			"fuels": [
+				{
+					"item": "Desc_Coal_C",
+					"energyMJ": 300,
+					"supplemental": {
+						"item": "Desc_Water_C",
+						"amountPerMJ": 0.01
+					}
+				},
+				{
+					"item": "Desc_CompactedCoal_C",
+					"energyMJ": 630,
+					"supplemental": {
+						"item": "Desc_Water_C",
+						"amountPerMJ": 0.01
+					}
+				},
+				{
+					"item": "Desc_PetroleumCoke_C",
+					"energyMJ": 180,
+					"supplemental": {
+						"item": "Desc_Water_C",
+						"amountPerMJ": 0.01
+					}
+				}
+			]
+		},
+		{
+			"id": "Build_GeneratorFuel_C",
+			"name": "Fuel-Powered Generator",
+			"nameJa": "燃料式発電機",
+			"powerMW": 250,
+			"fuels": [
+				{
+					"item": "Desc_LiquidFuel_C",
+					"energyMJ": 750
+				},
+				{
+					"item": "Desc_LiquidTurboFuel_C",
+					"energyMJ": 2000
+				},
+				{
+					"item": "Desc_LiquidBiofuel_C",
+					"energyMJ": 750
+				},
+				{
+					"item": "Desc_RocketFuel_C",
+					"energyMJ": 3600
+				},
+				{
+					"item": "Desc_IonizedFuel_C",
+					"energyMJ": 5000
+				}
+			]
+		},
+		{
+			"id": "Build_GeneratorNuclear_C",
+			"name": "Nuclear Power Plant",
+			"nameJa": "原子力発電所",
+			"powerMW": 2500,
+			"fuels": [
+				{
+					"item": "Desc_NuclearFuelRod_C",
+					"energyMJ": 750000,
+					"supplemental": {
+						"item": "Desc_Water_C",
+						"amountPerMJ": 0.0016
+					}
+				},
+				{
+					"item": "Desc_PlutoniumFuelRod_C",
+					"energyMJ": 1500000,
+					"supplemental": {
+						"item": "Desc_Water_C",
+						"amountPerMJ": 0.0016
+					}
+				},
+				{
+					"item": "Desc_FicsoniumFuelRod_C",
+					"energyMJ": 150000,
+					"supplemental": {
+						"item": "Desc_Water_C",
+						"amountPerMJ": 0.0016
+					}
 				}
 			]
 		}

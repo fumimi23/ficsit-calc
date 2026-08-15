@@ -82,6 +82,7 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 					],
 				},
 			],
+			generators: [],
 		};
 		const plan = planProduction(byproductData, {
 			itemId: "plastic",

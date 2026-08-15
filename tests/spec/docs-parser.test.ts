@@ -4,6 +4,8 @@
 // データポリシーにより説明文・フレーバーテキストは除去済み)。
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { Fraction } from "../../src/lib/calc/fraction";
+import type { ExactNumeric } from "../../src/lib/calc/types";
 import { validateRecipeData } from "../../src/lib/calc/validate";
 import { decodeDocs, parseDocs } from "../../src/lib/docs/parse-docs";
 
@@ -85,5 +87,73 @@ describe("Docs パーサー(issue #2)", () => {
 		for (const r of data.recipes) {
 			expect(data.buildings[r.building]).toBeDefined();
 		}
+	});
+});
+
+// issue #20: 必要発電機リスト — 総電力から必要台数・必要燃料を出すために、
+// Docs から発電機(定格出力・燃焼できる燃料・副資材)も収録する。
+describe("Docs パーサー: 発電機の収録(issue #20)", () => {
+	// ExactNumeric の表現(number / 十進文字列)は約束しないので、値は Fraction で比べる
+	const expectValue = (actual: ExactNumeric | undefined, expected: string) => {
+		expect(
+			actual === undefined ? undefined : Fraction.from(actual).toString(),
+		).toBe(Fraction.from(expected).toString());
+	};
+
+	it("石炭発電機が定格 75MW・石炭燃料(300MJ)・水の副資材(0.01 m³/MJ)付きで収録される", () => {
+		const data = parseFixture();
+
+		const coal = data.generators.find((g) => g.id === "Build_GeneratorCoal_C");
+		expect(coal).toBeDefined();
+		expect(coal?.name).toBe("Coal-Powered Generator");
+		expect(coal?.nameJa).toBe("石炭発電機");
+		expectValue(coal?.powerMW, "75");
+		expect(coal?.fuels).toHaveLength(1);
+		expect(coal?.fuels[0]?.item).toBe("Desc_Coal_C");
+		expectValue(coal?.fuels[0]?.energyMJ, "300");
+		expect(coal?.fuels[0]?.supplemental?.item).toBe("Desc_Water_C");
+		// Docs の mSupplementalToPowerRatio は L/MJ。数量と同じく m³ 基準に直す
+		expectValue(coal?.fuels[0]?.supplemental?.amountPerMJ, "0.01");
+	});
+
+	it("液体燃料のエネルギー値は MJ/L から MJ/m³ に換算される(0.75 → 750)", () => {
+		const data = parseFixture();
+
+		const fuel = data.generators.find((g) => g.id === "Build_GeneratorFuel_C");
+		expectValue(fuel?.powerMW, "250");
+		expect(fuel?.fuels[0]?.item).toBe("Desc_LiquidFuel_C");
+		expectValue(fuel?.fuels[0]?.energyMJ, "750");
+		// 副資材を要求しない発電機には supplemental が付かない
+		expect(fuel?.fuels[0]?.supplemental).toBeUndefined();
+	});
+
+	it("原子力発電所が定格 2500MW・ウラン燃料棒(750000MJ)・水の副資材(0.0016 m³/MJ)付きで収録される", () => {
+		// 燃料式とは別の NativeClass(FGBuildableGeneratorNuclear)から拾う経路を通す
+		const data = parseFixture();
+
+		const nuclear = data.generators.find(
+			(g) => g.id === "Build_GeneratorNuclear_C",
+		);
+		expect(nuclear).toBeDefined();
+		expect(nuclear?.name).toBe("Nuclear Power Plant");
+		expect(nuclear?.nameJa).toBe("原子力発電所");
+		expectValue(nuclear?.powerMW, "2500");
+		// 固体燃料なので m³ 換算(×1000)は掛からない
+		expect(nuclear?.fuels[0]?.item).toBe("Desc_NuclearFuelRod_C");
+		expectValue(nuclear?.fuels[0]?.energyMJ, "750000");
+		expect(nuclear?.fuels[0]?.supplemental?.item).toBe("Desc_Water_C");
+		// 1.6 L/MJ ÷ 1000 = 0.0016 m³/MJ(2500MW で水 240 m³/分 = ゲーム内の既知値)
+		expectValue(nuclear?.fuels[0]?.supplemental?.amountPerMJ, "0.0016");
+	});
+
+	it("発電機の燃料・副資材のアイテムがアイテム辞書に収録される", () => {
+		// レシピからしか items を作らないと、燃料アイテムの表示名が引けず参照整合性も壊れる
+		const data = parseFixture();
+
+		for (const id of ["Desc_Coal_C", "Desc_Water_C", "Desc_LiquidFuel_C"]) {
+			expect(data.items[id]).toBeDefined();
+		}
+		expect(data.items.Desc_Coal_C?.name).toBe("Coal");
+		expect(data.items.Desc_Water_C?.form).toBe("liquid");
 	});
 });

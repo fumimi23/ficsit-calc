@@ -2,12 +2,14 @@
 // 入力の状態管理と planProduction の呼び出しを担い、表示は部品に委譲する。
 // RecipeData は props で受け取る(テストは fixture を注入する)。
 import { useEffect, useMemo, useRef, useState } from "react";
+import { planGenerators } from "../lib/calc/generators";
 import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
 import { filterItemIds } from "../lib/ui/item-search";
 import { normalizeRateInput } from "../lib/ui/rate-input";
 import { FlowGraph } from "./FlowGraph";
+import { GeneratorTable } from "./GeneratorTable";
 import { ItemRateList } from "./ItemRateList";
 import { MachineTable } from "./MachineTable";
 import { PlanTree } from "./PlanTree";
@@ -95,6 +97,16 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 			};
 		}
 	}, [data, selection, itemId, rateText]);
+
+	// 総電力 0(原料だけの計画)や発電機を持たないデータでは行が 1 つも立たない。
+	// 0 台の表を出すと「発電機ゼロ台で足りる」と読めてしまうのでセクションごと出さない
+	const generatorRequirements = useMemo(
+		() =>
+			state.kind === "ready" && !state.plan.totalPowerMW.isZero()
+				? planGenerators(data, state.plan.totalPowerMW)
+				: [],
+		[data, state],
+	);
 
 	return (
 		<div className={styles.planner}>
@@ -206,6 +218,15 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					<p className={styles.total}>
 						総電力: {state.plan.totalPowerMW.toDecimalString()} MW
 					</p>
+					{generatorRequirements.length > 0 && (
+						<section>
+							<h2>必要発電機</h2>
+							<GeneratorTable
+								data={data}
+								requirements={generatorRequirements}
+							/>
+						</section>
+					)}
 					<section>
 						<h2>生産ツリー</h2>
 						<PlanTree data={data} root={state.plan.root} />

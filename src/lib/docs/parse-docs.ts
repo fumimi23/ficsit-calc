@@ -6,14 +6,25 @@
 // - 可変電力の機械(粒子加速器等)とそのレシピ: 消費電力がレシピごとに変わり、機械単位の
 //   定格 powerMW では表せない。誤った電力を出すより v1 では丸ごと対象外にする
 // - 液体・気体の数量: Docs はリットル表記だがゲーム内 UI・既存ツールは m³ なので ÷1000 する
+// - 地熱発電機(FGBuildableGeneratorGeoThermal): 出力が間欠泉の純度に依存し、定格 1 つで
+//   表せない。発電機の NativeClass を列挙で持つことで自然に対象外になる
+import { Fraction } from "../calc/fraction";
 import type {
 	BuildingDef,
 	ExactNumeric,
+	GeneratorDef,
+	GeneratorFuelDef,
 	ItemDef,
 	RecipeData,
 	RecipeDef,
 	RecipeIngredient,
 } from "../calc/types";
+
+/** 燃料を燃やして定格出力を出す発電機の NativeClass(suffix 一致。地熱は含めない) */
+const GENERATOR_NATIVE_CLASSES = [
+	".FGBuildableGeneratorFuel'",
+	".FGBuildableGeneratorNuclear'",
+];
 
 /** UTF-16LE(BOM 付き)の Docs ファイルを文字列に復号する */
 export function decodeDocs(buffer: Uint8Array): string {
@@ -32,10 +43,7 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 
 	// Descriptor 系の NativeClass は列挙しない(核燃料・バイオマス等に散らばっていて、
 	// ゲーム更新で増える。全グループを索引してレシピが参照した ClassName から引くほうが壊れない)
-	const descriptors = new Map<
-		string,
-		{ name: string; form?: ItemDef["form"] }
-	>();
+	const descriptors = new Map<string, Descriptor>();
 	for (const group of groups) {
 		for (const entry of group.Classes) {
 			const name = asString(entry.mDisplayName);
@@ -43,6 +51,8 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 			descriptors.set(entry.ClassName, {
 				name,
 				form: parseForm(asString(entry.mForm)),
+				// 燃料のエネルギー(固体 = MJ/個、液体・気体 = MJ/L)。発電機の計算に使う
+				energyValue: asString(entry.mEnergyValue),
 			});
 		}
 	}
@@ -117,12 +127,75 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		}
 	}
 
+	// 発電機はレシピより後に読む(燃料・副資材を referencedItems へ足してから items を作るため)。
+	// 燃料をレシピ経由でしか収録しないと、可変電力機械でしか作れないフィクソニウム燃料棒の
+	// 表示名が引けず参照整合性も壊れる
+	const generators: GeneratorDef[] = [];
+	for (const group of groups) {
+		if (!GENERATOR_NATIVE_CLASSES.some((c) => group.NativeClass.endsWith(c))) {
+			continue;
+		}
+		for (const entry of group.Classes) {
+			const id = entry.ClassName;
+			// 副資材の比率は発電機ごとに 1 つ(燃料別ではない)。要求しない発電機の
+			// mSupplementalResourceClass は空文字なので、フラグを見てから読む
+			const supplementalPerMJ =
+				asString(entry.mRequiresSupplementalResource) === "True"
+					? scaleByThousand(
+							requireString(
+								entry.mSupplementalToPowerRatio,
+								`${id}.mSupplementalToPowerRatio`,
+							),
+							"div",
+						)
+					: undefined;
+
+			const fuels = parseFuelEntries(entry.mFuel, id).map(
+				({ fuelClass, supplementalClass }, i): GeneratorFuelDef => {
+					referencedItems.add(fuelClass);
+					if (supplementalPerMJ === undefined) {
+						return {
+							item: fuelClass,
+							energyMJ: fuelEnergyMJ(fuelClass, descriptors),
+						};
+					}
+					// 副資材必須なのにクラスが空、は Docs 側の不整合。黙って落とすと
+					// 水需要が過少表示になるだけで気づけないので、燃料のエネルギー値と同じく大声で失敗する
+					if (!supplementalClass) {
+						throw new Error(
+							`副資材が必須なのに副資材クラスが空です: ${id}.mFuel[${i}].mSupplementalResourceClass`,
+						);
+					}
+					referencedItems.add(supplementalClass);
+					return {
+						item: fuelClass,
+						energyMJ: fuelEnergyMJ(fuelClass, descriptors),
+						supplemental: {
+							item: supplementalClass,
+							amountPerMJ: supplementalPerMJ,
+						},
+					};
+				},
+			);
+
+			generators.push({
+				id,
+				name: requireString(entry.mDisplayName, `${id}.mDisplayName`),
+				...jaName(jaNames, id),
+				powerMW: parseDecimal(
+					requireString(entry.mPowerProduction, `${id}.mPowerProduction`),
+				),
+				fuels,
+			});
+		}
+	}
+
 	// 全 Descriptor は収録しない(データポリシー: 抽出は計算に必要な最小限)
 	const items = new Map<string, ItemDef>();
 	for (const id of referencedItems) {
 		const desc = descriptors.get(id);
 		if (!desc) {
-			throw new Error(`レシピが参照するアイテムの定義が見つかりません: ${id}`);
+			throw new Error(`参照されたアイテムの定義が見つかりません: ${id}`);
 		}
 		items.set(id, {
 			name: desc.name,
@@ -140,10 +213,19 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 			[...buildings].sort(([a], [b]) => byKey(a, b)),
 		),
 		recipes: recipes.sort((a, b) => byKey(a.id, b.id)),
+		generators: generators.sort((a, b) => byKey(a.id, b.id)),
 	};
 }
 
 // ---- Docs の生形式 ----
+
+/** ClassName で引く Descriptor 側の属性(表示名・形態・燃料としてのエネルギー) */
+interface Descriptor {
+	name: string;
+	form?: ItemDef["form"];
+	/** Docs の生表記("300.000000")。単位は形態で変わるので換算は使う側で行う */
+	energyValue?: string;
+}
 
 interface DocsGroup {
 	NativeClass: string;
@@ -244,6 +326,66 @@ function convertAmount(
 ): number {
 	const form = descriptors.get(item)?.form;
 	return form === "liquid" || form === "gas" ? amount / 1000 : amount;
+}
+
+const THOUSAND = Fraction.of(1000);
+
+/**
+ * 十進値を 1000 倍 / 1000 分の 1 する(L ↔ m³ の換算)。
+ * float の乗除算を使わないのは `3.6 * 1000 === 3600.0000000000005` のように
+ * 十進の見た目ごと壊れるため。往復で一致しない結果は無言で丸めずエラーにする。
+ */
+function scaleByThousand(text: string, direction: "mul" | "div"): ExactNumeric {
+	const source = Fraction.from(text);
+	const exact =
+		direction === "mul" ? source.mul(THOUSAND) : source.div(THOUSAND);
+	const value = Number(exact.toDecimalString(12));
+	if (!Fraction.from(value).equals(exact)) {
+		throw new Error(`十進で正確に表せない換算結果です: ${text}`);
+	}
+	return value;
+}
+
+/**
+ * 燃料 1 単位あたりのエネルギー(MJ)。液体・気体は Docs が MJ/L なので、
+ * 数量を m³ に揃えているのに合わせて ×1000 して MJ/m³ にする。
+ * 副資材(水)の mEnergyValue は 0 だが燃料としては読まないのでここには来ない。
+ */
+function fuelEnergyMJ(
+	itemId: string,
+	descriptors: Map<string, Descriptor>,
+): ExactNumeric {
+	const desc = descriptors.get(itemId);
+	if (!desc?.energyValue) {
+		throw new Error(`燃料のエネルギー値が Docs にありません: ${itemId}`);
+	}
+	const energy =
+		desc.form === "liquid" || desc.form === "gas"
+			? scaleByThousand(desc.energyValue, "mul")
+			: parseDecimal(desc.energyValue);
+	// 0 を通すと必要燃料が 0 除算になる(燃料でないアイテムを mFuel から拾った兆候でもある)
+	const exact = Fraction.from(energy);
+	if (exact.isZero() || exact.isNegative()) {
+		throw new Error(`燃料のエネルギー値が正ではありません: ${itemId}`);
+	}
+	return energy;
+}
+
+/** mFuel は生の JSON 配列(他のフィールドと違い文字列に畳まれていない) */
+function parseFuelEntries(
+	value: unknown,
+	id: string,
+): { fuelClass: string; supplementalClass?: string }[] {
+	if (!Array.isArray(value) || value.length === 0) {
+		throw new Error(`発電機の燃料が空です: ${id}.mFuel`);
+	}
+	return value.map((raw, i) => {
+		const fuel = (raw ?? {}) as Record<string, unknown>;
+		return {
+			fuelClass: requireString(fuel.mFuelClass, `${id}.mFuel[${i}].mFuelClass`),
+			supplementalClass: asString(fuel.mSupplementalResourceClass),
+		};
+	});
 }
 
 function asString(value: unknown): string | undefined {
