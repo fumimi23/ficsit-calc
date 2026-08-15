@@ -45,3 +45,21 @@
 	font-weight: 400;
 	color: var(--ink-2);
 }
+
+/* レシピ切り替え(issue #22)。ノード行の続きに小さく添え、ラベルの読みを妨げない */
+.picker {
+	font: inherit;
+	font-size: 0.85em;
+	background: var(--surface);
+	color: var(--ink);
+	border: 1px solid var(--line-strong);
+	border-radius: 0;
+	margin-left: 0.6rem;
+	padding: 0.1rem 0.3rem;
+	max-width: 18rem;
+}
+
+.picker:focus {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}

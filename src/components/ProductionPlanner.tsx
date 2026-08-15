@@ -6,8 +6,14 @@ import { sumMachineConstructionCost } from "../lib/calc/construction";
 import { planGenerators } from "../lib/calc/generators";
 import { singleMachineRate } from "../lib/calc/machine-rate";
 import { planProduction } from "../lib/calc/plan";
-import { selectPrimaryRecipes } from "../lib/calc/select";
-import type { ProductionPlan, RecipeData } from "../lib/calc/types";
+import {
+	candidateRecipesByItem,
+	mergeRecipeSelection,
+	type RecipeOverrides,
+	selectPrimaryRecipes,
+} from "../lib/calc/select";
+import type { ItemId, ProductionPlan, RecipeData } from "../lib/calc/types";
+import { itemLabel, recipeLabel } from "../lib/ui/display";
 import { filterItemIds } from "../lib/ui/item-search";
 import { normalizeRateInput } from "../lib/ui/rate-input";
 import { ConstructionCostList } from "./ConstructionCostList";
@@ -27,10 +33,42 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	const [itemId, setItemId] = useState("");
 	const [itemQuery, setItemQuery] = useState("");
 	const [rateText, setRateText] = useState("");
+	// 上書きはアイテム単位の嗜好なので、目標アイテムを切り替えても持ち越す(issue #22)
+	const [overrides, setOverrides] = useState<RecipeOverrides>(
+		() => new Map<ItemId, string>(),
+	);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 	const itemSelectRef = useRef<HTMLSelectElement>(null);
 
-	const selection = useMemo(() => selectPrimaryRecipes(data), [data]);
+	const primary = useMemo(() => selectPrimaryRecipes(data), [data]);
+	const candidates = useMemo(() => candidateRecipesByItem(data), [data]);
+	// 候補以外は select に出ないので InvalidRecipeOverrideError は起こりえない。
+	// 描画中の throw を握り潰すと原因が消えるため、あえて捕まえない
+	const selection = useMemo(
+		() => mergeRecipeSelection(data, overrides),
+		[data, overrides],
+	);
+
+	const selectRecipe = (targetItem: ItemId, recipeId: string) => {
+		setOverrides((prev) => {
+			const next = new Map(prev);
+			// 既定(primary、原料終端なら "")に戻したときは上書きを持ち続けない
+			if (recipeId === (primary.get(targetItem)?.id ?? "")) {
+				next.delete(targetItem);
+			} else {
+				next.set(targetItem, recipeId);
+			}
+			return next;
+		});
+	};
+
+	const resetRecipe = (targetItem: ItemId) => {
+		setOverrides((prev) => {
+			const next = new Map(prev);
+			next.delete(targetItem);
+			return next;
+		});
+	};
 	const itemOptions = useMemo(
 		() =>
 			Object.entries(data.items)
@@ -208,6 +246,31 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 				</p>
 			)}
 
+			{/* 循環するレシピを選ぶとツリーごと消え、ノードのドロップダウンからは
+			    戻せなくなる。行き止まりにしないため、エラー時だけ上書きの一覧を出す */}
+			{state.kind === "error" && overrides.size > 0 && (
+				<section>
+					<h2 className={styles.overridesHeading}>変更中のレシピ</h2>
+					<ul aria-label="変更中のレシピ" className={styles.overrides}>
+						{[...overrides].map(([overriddenItem, recipeId]) => (
+							<li key={overriddenItem}>
+								<span>
+									{itemLabel(data, overriddenItem)}:{" "}
+									{recipeLabel(data, recipeId)}
+								</span>
+								<button
+									type="button"
+									aria-label={`${itemLabel(data, overriddenItem)}をデフォルトに戻す`}
+									onClick={() => resetRecipe(overriddenItem)}
+								>
+									デフォルトに戻す
+								</button>
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
+
 			{state.kind === "ready" && (
 				<div className={styles.results}>
 					<section>
@@ -260,7 +323,11 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 					)}
 					<section>
 						<h2>生産ツリー</h2>
-						<PlanTree data={data} root={state.plan.root} />
+						<PlanTree
+							data={data}
+							root={state.plan.root}
+							picker={{ candidates, primary, onSelect: selectRecipe }}
+						/>
 					</section>
 					<section>
 						<h2>接続図</h2>
