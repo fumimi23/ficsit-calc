@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { sumMachineConstructionCost } from "../lib/calc/construction";
 import { planGenerators } from "../lib/calc/generators";
+import { singleMachineRate } from "../lib/calc/machine-rate";
 import { planProduction } from "../lib/calc/plan";
 import { selectPrimaryRecipes } from "../lib/calc/select";
 import type { ProductionPlan, RecipeData } from "../lib/calc/types";
@@ -168,7 +169,15 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						ref={itemSelectRef}
 						size={8}
 						value={itemId}
-						onChange={(event) => setItemId(event.target.value)}
+						onChange={(event) => {
+							const nextId = event.target.value;
+							setItemId(nextId);
+							// 選択操作への応答なので useEffect ではなくハンドラで完結させる。
+							// 原料(1 台分レートが無いアイテム)では undefined が返るが、そのときは
+							// 入力済みの値を消さずそのまま残す(issue #48)
+							const rate = singleMachineRate(selection, nextId);
+							if (rate !== undefined) setRateText(rate.toDecimalString());
+						}}
 					>
 						{/* 未選択(value="")の受け皿。React は一致する option が無い controlled
 						    select で先頭の option に選択状態を立てるため、これが無いと未選択でも
