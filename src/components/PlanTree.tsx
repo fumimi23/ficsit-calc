@@ -95,9 +95,7 @@ function NodeRecipePicker({
 			{!hasPrimary && <option value="">原料として扱う</option>}
 			{candidates.map((recipe) => (
 				<option key={recipe.id} value={recipe.id}>
-					{recipe.alternate
-						? `代替: ${recipeLabel(data, recipe.id)}`
-						: recipeLabel(data, recipe.id)}
+					{recipeLabel(data, recipe.id)}
 				</option>
 			))}
 		</select>
