@@ -128,6 +128,19 @@ describe("parseDocs", () => {
 		);
 	});
 
+	it("地熱発電機は収録されない(出力が立地依存で定格が無い)", () => {
+		// fixture には Build_GeneratorGeoThermal_C が別 NativeClass で含まれている
+		const data = parseDocs(
+			decodeDocs(readFixture("en-US.json")),
+			decodeDocs(readFixture("ja.json")),
+		);
+		expect(
+			data.generators.some((g) => g.id === "Build_GeneratorGeoThermal_C"),
+		).toBe(false);
+		// 発電機はビルディング(製造機械)辞書にも混ざらない
+		expect(data.buildings.Build_GeneratorCoal_C).toBeUndefined();
+	});
+
 	it("ja テキストを渡さないとき nameJa は付かない", () => {
 		const data = parseDocs(decodeDocs(readFixture("en-US.json")));
 		expect(data.items.Desc_IronPlate_C?.name).toBe("Iron Plate");

@@ -14,7 +14,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProductionPlanner } from "../../../src/components/ProductionPlanner";
 import type { RecipeData } from "../../../src/lib/calc/types";
-import { fixtureData } from "../../fixtures/recipes";
+import { fixtureData, generatorFixtureData } from "../../fixtures/recipes";
 
 // mermaid の実描画は jsdom では動かない(SVG 計測 API が無い)ためモックする。
 // 描画結果の見た目はブラウザ手動確認(issue #18)。変換規則は tests/spec/flow-graph.test.ts が固定する
@@ -128,6 +128,7 @@ describe("Web UI 最小版(issue #3)", () => {
 					],
 				},
 			],
+			generators: [],
 		};
 		await enterTarget(byproductData, "plastic", "20");
 
@@ -136,5 +137,47 @@ describe("Web UI 最小版(issue #3)", () => {
 		// 需要側(原料)は相殺されず全量のまま
 		const rawList = screen.getByRole("list", { name: "原料合計" });
 		within(rawList).getByText("原油: 30 /分");
+	});
+});
+
+// issue #20: 必要発電機リスト — 総電力を賄う発電機の台数と燃料を一覧で出す。
+// 算出そのものは tests/spec/generator-plan.test.ts(純関数)が固定する。
+describe("必要発電機リスト(issue #20)", () => {
+	it("計画を表示したとき、必要発電機の一覧に種別ごとの台数と必要燃料が表示される", async () => {
+		// 鉄板 30/分 → 総電力 12MW
+		await enterTarget(generatorFixtureData, "iron-plate", "30");
+
+		// 機械一覧と区別できるよう、発電機の表には名前を付ける
+		const table = screen.getByRole("table", { name: "必要発電機" });
+
+		const coalRow = within(table).getByText("石炭発電機").closest("tr");
+		expect(coalRow).not.toBeNull();
+		// ceil(12 ÷ 75) = 1 台。燃料は実負荷ベース: 石炭 12×60÷300 = 2.4、水 12×60×0.01 = 7.2
+		within(coalRow as HTMLElement).getByText("1 台");
+		within(coalRow as HTMLElement).getByText(/2\.4 \/分/);
+		within(coalRow as HTMLElement).getByText(/7\.2 \/分/);
+		expect(coalRow?.textContent).toContain("石炭");
+		expect(coalRow?.textContent).toContain("水");
+
+		const fuelRow = within(table).getByText("燃料式発電機").closest("tr");
+		expect(fuelRow).not.toBeNull();
+		// ceil(12 ÷ 250) = 1 台、燃料 12×60÷750 = 0.96
+		within(fuelRow as HTMLElement).getByText("1 台");
+		within(fuelRow as HTMLElement).getByText(/0\.96 \/分/);
+	});
+
+	it("総電力 0 の計画では、必要発電機のセクションが表示されない", async () => {
+		// 鉄鉱石は原料(レシピを持たない)なので機械が要らず、総電力が 0 になる
+		await enterTarget(generatorFixtureData, "iron-ore", "30");
+
+		screen.getByText("総電力: 0 MW");
+		expect(screen.queryByRole("table", { name: "必要発電機" })).toBeNull();
+	});
+
+	it("発電機を持たないレシピデータでは、必要発電機のセクションが表示されない", async () => {
+		// 空の表を出すと「発電機ゼロ台で足りる」と読めてしまうため出さない
+		await enterTarget(fixtureData, "iron-plate", "30");
+
+		expect(screen.queryByRole("table", { name: "必要発電機" })).toBeNull();
 	});
 });

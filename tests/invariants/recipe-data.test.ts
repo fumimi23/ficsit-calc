@@ -14,4 +14,16 @@ describe("invariants: レシピデータ", () => {
 	it("計算コアのテスト fixture もスキーマ準拠である", () => {
 		expect(() => validateRecipeData(fixtureData)).not.toThrow();
 	});
+
+	// issue #20: 総電力から必要発電機を出すには、スナップショットに発電機が要る。
+	// 地熱は出力が立地依存なので収録対象外(id を数え上げず「含む」で確かめる)
+	it("コミット済み data/recipes.json に発電機(石炭・燃料式・原子力)が収録されている", () => {
+		const data = validateRecipeData(recipesJson);
+		const ids = data.generators.map((g) => g.id);
+
+		expect(ids).toContain("Build_GeneratorCoal_C");
+		expect(ids).toContain("Build_GeneratorFuel_C");
+		expect(ids).toContain("Build_GeneratorNuclear_C");
+		expect(ids).not.toContain("Build_GeneratorGeoThermal_C");
+	});
 });
