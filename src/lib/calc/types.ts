@@ -74,6 +74,32 @@ export interface GeneratorDef {
 	constructionCost: RecipeIngredient[];
 }
 
+/** 採取設備 ID(例: "Build_WaterPump_C")。RecipeData.extractors の要素の id */
+export type ExtractorId = string;
+
+/**
+ * 採取設備 1 種(issue #23)。原料ノードで終端していた採取を設備として数えるのに使う。
+ * 資源井(加圧機 + サテライト)は含めない: レートがサテライト数・立地に依存し、
+ * 定格 1 つでは表せないため(地熱発電機を GeneratorDef から外したのと同じ整理)。
+ */
+export interface ExtractorDef {
+	id: ExtractorId;
+	name: string;
+	/** 日本語表示名。無ければ表示は name にフォールバック */
+	nameJa?: string;
+	/** 定格消費電力(MW)。オーバークロックは v1 スコープ外 */
+	powerMW: ExactNumeric;
+	/**
+	 * 普通純度ノードでの採取レート(固体 = 個/分、液体・気体 = m³/分)。
+	 * 純度の仮定はデータではなく計算側の関心事なので、ここには定格だけを持つ
+	 */
+	ratePerMinute: ExactNumeric;
+	/** この設備で採取できる資源(アイテム ID、昇順ソート済み) */
+	resources: ItemId[];
+	/** 1 台建てるのに必要な建設素材(issue #21)。BuildingDef と同じく必須 */
+	constructionCost: RecipeIngredient[];
+}
+
 export interface RecipeIngredient {
 	item: ItemId;
 	/** 1 クラフトあたりの個数 */
@@ -102,6 +128,8 @@ export interface RecipeData {
 	recipes: RecipeDef[];
 	/** 発電機の一覧(issue #20)。総電力から必要台数・必要燃料を出すのに使う */
 	generators: GeneratorDef[];
+	/** 採取設備の一覧(issue #23)。原料合計から必要台数・電力を出すのに使う */
+	extractors: ExtractorDef[];
 }
 
 // ---- 逆算結果 ----

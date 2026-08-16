@@ -1,10 +1,11 @@
 // 横断不変条件: 個別機能ではなくデータセット全体を ∀ 検査する。
 // validateRecipeData が検査する内容 =
 //   スキーマ準拠 /
-//   参照整合性(レシピの入出力アイテムと発電機の燃料・副資材はアイテム辞書に、
-//     レシピの機械はビルディング辞書に存在) /
-//   正の値(電力・定格出力・所要時間・数量・エネルギー値・副資材比率) /
-//   ID の一意性(レシピ・発電機) / 発電機は燃料を 1 つ以上持つ。
+//   参照整合性(レシピの入出力アイテムと発電機の燃料・副資材、採取設備の対象資源は
+//     アイテム辞書に、レシピの機械はビルディング辞書に存在) /
+//   正の値(電力・定格出力・所要時間・数量・エネルギー値・副資材比率・採取レート) /
+//   ID の一意性(レシピ・発電機・採取設備) /
+//   発電機は燃料を、採取設備は対象資源を 1 つ以上持つ。
 import { describe, expect, it } from "vitest";
 import recipesJson from "../../data/recipes.json";
 import { validateRecipeData } from "../../src/lib/calc/validate";
@@ -29,6 +30,25 @@ describe("invariants: レシピデータ", () => {
 		expect(ids).toContain("Build_GeneratorFuel_C");
 		expect(ids).toContain("Build_GeneratorNuclear_C");
 		expect(ids).not.toContain("Build_GeneratorGeoThermal_C");
+	});
+
+	// issue #23: 原料の採取を計画に含めるには、スナップショットに採取設備が要る。
+	// 資源井(加圧機 + サテライト)はレートが立地依存なので収録対象外
+	it("コミット済み data/recipes.json に採取設備(揚水ポンプ・原油抽出機・採鉱機 Mk.1〜3)が収録されている", () => {
+		const data = validateRecipeData(recipesJson);
+		const ids = data.extractors.map((e) => e.id);
+
+		expect(ids).toContain("Build_WaterPump_C");
+		expect(ids).toContain("Build_OilPump_C");
+		expect(ids).toContain("Build_MinerMk1_C");
+		expect(ids).toContain("Build_MinerMk2_C");
+		expect(ids).toContain("Build_MinerMk3_C");
+		expect(ids).not.toContain("Build_FrackingExtractor_C");
+		expect(ids).not.toContain("Build_FrackingSmasher_C");
+
+		// 対象資源が正しく引けていないと、水を要求する計画に揚水ポンプが出ない
+		const waterPump = data.extractors.find((e) => e.id === "Build_WaterPump_C");
+		expect(waterPump?.resources).toContain("Desc_Water_C");
 	});
 
 	// issue #21: 1 機種でも建設素材が欠けると建設コストが黙って過少表示になる。

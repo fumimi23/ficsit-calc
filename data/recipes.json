@@ -6936,5 +6936,162 @@
 				}
 			]
 		}
+	],
+	"extractors": [
+		{
+			"id": "Build_MinerMk1_C",
+			"name": "Miner Mk.1",
+			"nameJa": "採鉱機 Mk.1",
+			"powerMW": 5,
+			"ratePerMinute": 60,
+			"resources": [
+				"Desc_Coal_C",
+				"Desc_OreBauxite_C",
+				"Desc_OreCopper_C",
+				"Desc_OreGold_C",
+				"Desc_OreIron_C",
+				"Desc_OreUranium_C",
+				"Desc_RawQuartz_C",
+				"Desc_SAM_C",
+				"Desc_Stone_C",
+				"Desc_Sulfur_C"
+			],
+			"constructionCost": [
+				{
+					"item": "BP_ItemDescriptorPortableMiner_C",
+					"amount": 1
+				},
+				{
+					"item": "Desc_IronPlate_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Cement_C",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "Build_MinerMk2_C",
+			"name": "Miner Mk.2",
+			"nameJa": "採鉱機 Mk.2",
+			"powerMW": 15,
+			"ratePerMinute": 120,
+			"resources": [
+				"Desc_Coal_C",
+				"Desc_OreBauxite_C",
+				"Desc_OreCopper_C",
+				"Desc_OreGold_C",
+				"Desc_OreIron_C",
+				"Desc_OreUranium_C",
+				"Desc_RawQuartz_C",
+				"Desc_SAM_C",
+				"Desc_Stone_C",
+				"Desc_Sulfur_C"
+			],
+			"constructionCost": [
+				{
+					"item": "BP_ItemDescriptorPortableMiner_C",
+					"amount": 2
+				},
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_ModularFrame_C",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "Build_MinerMk3_C",
+			"name": "Miner Mk.3",
+			"nameJa": "採鉱機 Mk.3",
+			"powerMW": 45,
+			"ratePerMinute": 240,
+			"resources": [
+				"Desc_Coal_C",
+				"Desc_OreBauxite_C",
+				"Desc_OreCopper_C",
+				"Desc_OreGold_C",
+				"Desc_OreIron_C",
+				"Desc_OreUranium_C",
+				"Desc_RawQuartz_C",
+				"Desc_SAM_C",
+				"Desc_Stone_C",
+				"Desc_Sulfur_C"
+			],
+			"constructionCost": [
+				{
+					"item": "BP_ItemDescriptorPortableMiner_C",
+					"amount": 3
+				},
+				{
+					"item": "Desc_SteelPipe_C",
+					"amount": 50
+				},
+				{
+					"item": "Desc_ComputerSuper_C",
+					"amount": 5
+				},
+				{
+					"item": "Desc_ModularFrameFused_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_MotorLightweight_C",
+					"amount": 3
+				}
+			]
+		},
+		{
+			"id": "Build_OilPump_C",
+			"name": "Oil Extractor",
+			"nameJa": "原油抽出機",
+			"powerMW": 40,
+			"ratePerMinute": 120,
+			"resources": ["Desc_LiquidOil_C"],
+			"constructionCost": [
+				{
+					"item": "Desc_Motor_C",
+					"amount": 15
+				},
+				{
+					"item": "Desc_SteelPlateReinforced_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_Cable_C",
+					"amount": 60
+				}
+			]
+		},
+		{
+			"id": "Build_WaterPump_C",
+			"name": "Water Extractor",
+			"nameJa": "揚水ポンプ",
+			"powerMW": 20,
+			"ratePerMinute": 120,
+			"resources": ["Desc_Water_C"],
+			"constructionCost": [
+				{
+					"item": "Desc_CopperSheet_C",
+					"amount": 20
+				},
+				{
+					"item": "Desc_IronPlateReinforced_C",
+					"amount": 10
+				},
+				{
+					"item": "Desc_Rotor_C",
+					"amount": 10
+				}
+			]
+		}
 	]
 }
