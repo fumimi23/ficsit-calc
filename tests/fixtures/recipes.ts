@@ -88,6 +88,9 @@ export const fixtureData: RecipeData = {
 	],
 	// 発電機は generatorFixtureData 側に置く(理由は下のコメント)
 	generators: [],
+	// 採取設備(issue #23)は各 spec のローカル fixture に持たせる。ここに足すと
+	// 総電力・建設コストを約束にしている既存 UI テストの期待値が動いてしまう
+	extractors: [],
 };
 
 // 発電機入りの fixture(issue #20)。fixtureData 自体に足さないのは、
@@ -260,6 +263,7 @@ export const multiRecipeFixtureData: RecipeData = {
 		},
 	],
 	// 発電機を入れないのは、必要発電機の表がレシピ切り替えの検算(台数・電力・原料)に
-	// 関わらないため
+	// 関わらないため。採取設備(issue #23)も同じ理由で入れない
 	generators: [],
+	extractors: [],
 };

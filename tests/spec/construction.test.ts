@@ -6,8 +6,11 @@ import { describe, expect, it } from "vitest";
 import type { ItemQuantity } from "../../src/lib/calc/construction";
 import {
 	generatorConstructionCost,
+	mergeItemQuantities,
+	sumExtractorConstructionCost,
 	sumMachineConstructionCost,
 } from "../../src/lib/calc/construction";
+import type { ExtractorRequirement } from "../../src/lib/calc/extractors";
 import { Fraction } from "../../src/lib/calc/fraction";
 import { planGenerators } from "../../src/lib/calc/generators";
 import type { MachineRequirement, RecipeData } from "../../src/lib/calc/types";
@@ -113,5 +116,121 @@ describe("発電機の建設コスト(issue #21)", () => {
 		expect(coal.count).toBe(0n);
 
 		expect(generatorConstructionCost(generatorFixtureData, coal)).toEqual([]);
+	});
+});
+
+// issue #23: 採取設備も建てるものなので、建設コストに合算する
+// (欠落を許すと建設コストが黙って過少表示される、という issue #21 の原則から)。
+// 採取設備入りのローカル fixture を使うのは、共有 fixture に足すと総電力・建設コストを
+// 約束にしている既存 UI テストの期待値が動くため
+const extractorFixtureData: RecipeData = {
+	...generatorFixtureData,
+	extractors: [
+		{
+			id: "Build_WaterPump_C",
+			name: "Water Extractor",
+			nameJa: "揚水ポンプ",
+			powerMW: 20,
+			ratePerMinute: 120,
+			resources: ["water"],
+			constructionCost: [
+				{ item: "reinforced-iron-plate", amount: 10 },
+				{ item: "iron-rod", amount: 10 },
+			],
+		},
+		{
+			id: "Build_MinerMk2_C",
+			name: "Miner Mk.2",
+			nameJa: "採鉱機 Mk.2",
+			powerMW: 15,
+			ratePerMinute: 120,
+			resources: ["iron-ore"],
+			constructionCost: [{ item: "iron-rod", amount: 20 }],
+		},
+	],
+};
+
+/** 建設コストは extractor と count しか見ないので、電力は 0 で埋める */
+const extraction = (
+	item: string,
+	extractor: string,
+	count: string,
+): ExtractorRequirement => ({
+	item,
+	extractor,
+	count: Fraction.from(count),
+	powerMW: Fraction.of(0),
+});
+
+const quantity = (item: string, amount: string): ItemQuantity => ({
+	item,
+	amount: Fraction.from(amount),
+});
+
+describe("採取設備の建設コスト(issue #23)", () => {
+	it("採取設備の台数が端数のとき、切り上げた台数分のコストになる", () => {
+		// 揚水ポンプ 0.375 台 → 建設 1 台 = 強化鉄板 10 + 鉄のロッド 10
+		const cost = sumExtractorConstructionCost(extractorFixtureData, [
+			extraction("water", "Build_WaterPump_C", "0.375"),
+		]);
+
+		expect(byItem(cost)).toEqual({
+			"reinforced-iron-plate": "10",
+			"iron-rod": "10",
+		});
+	});
+
+	it("複数の資源を採るとき、資源単位で切り上げた台数の合計になる", () => {
+		// 0.5 台 + 0.5 台 は別々のノードに建てる設備なので、合算してから切り上げてはいけない
+		const cost = sumExtractorConstructionCost(extractorFixtureData, [
+			extraction("water", "Build_WaterPump_C", "0.5"),
+			extraction("iron-ore", "Build_MinerMk2_C", "0.5"),
+		]);
+
+		expect(byItem(cost)).toEqual({
+			"reinforced-iron-plate": "10",
+			"iron-rod": "30",
+		});
+	});
+
+	it("台数 0 の採取設備は、建設コストに現れない", () => {
+		// 0 個の素材行を出すと「建てるのに素材が要る」と読めてしまう
+		expect(
+			sumExtractorConstructionCost(extractorFixtureData, [
+				extraction("water", "Build_WaterPump_C", "0"),
+			]),
+		).toEqual([]);
+	});
+
+	it("requirements が空のとき、空配列を返す", () => {
+		expect(sumExtractorConstructionCost(extractorFixtureData, [])).toEqual([]);
+	});
+
+	it("採取設備が採取設備の一覧に無いとき、Error になる", () => {
+		// 黙って 0 個として飛ばすと建設コストが過少表示になる
+		expect(() =>
+			sumExtractorConstructionCost(extractorFixtureData, [
+				extraction("crude-oil", "Build_OilPump_C", "1"),
+			]),
+		).toThrow();
+	});
+});
+
+describe("建設コストの合流(issue #23)", () => {
+	it("複数のリストに同じアイテムがあるとき、アイテム別に合算される", () => {
+		// 機械分と採取設備分は別々に数えてから 1 つの表に合流する
+		const merged = mergeItemQuantities([
+			[quantity("iron-rod", "16"), quantity("reinforced-iron-plate", "4")],
+			[quantity("iron-rod", "10")],
+		]);
+
+		expect(byItem(merged)).toEqual({
+			"iron-rod": "26",
+			"reinforced-iron-plate": "4",
+		});
+	});
+
+	it("リストが 1 つも無いとき、空配列を返す", () => {
+		expect(mergeItemQuantities([])).toEqual([]);
 	});
 });

@@ -226,3 +226,87 @@ describe("Docs パーサー: 建設素材の収録(issue #21)", () => {
 		);
 	});
 });
+
+// issue #23: 採取設備を計画に含めるために、Docs から採取設備
+// (対象資源・採取レート・電力・建設素材)も収録する。
+describe("Docs パーサー: 採取設備の収録(issue #23)", () => {
+	// ExactNumeric の表現(number / 十進文字列)は約束しないので、値は Fraction で比べる
+	const expectValue = (actual: ExactNumeric | undefined, expected: string) => {
+		expect(
+			actual === undefined ? undefined : Fraction.from(actual).toString(),
+		).toBe(Fraction.from(expected).toString());
+	};
+	const costOf = (list: RecipeIngredient[] | undefined) =>
+		[...(list ?? [])]
+			.map((c) => ({
+				item: c.item,
+				amount: Fraction.from(c.amount).toString(),
+			}))
+			.sort((a, b) => (a.item < b.item ? -1 : 1));
+
+	const extractorOf = (id: string) =>
+		parseFixture().extractors.find((e) => e.id === id);
+
+	it("揚水ポンプが定格 20MW・採取レート 120 m³/分・水専用で収録される", () => {
+		// Docs は 1 サイクル 1 秒あたり 2000 L。数量と同じく m³ 基準に直して 120 m³/分
+		const waterPump = extractorOf("Build_WaterPump_C");
+
+		expect(waterPump).toBeDefined();
+		expect(waterPump?.name).toBe("Water Extractor");
+		expect(waterPump?.nameJa).toBe("揚水ポンプ");
+		expectValue(waterPump?.powerMW, "20");
+		expectValue(waterPump?.ratePerMinute, "120");
+		expect(waterPump?.resources).toEqual(["Desc_Water_C"]);
+	});
+
+	it("採鉱機の採取レートがサイクル時間から換算される(Mk.1 は 60/分、Mk.2 は 120/分)", () => {
+		// 固体は m³ 換算が掛からない。Mk.2 はサイクル 0.5 秒なので Mk.1 の倍
+		const mk1 = extractorOf("Build_MinerMk1_C");
+		const mk2 = extractorOf("Build_MinerMk2_C");
+
+		expectValue(mk1?.powerMW, "5");
+		expectValue(mk1?.ratePerMinute, "60");
+		expect(mk2?.nameJa).toBe("採鉱機 Mk.2");
+		expectValue(mk2?.powerMW, "15");
+		expectValue(mk2?.ratePerMinute, "120");
+	});
+
+	it("資源を限定しない採鉱機には、同じ形態の資源がすべて対象として収録される", () => {
+		// mOnlyAllowCertainResources=False の設備は mAllowedResources が空なので、
+		// mAllowedResourceForms(RF_SOLID)から資源 descriptor を引いて展開する
+		const mk2 = extractorOf("Build_MinerMk2_C");
+
+		expect(mk2?.resources).toEqual(["Desc_Coal_C", "Desc_OreIron_C"]);
+	});
+
+	it("資源井の抽出機(立地依存)は採取設備として収録されない", () => {
+		// レートがサテライト数・加圧機の立地に依存し、定格 1 つでは表せない。
+		// 資源(水・原油)で除外すると揚水ポンプまで落ちるので、NativeClass で除外する
+		const data = parseFixture();
+
+		expect(data.extractors.map((e) => e.id)).not.toContain(
+			"Build_FrackingExtractor_C",
+		);
+	});
+
+	it("採取設備にも建設素材が収録される", () => {
+		expect(costOf(extractorOf("Build_WaterPump_C")?.constructionCost)).toEqual([
+			{ item: "Desc_CopperSheet_C", amount: "20" },
+			{ item: "Desc_IronPlateReinforced_C", amount: "10" },
+			{ item: "Desc_Rotor_C", amount: "10" },
+		]);
+	});
+
+	it("採取設備の対象資源・建設素材のアイテムがアイテム辞書に収録される", () => {
+		// レシピ・発電機からしか items を作らないと、採取設備専用の素材の表示名が
+		// 引けず参照整合性も壊れる
+		const data = parseFixture();
+
+		expect(data.items.Desc_SteelPipe_C?.name).toBe("Steel Pipe");
+		expect(data.items.BP_ItemDescriptorPortableMiner_C?.nameJa).toBe(
+			"携帯式採鉱機",
+		);
+		expect(data.items.Desc_Cement_C).toBeDefined();
+		expect(data.items.Desc_Water_C?.form).toBe("liquid");
+	});
+});
