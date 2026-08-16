@@ -8,10 +8,14 @@
 // - 液体・気体の数量: Docs はリットル表記だがゲーム内 UI・既存ツールは m³ なので ÷1000 する
 // - 地熱発電機(FGBuildableGeneratorGeoThermal): 出力が間欠泉の純度に依存し、定格 1 つで
 //   表せない。発電機の NativeClass を列挙で持つことで自然に対象外になる
+// - 資源井の抽出機・加圧機(FGBuildableFrackingExtractor / FGBuildableFrackingActivator):
+//   採取レートがサテライト数と加圧機の立地に依存し、地熱発電機と同じく定格 1 つで表せない。
+//   資源(水・原油)で除外すると揚水ポンプまで落ちるので、採取設備も NativeClass の列挙で持つ
 import { Fraction } from "../calc/fraction";
 import type {
 	BuildingDef,
 	ExactNumeric,
+	ExtractorDef,
 	GeneratorDef,
 	GeneratorFuelDef,
 	ItemDef,
@@ -26,8 +30,23 @@ const GENERATOR_NATIVE_CLASSES = [
 	".FGBuildableGeneratorNuclear'",
 ];
 
+/** 定格レートで採取する設備の NativeClass(suffix 一致。資源井の 2 種は含めない) */
+const EXTRACTOR_NATIVE_CLASSES = [
+	".FGBuildableWaterPump'",
+	".FGBuildableResourceExtractor'",
+];
+
+/** 採取できる資源を形態から引くための descriptor の NativeClass(suffix 一致) */
+const RESOURCE_DESCRIPTOR_NATIVE_CLASS = ".FGResourceDescriptor'";
+
 /** 建設レシピ(Build Gun で建てるレシピ)の mProducedIn に現れるクラス */
 const BUILD_GUN_CLASS = "BP_BuildGun_C";
+
+/**
+ * 出力順を安定させる比較関数(生成のたびに diff が出ないように)。
+ * localeCompare は使わない(ICU/ロケール依存で環境により並びが変わりうるため)
+ */
+const byKey = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
 /** UTF-16LE(BOM 付き)の Docs ファイルを文字列に復号する */
 export function decodeDocs(buffer: Uint8Array): string {
@@ -239,6 +258,56 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		}
 	}
 
+	// 資源の形態は資源 descriptor だけから引く。全 descriptor から引くと、
+	// 部品(鉄板など)まで RF_SOLID の資源として採鉱機の対象に混ざる
+	const resourceForms = new Map<string, ItemDef["form"]>();
+	for (const group of groups) {
+		if (!group.NativeClass.endsWith(RESOURCE_DESCRIPTOR_NATIVE_CLASS)) continue;
+		for (const entry of group.Classes) {
+			resourceForms.set(entry.ClassName, parseForm(asString(entry.mForm)));
+		}
+	}
+
+	// 採取設備も発電機と同じくレシピより後・items より前に読む
+	// (対象資源・建設素材を referencedItems へ足してから items を作るため)
+	const extractors: ExtractorDef[] = [];
+	for (const group of groups) {
+		if (!EXTRACTOR_NATIVE_CLASSES.some((c) => group.NativeClass.endsWith(c))) {
+			continue;
+		}
+		for (const entry of group.Classes) {
+			const id = entry.ClassName;
+			const form = parseAllowedResourceForm(entry, id);
+			// 資源を限定する設備(揚水ポンプ・原油抽出機)は mAllowedResources を持つが、
+			// 限定しない設備(採鉱機)では空なので、形態から資源 descriptor を展開する
+			const resources = (
+				asString(entry.mOnlyAllowCertainResources) === "True"
+					? parseClassNameList(asString(entry.mAllowedResources) ?? "")
+					: [...resourceForms]
+							.filter(([, resourceForm]) => resourceForm === form)
+							.map(([className]) => className)
+			).sort(byKey);
+			// 対象資源が引けない設備は原料に結び付けようがない。黙って空で通すと
+			// 「採取設備の無い資源」と見分けが付かなくなる(Docs ドリフトの兆候)
+			if (resources.length === 0) {
+				throw new Error(`採取設備の対象資源が空です: ${id}`);
+			}
+			for (const resource of resources) referencedItems.add(resource);
+
+			extractors.push({
+				id,
+				name: requireString(entry.mDisplayName, `${id}.mDisplayName`),
+				...jaName(jaNames, id),
+				powerMW: parseDecimal(
+					requireString(entry.mPowerConsumption, `${id}.mPowerConsumption`),
+				),
+				ratePerMinute: extractRatePerMinute(entry, form, id),
+				resources,
+				constructionCost: constructionCostOf(id),
+			});
+		}
+	}
+
 	// 全 Descriptor は収録しない(データポリシー: 抽出は計算に必要な最小限)
 	const items = new Map<string, ItemDef>();
 	for (const id of referencedItems) {
@@ -253,9 +322,6 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		});
 	}
 
-	// 出力順を安定させる(生成のたびに diff が出ないように)。
-	// localeCompare は使わない(ICU/ロケール依存で環境により並びが変わりうるため)
-	const byKey = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 	return {
 		items: Object.fromEntries([...items].sort(([a], [b]) => byKey(a, b))),
 		buildings: Object.fromEntries(
@@ -263,6 +329,7 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		),
 		recipes: recipes.sort((a, b) => byKey(a.id, b.id)),
 		generators: generators.sort((a, b) => byKey(a.id, b.id)),
+		extractors: extractors.sort((a, b) => byKey(a.id, b.id)),
 	};
 }
 
@@ -378,21 +445,78 @@ function convertAmount(
 }
 
 const THOUSAND = Fraction.of(1000);
+const SIXTY = Fraction.of(60);
 
 /**
- * 十進値を 1000 倍 / 1000 分の 1 する(L ↔ m³ の換算)。
- * float の乗除算を使わないのは `3.6 * 1000 === 3600.0000000000005` のように
+ * 分数で出した換算結果を ExactNumeric(十進)に戻す。
+ * float の乗除算で計算しないのは `3.6 * 1000 === 3600.0000000000005` のように
  * 十進の見た目ごと壊れるため。往復で一致しない結果は無言で丸めずエラーにする。
  */
-function scaleByThousand(text: string, direction: "mul" | "div"): ExactNumeric {
-	const source = Fraction.from(text);
-	const exact =
-		direction === "mul" ? source.mul(THOUSAND) : source.div(THOUSAND);
+function toExactNumeric(exact: Fraction, label: string): ExactNumeric {
 	const value = Number(exact.toDecimalString(12));
 	if (!Fraction.from(value).equals(exact)) {
-		throw new Error(`十進で正確に表せない換算結果です: ${text}`);
+		throw new Error(`十進で正確に表せない換算結果です: ${label}`);
 	}
 	return value;
+}
+
+/** 十進値を 1000 倍 / 1000 分の 1 する(L ↔ m³ の換算) */
+function scaleByThousand(text: string, direction: "mul" | "div"): ExactNumeric {
+	const source = Fraction.from(text);
+	return toExactNumeric(
+		direction === "mul" ? source.mul(THOUSAND) : source.div(THOUSAND),
+		text,
+	);
+}
+
+/**
+ * 採取設備が採れる資源の形態。単位換算が形態で変わるので、複数形態
+ * (資源井の "(RF_LIQUID,RF_GAS)")や未知の形態は黙って通さない。
+ */
+function parseAllowedResourceForm(
+	entry: DocsEntry,
+	id: string,
+): NonNullable<ItemDef["form"]> {
+	const raw = requireString(
+		entry.mAllowedResourceForms,
+		`${id}.mAllowedResourceForms`,
+	);
+	const names = raw
+		.replace(/[()]/g, "")
+		.split(",")
+		.map((name) => name.trim())
+		.filter((name) => name.length > 0);
+	const form = names.length === 1 ? parseForm(names[0]) : undefined;
+	if (!form) {
+		throw new Error(`採取設備の資源形態が 1 つに定まりません: ${id} = ${raw}`);
+	}
+	return form;
+}
+
+/**
+ * 普通純度ノードでの採取レート(1 分あたり)。Docs は 1 サイクルの秒数と個数で持つ。
+ * 液体・気体はレシピの数量と同じく L → m³ に直す(÷1000)。
+ */
+function extractRatePerMinute(
+	entry: DocsEntry,
+	form: NonNullable<ItemDef["form"]>,
+	id: string,
+): ExactNumeric {
+	const cycleSeconds = Fraction.from(
+		requireString(entry.mExtractCycleTime, `${id}.mExtractCycleTime`),
+	);
+	// 0 秒サイクルは無限レートになる(Docs 側の不整合の兆候)
+	if (cycleSeconds.isZero() || cycleSeconds.isNegative()) {
+		throw new Error(`採取のサイクル時間が正ではありません: ${id}`);
+	}
+	const perCycle = Fraction.from(
+		requireString(entry.mItemsPerCycle, `${id}.mItemsPerCycle`),
+	);
+	const perMinute = perCycle.div(cycleSeconds).mul(SIXTY);
+	return toExactNumeric(
+		form === "liquid" || form === "gas" ? perMinute.div(THOUSAND) : perMinute,
+		`${id}.mItemsPerCycle`,
+	);
 }
 
 /**
