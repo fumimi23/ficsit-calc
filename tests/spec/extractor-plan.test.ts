@@ -12,7 +12,8 @@ import { Fraction } from "../../src/lib/calc/fraction";
 import type { ItemRate, RecipeData } from "../../src/lib/calc/types";
 
 // Fraction の内部表現は約束しないので、既約分数の文字列で突き合わせる
-// (失敗時に値が読めるぶん equals よりこちらを使う)
+// (失敗時に値が読めるぶん equals よりこちらを使う)。
+// expected は十進表記で渡す: Fraction.from は分数表記("3/8")を受理しない(issue #8)
 function expectValue(actual: Fraction | undefined, expected: string): void {
 	expect(actual?.toString()).toBe(Fraction.from(expected).toString());
 }
@@ -99,7 +100,7 @@ describe("採取設備の算出(issue #23)", () => {
 			rates([["water", "45"]]),
 		);
 
-		expectValue(requirements[0]?.count, "3/8");
+		expectValue(requirements[0]?.count, "0.375");
 		// 20MW × 0.375 = 7.5MW(端数の 1 台は部分負荷で回る)
 		expectValue(requirements[0]?.powerMW, "7.5");
 	});
@@ -113,7 +114,7 @@ describe("採取設備の算出(issue #23)", () => {
 
 		expect(requirements[0]?.extractor).toBe("Build_MinerMk2_C");
 		// 60 ÷ 120 = 0.5 台、15MW × 0.5 = 7.5MW
-		expectValue(requirements[0]?.count, "1/2");
+		expectValue(requirements[0]?.count, "0.5");
 		expectValue(requirements[0]?.powerMW, "7.5");
 	});
 
