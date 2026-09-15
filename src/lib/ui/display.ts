@@ -1,6 +1,7 @@
 // 表示名の解決。日本語名(nameJa)が無ければ英語名(name)、それも無ければ ID にフォールバック
 import type {
 	BuildingId,
+	ExtractorId,
 	GeneratorId,
 	ItemId,
 	RecipeData,
@@ -30,4 +31,12 @@ export function generatorLabel(
 ): string {
 	const def = data.generators.find((g) => g.id === generatorId);
 	return def?.nameJa ?? def?.name ?? generatorId;
+}
+
+export function extractorLabel(
+	data: RecipeData,
+	extractorId: ExtractorId,
+): string {
+	const def = data.extractors.find((e) => e.id === extractorId);
+	return def?.nameJa ?? def?.name ?? extractorId;
 }

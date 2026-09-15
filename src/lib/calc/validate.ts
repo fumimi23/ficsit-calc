@@ -9,8 +9,9 @@ const FORMS = new Set(["solid", "liquid", "gas"]);
 
 /**
  * 値が RecipeData のスキーマに準拠していることを検証して返す。違反は Error。
- * 検査内容: 構造と型 / 参照整合性(レシピの入出力アイテム・機械・発電機の燃料が辞書に存在) /
- * 数値の正当性(電力・所要時間・数量・エネルギー値が正の ExactNumeric) / ID の一意性。
+ * 検査内容: 構造と型 / 参照整合性(レシピの入出力アイテム・機械・発電機の燃料・
+ * 採取設備の対象資源が辞書に存在) / 数値の正当性(電力・所要時間・数量・エネルギー値・
+ * 採取レートが正の ExactNumeric) / ID の一意性。
  */
 export function validateRecipeData(value: unknown): RecipeData {
 	const root = asRecord(value, "recipes.json");
@@ -21,6 +22,11 @@ export function validateRecipeData(value: unknown): RecipeData {
 	}
 	if (!Array.isArray(root.generators)) {
 		throw new Error("generators が配列ではありません");
+	}
+	// 空配列は通す(収録漏れは invariants の担当)。ここで非空を要求すると、
+	// 採取設備を持たないローカル fixture がすべて検証を通らなくなる
+	if (!Array.isArray(root.extractors)) {
+		throw new Error("extractors が配列ではありません");
 	}
 
 	for (const [id, raw] of Object.entries(items)) {
@@ -118,6 +124,35 @@ export function validateRecipeData(value: unknown): RecipeData {
 				supplemental.amountPerMJ,
 				`${label}.supplemental.amountPerMJ`,
 			);
+		}
+	}
+
+	const extractorIds = new Set<string>();
+	for (const raw of root.extractors) {
+		const extractor = asRecord(raw, "extractors の要素");
+		const id = requireNonEmpty(extractor.id, "extractors[].id");
+		if (extractorIds.has(id)) {
+			throw new Error(`採取設備 ID が重複しています: ${id}`);
+		}
+		extractorIds.add(id);
+		requireName(extractor, id);
+		requirePositive(extractor.powerMW, `${id}.powerMW`);
+		// レート 0 を通すと必要台数が 0 除算になる
+		requirePositive(extractor.ratePerMinute, `${id}.ratePerMinute`);
+		requireConstructionCost(
+			extractor.constructionCost,
+			items,
+			`${id}.constructionCost`,
+		);
+		// 何も採れない採取設備は原料に結び付けようがなく、収録されていること自体が異常
+		if (
+			!Array.isArray(extractor.resources) ||
+			extractor.resources.length === 0
+		) {
+			throw new Error(`${id}.resources が空でない配列ではありません`);
+		}
+		for (const [i, resource] of extractor.resources.entries()) {
+			requireKnownItem(resource, items, `${id}.resources[${i}]`);
 		}
 	}
 

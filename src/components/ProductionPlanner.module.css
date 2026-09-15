@@ -204,6 +204,13 @@
 	color: var(--accent-note);
 }
 
+/* 製造 + 採取の内訳(issue #23)。合算値が主役なので一段小さく添える */
+.breakdown {
+	font-size: 0.7em;
+	font-weight: 400;
+	color: var(--ink-2);
+}
+
 /* 総電力: 寸法注記風のヒーロー行 */
 .total {
 	border-left: 3px double var(--line-strong);

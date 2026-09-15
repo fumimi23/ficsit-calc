@@ -1,6 +1,7 @@
 // data/recipes.json をゲーム同梱 Docs から生成する。
 //   使い方: npm run generate-recipes -- "<Docs ディレクトリ>"
 //   例:     npm run generate-recipes -- "/mnt/e/Epic Games/Satisfactory/CommunityResources/Docs"
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateRecipeData } from "../src/lib/calc/validate";
@@ -23,6 +24,13 @@ const data = validateRecipeData(parseDocs(en, ja));
 mkdirSync("data", { recursive: true });
 const outPath = join("data", "recipes.json");
 writeFileSync(outPath, `${JSON.stringify(data, null, "\t")}\n`);
+// JSON.stringify の整形は biome と一致しない(1 要素の配列を 1 行に畳まない)ので、
+// 書き出した直後に biome を通す。整形せずにコミットすると `biome ci` が落ちる。
+// npm script 側に `&&` で足さないのは、`npm run generate-recipes -- "<Docs>"` の
+// 引数が末尾のコマンドに付いてしまうため。
+execFileSync("npx", ["biome", "format", "--write", outPath], {
+	stdio: "inherit",
+});
 console.log(
 	`${outPath} を生成しました: items ${Object.keys(data.items).length} / buildings ${Object.keys(data.buildings).length} / recipes ${data.recipes.length} / generators ${data.generators.length}`,
 );

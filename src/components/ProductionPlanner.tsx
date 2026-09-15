@@ -2,7 +2,13 @@
 // 入力の状態管理と planProduction の呼び出しを担い、表示は部品に委譲する。
 // RecipeData は props で受け取る(テストは fixture を注入する)。
 import { useEffect, useMemo, useRef, useState } from "react";
-import { sumMachineConstructionCost } from "../lib/calc/construction";
+import {
+	mergeItemQuantities,
+	sumExtractorConstructionCost,
+	sumMachineConstructionCost,
+} from "../lib/calc/construction";
+import { planExtractors, sumExtractorPowerMW } from "../lib/calc/extractors";
+import { Fraction } from "../lib/calc/fraction";
 import { planGenerators } from "../lib/calc/generators";
 import { singleMachineRate } from "../lib/calc/machine-rate";
 import { planProduction } from "../lib/calc/plan";
@@ -17,6 +23,7 @@ import { itemLabel, recipeLabel } from "../lib/ui/display";
 import { filterItemIds } from "../lib/ui/item-search";
 import { normalizeRateInput } from "../lib/ui/rate-input";
 import { ConstructionCostList } from "./ConstructionCostList";
+import { ExtractorTable } from "./ExtractorTable";
 import { FlowGraph } from "./FlowGraph";
 import { GeneratorTable } from "./GeneratorTable";
 import { ItemRateList } from "./ItemRateList";
@@ -139,23 +146,50 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 		}
 	}, [data, selection, itemId, rateText]);
 
-	// 機械が 1 台も要らない計画(原料だけ)では建てるものが無いのでセクションごと出さない
+	// 採取設備を持たない原料(窒素ガスなど資源井でしか採れないもの)は行が立たない。
+	// 1 行も無ければ表ごと出さない(issue #23)
+	const extractorRequirements = useMemo(
+		() =>
+			state.kind === "ready"
+				? planExtractors(data, state.plan.rawMaterials)
+				: [],
+		[data, state],
+	);
+
+	// 建てるものが 1 つも無い計画(原料だけ)では建設コストのセクションごと出さない
 	const constructionCost = useMemo(
 		() =>
 			state.kind === "ready"
-				? sumMachineConstructionCost(data, state.plan.machines)
+				? mergeItemQuantities([
+						sumMachineConstructionCost(data, state.plan.machines),
+						sumExtractorConstructionCost(data, extractorRequirements),
+					])
 				: [],
-		[data, state],
+		[data, state, extractorRequirements],
+	);
+
+	// 採取分は ProductionPlan には含まれない(totalPowerMW は製造分のみ、という
+	// 意味を保つため)。表示・発電機の計算に使う総電力はここで合算する
+	const extractorPowerMW = useMemo(
+		() => sumExtractorPowerMW(extractorRequirements),
+		[extractorRequirements],
+	);
+	const totalPowerMW = useMemo(
+		() =>
+			state.kind === "ready"
+				? state.plan.totalPowerMW.add(extractorPowerMW)
+				: Fraction.of(0),
+		[state, extractorPowerMW],
 	);
 
 	// 総電力 0(原料だけの計画)や発電機を持たないデータでは行が 1 つも立たない。
 	// 0 台の表を出すと「発電機ゼロ台で足りる」と読めてしまうのでセクションごと出さない
 	const generatorRequirements = useMemo(
 		() =>
-			state.kind === "ready" && !state.plan.totalPowerMW.isZero()
-				? planGenerators(data, state.plan.totalPowerMW)
+			state.kind === "ready" && !totalPowerMW.isZero()
+				? planGenerators(data, totalPowerMW)
 				: [],
-		[data, state],
+		[data, state, totalPowerMW],
 	);
 
 	return (
@@ -287,13 +321,24 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						<h2>機械一覧</h2>
 						<MachineTable data={data} machines={state.plan.machines} />
 					</section>
+					{/* 原料の採取に要る設備。機械一覧の続きとして読めるよう直後に置き、
+					    合流先の建設コストより前に出す */}
+					{extractorRequirements.length > 0 && (
+						<section>
+							<h2>採取設備</h2>
+							<ExtractorTable
+								data={data}
+								requirements={extractorRequirements}
+							/>
+						</section>
+					)}
 					{constructionCost.length > 0 && (
 						<section>
 							{/* 発電機分を含まないことが見出しから読み取れるようにする */}
-							<h2>建設コスト（機械分）</h2>
+							<h2>建設コスト（機械・採取設備分）</h2>
 							<ConstructionCostList
 								data={data}
-								label="建設コスト（機械分）"
+								label="建設コスト（機械・採取設備分）"
 								quantities={constructionCost}
 							/>
 						</section>
@@ -320,7 +365,15 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 						)}
 					</div>
 					<p className={styles.total}>
-						総電力: {state.plan.totalPowerMW.toDecimalString()} MW
+						総電力: {totalPowerMW.toDecimalString()} MW
+						{/* 採取分 0 のときに「+ 採取 0 MW」と書くと、採取が要る計画との
+						    区別が付かなくなるので内訳ごと出さない */}
+						{!extractorPowerMW.isZero() && (
+							<span className={styles.breakdown}>
+								（製造 {state.plan.totalPowerMW.toDecimalString()} MW + 採取{" "}
+								{extractorPowerMW.toDecimalString()} MW）
+							</span>
+						)}
 					</p>
 					{generatorRequirements.length > 0 && (
 						<section>
