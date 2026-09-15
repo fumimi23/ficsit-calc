@@ -2,8 +2,9 @@
 
 <!-- Copilot code review は PR の head ブランチにあるこのファイルを読む(issue #55)。
      Copilot が繰り返す誤指摘は返信・👎・Resolve では止まらないので、根拠となる規約をここに書いて事前に抑える。
-     実測(PR #57)で分かった限界: 総評の定型部分(見出し・overview・ファイル要約)は英語のままで、
-     指摘が「Suppressed comments」に畳まれるかも指示では制御できない。下の 2 項目はあくまで要望 -->
+     実測(#54 と #57 の比較)で分かった限界: 総評の見出しと「Review details」等の定型ラベルは英語固定。
+     総評の要約文が日本語になるかは回によってぶれる。指摘が「Suppressed comments」に畳まれるかも
+     指示では制御できない。下の 2 項目はあくまで要望 -->
 
 ## レビューの書き方
 
@@ -22,12 +23,12 @@
 
 Satisfactory の生産チェーン計算機。以下は誤りがテストの外で表面化しにくいので重点的に見る。
 
-- **数値は誤差のない分数で持つ**: 計算の途中の値は BigInt ベースの `Fraction`(`src/lib/calc/fraction.ts`)。計算が `number` の四則演算・`parseFloat`・`Math.round` に落ちる変更は `[blocker]` 級として指摘する。ただしデータモデル側の値は `ExactNumeric`(`number | string`、`src/lib/calc/types.ts`)で持ち、計算に入る時点で `Fraction.from` に通すのが正しい設計なので、この境界の `number` は指摘対象ではない。表示のための十進文字列化(`toDecimalString`)も同様。
+- **数値は誤差のない分数で持つ**: 計算コア(`src/lib/calc/`)の計算途中の値は BigInt ベースの `Fraction`(`fraction.ts`)。計算が `number` の四則演算・`parseFloat`・`Math.round` に落ちる変更は `[blocker]` 級として指摘する。以下は正しい設計なので指摘対象ではない: データモデルの値を `ExactNumeric`(`number | string`、`types.ts`)で持ち計算に入る時点で `Fraction.from` に通す境界、表示のための十進文字列化(`toDecimalString`)、`parse-docs.ts` が生成時に十進へ戻す箇所(`toExactNumeric` の往復一致検査で担保されている)。
 - **単位換算**: レートは個/分(液体・気体は m³/分)に統一する。所要時間からの換算は `60 / durationSeconds × amount`(既知値: 製錬炉の鉄インゴットは 30 個/分)。Docs の液体・気体は数量がリットルなので **÷1000** して m³ にするが、燃料のエネルギーは MJ/L なので **×1000** して MJ/m³ にする(方向が逆で、取り違えても値はそれらしく見える)。換算を足す・触る変更は境界値と既知値での検算の観点で見る。
-- **電力**: 機械・発電機・採取設備の電力は定格(`powerMW`)× 台数。発電機の副資材(石炭発電機の水など)は `amountPerMJ` で、**台数ではなく発電量(MJ)に比例する**(`types.ts` の `GeneratorFuelDef` 参照)。台数比例に書き換える変更は型が通ってしまうので指摘する。
+- **電力**: 機械・採取設備の**消費**電力は定格(`powerMW`)× 台数。発電機は向きが逆で、総電力から台数を切り上げ逆算する(`count = ceil(総電力 / 定格出力)`)。ただし**燃料・副資材は切り上げ後の台数ではなく総電力そのものから出す**(端数の 1 台は部分負荷で回るので、定格 × 台数で見積もると要らない燃料まで数える。理由は `generators.ts` 冒頭コメント)。台数から燃料を見積もる変更は指摘する。副資材(石炭発電機の水など)も `amountPerMJ` で**発電量(MJ)に比例**する(`types.ts` の `GeneratorFuelDef`)。台数比例に書き換えても型は通ってしまうので指摘する。
 - **`data/recipes.json` は生成物**: 正本はゲーム同梱の `CommunityResources/Docs/` の `en-US.json` / `ja.json` と、`src/lib/docs/parse-docs.ts` + `scripts/generate-recipes.ts`。この JSON を手編集した差分(パーサーの変更を伴わない値の書き換え)は指摘する。
 - **パーサーは必須フィールドの欠落を黙って通さない**: `parse-docs.ts` は Docs のスキーマ解釈。スキーマ上必須のフィールド(数量・所要時間・電力・エネルギー値・採取レート等)を `?? 0` やフォールバックで埋めると、計算結果が静かに過少になる。欠落は例外を投げて生成を止めるのが既定の方針なので、それを緩める変更は理由が PR 本文にあるか確認する。一方 `nameJa`(日本語表示名)と `form`(物質形態)は意図的に optional なので、これらの `?` や表示側のフォールバックは正しい。
-- **依存・ツール**: 依存の追加、Node/TypeScript のバージョン変更、`scripts/check.sh` の変更は、意図が PR 本文に無ければ指摘する。
+- **依存・ツール**: 依存の追加、Node/TypeScript のバージョン変更、`scripts/check.sh` / `.githooks/` の変更は、意図が PR 本文に無ければ指摘する。
 
 ## 指摘しなくてよいこと
 
