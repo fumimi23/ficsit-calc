@@ -1,4 +1,4 @@
-// Docs パーサーの実装都合テスト(unit)。issue #2 の約束レベルの検証は tests/spec/ 側。
+// Docs パーサーの実装都合テスト(unit)。約束レベルの検証は tests/spec/ 側。
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { decodeDocs, parseDocs } from "../../src/lib/docs/parse-docs";

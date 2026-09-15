@@ -1,4 +1,3 @@
-// 表示名の解決。日本語名(nameJa)が無ければ英語名(name)、それも無ければ ID にフォールバック
 import type {
 	BuildingId,
 	ExtractorId,

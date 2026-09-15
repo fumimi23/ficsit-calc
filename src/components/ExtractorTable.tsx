@@ -1,8 +1,7 @@
-// 採取設備(issue #23)。原料の採取に要る設備の台数・電力を並べる。
+// 採取設備。原料の採取に要る設備の台数・電力を並べる。
 // 台数は機械一覧と同じく端数のまま出し、切り上げの建設台数を併記する
 // (端数の 1 台は部分負荷で回るので、電力は端数のまま比例させる)。
-// 純度とマークは固定の仮定なので、表そのものではなく脚注で明示する
-// (選ばせる設定 UI はフォローアップ issue)。
+// 純度とマークは固定の仮定なので、表そのものではなく脚注で明示する。
 import type { ExtractorRequirement } from "../lib/calc/extractors";
 import type { RecipeData } from "../lib/calc/types";
 import { extractorLabel, itemLabel } from "../lib/ui/display";

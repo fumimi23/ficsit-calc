@@ -52,7 +52,7 @@ describe("Docs パーサー(issue #2)", () => {
 	});
 
 	// issue #12: 「代替レシピは既定で除外される」(issue #2)の意図された撤回。
-	// レシピ選択(ロードマップ 3)の前提として alternate も収録し、フラグで区別する
+	// レシピ選択の前提として alternate も収録し、フラグで区別する
 	it("代替レシピが alternate: true で収録され、通常レシピと同じ入出力・機械・所要時間を持つ", () => {
 		const data = parseFixture();
 

@@ -10,7 +10,7 @@ export type ItemId = string;
 export type BuildingId = string;
 
 /**
- * 正確に解釈される十進数値(issue #6)。number / "1.5" のような十進文字列の
+ * 正確に解釈される十進数値。number / "1.5" のような十進文字列の
  * どちらでもよく、内部で誤差のない分数(Fraction)に変換される。
  * number も String() の最短往復表現を経由するため、JSON に書いた十進リテラルが
  * そのまま取り込まれる(例: 0.1 → 1/10)。
@@ -33,7 +33,7 @@ export interface BuildingDef {
 	/** 定格消費電力(MW)。オーバークロックは v1 スコープ外 */
 	powerMW: ExactNumeric;
 	/**
-	 * 1 台建てるのに必要な建設素材(issue #21)。Docs の Build Gun 建設レシピ由来。
+	 * 1 台建てるのに必要な建設素材。Docs の Build Gun 建設レシピ由来。
 	 * optional にしないのは、欠落を許すと建設コストが黙って過少表示されるため
 	 */
 	constructionCost: RecipeIngredient[];
@@ -43,7 +43,7 @@ export interface BuildingDef {
 export type GeneratorId = string;
 
 /**
- * 発電機が燃やせる燃料 1 種(issue #20)。
+ * 発電機が燃やせる燃料 1 種。
  * 複数燃料の発電機(石炭発電機の石炭 / 圧縮石炭 / 石油コークス等)を代表 1 種に畳まないのは、
  * どれで賄うかがプレイヤーの選択であり、レートも燃料ごとに変わるため。
  */
@@ -59,7 +59,7 @@ export interface GeneratorFuelDef {
 }
 
 /**
- * 発電機 1 種(issue #20)。
+ * 発電機 1 種。
  * 地熱発電機は含めない: 出力が間欠泉の純度に依存し、定格 1 つでは表せないため。
  */
 export interface GeneratorDef {
@@ -70,7 +70,7 @@ export interface GeneratorDef {
 	/** 定格出力(MW)。オーバークロックは v1 スコープ外 */
 	powerMW: ExactNumeric;
 	fuels: GeneratorFuelDef[];
-	/** 1 台建てるのに必要な建設素材(issue #21)。BuildingDef と同じく必須 */
+	/** 1 台建てるのに必要な建設素材。BuildingDef と同じく必須 */
 	constructionCost: RecipeIngredient[];
 }
 
@@ -78,7 +78,7 @@ export interface GeneratorDef {
 export type ExtractorId = string;
 
 /**
- * 採取設備 1 種(issue #23)。原料ノードで終端していた採取を設備として数えるのに使う。
+ * 採取設備 1 種。原料ノードで終端していた採取を設備として数えるのに使う。
  * 資源井(加圧機 + サテライト)は含めない: レートがサテライト数・立地に依存し、
  * 定格 1 つでは表せないため(地熱発電機を GeneratorDef から外したのと同じ整理)。
  */
@@ -96,7 +96,7 @@ export interface ExtractorDef {
 	ratePerMinute: ExactNumeric;
 	/** この設備で採取できる資源(アイテム ID、昇順ソート済み) */
 	resources: ItemId[];
-	/** 1 台建てるのに必要な建設素材(issue #21)。BuildingDef と同じく必須 */
+	/** 1 台建てるのに必要な建設素材。BuildingDef と同じく必須 */
 	constructionCost: RecipeIngredient[];
 }
 
@@ -126,9 +126,9 @@ export interface RecipeData {
 	items: Record<ItemId, ItemDef>;
 	buildings: Record<BuildingId, BuildingDef>;
 	recipes: RecipeDef[];
-	/** 発電機の一覧(issue #20)。総電力から必要台数・必要燃料を出すのに使う */
+	/** 発電機の一覧。総電力から必要台数・必要燃料を出すのに使う */
 	generators: GeneratorDef[];
-	/** 採取設備の一覧(issue #23)。原料合計から必要台数・電力を出すのに使う */
+	/** 採取設備の一覧。原料合計から必要台数・電力を出すのに使う */
 	extractors: ExtractorDef[];
 }
 
@@ -165,10 +165,7 @@ export interface ProductionPlan {
 	root: PlanNode;
 	machines: MachineRequirement[];
 	rawMaterials: ItemRate[];
-	/**
-	 * 多出力レシピの第 2 以降の出力(余剰)。需要とは相殺しない(issue #5)。
-	 * 相殺・消費計画はロードマップ 4
-	 */
+	/** 多出力レシピの第 2 以降の出力(余剰)。需要とは相殺しない */
 	byproducts: ItemRate[];
 	totalPowerMW: Fraction;
 }

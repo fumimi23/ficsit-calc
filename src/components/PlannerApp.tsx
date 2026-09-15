@@ -1,4 +1,4 @@
-// アイランドのエントリ(issue #3)。recipes.json をビルド時に同梱する。
+// アイランドのエントリ。recipes.json をビルド時に同梱する。
 // import した JSON は型が広がる(form が string になる)ため、validateRecipeData を型ゲートに使う。
 // コミット済みデータの正当性は invariants テストが保証している
 import recipesJson from "../../data/recipes.json";

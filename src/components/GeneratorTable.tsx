@@ -1,7 +1,7 @@
-// 必要発電機リスト(issue #20)。総電力を賄う台数と、その電力を維持する燃料/副資材を並べる。
+// 必要発電機リスト。総電力を賄う台数と、その電力を維持する燃料/副資材を並べる。
 // 燃料を複数燃やせる発電機は燃料ごとに行を分ける(どれで賄うかはプレイヤーの選択)。
 // 台数は切り上げだが燃料は実負荷ベースなので、台数 × 定格からは逆算できない値になる。
-// 建設コスト(issue #21)も種別ごとに併記する: 種別は代替案の並記なので合算しない。
+// 建設コストも種別ごとに併記する: 種別は代替案の並記なので合算しない。
 import { generatorConstructionCost } from "../lib/calc/construction";
 import type { GeneratorRequirement } from "../lib/calc/generators";
 import type { ItemRate, RecipeData } from "../lib/calc/types";

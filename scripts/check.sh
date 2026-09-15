@@ -7,7 +7,6 @@
 set -e
 cd "$(CDPATH= cd "$(dirname "$0")/.." && pwd)"
 
-# 採用した lint / format チェックをここに置く(作成時に候補から選んだものを埋める)。
 # CI では整形を「適用」せず「差分があれば失敗」させる(--check / ci 系)。整形の適用は scripts/fmt.sh。
 echo "[check] lint / format (biome)"
 npx biome ci .

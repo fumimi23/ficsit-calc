@@ -1,4 +1,4 @@
-// 接続図(issue #18)。計画 → mermaid 記法の変換は純関数(lib/ui/flow-graph)に任せ、
+// 接続図。計画 → mermaid 記法の変換は純関数(lib/ui/flow-graph)に任せ、
 // ここは mermaid での SVG 化と表示状態(描画中/成功/失敗)だけを持つ。
 // mermaid はバンドルが大きいため動的 import で初回描画まで読み込みを遅延する
 import { useEffect, useMemo, useState } from "react";

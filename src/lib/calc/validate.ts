@@ -193,7 +193,7 @@ function requireKnownItem(
 }
 
 /**
- * 建設素材(issue #21)を検証する。欠落・空を通すと建設コストが黙って過少表示されるので、
+ * 建設素材を検証する。欠落・空を通すと建設コストが黙って過少表示されるので、
  * 発電機の fuels と同じく「非空の配列」を要求する。
  */
 function requireConstructionCost(

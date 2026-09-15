@@ -1,7 +1,7 @@
-// primary レシピの選択(issue #5)。
+// primary レシピの選択。
 // 「アイテムごとに使うレシピを高々 1 つ、決定的に選ぶ」規則を純関数として実装する。
 // 選択結果は planProduction に引数で渡す。recipes.json には焼き込まない
-// (将来のユーザー選択(ロードマップ 3)が同じ機構で上書きできるようにするため)。
+// (ユーザーの選び直しを mergeRecipeSelection が同じ機構で上書きするため)。
 import type { ItemDef, ItemId, RecipeData, RecipeDef } from "./types";
 
 /** アイテム → そのアイテムの生産に使うレシピ。無いアイテムは原料として終端する */
@@ -41,7 +41,7 @@ export function selectPrimaryRecipes(data: RecipeData): RecipeSelection {
 }
 
 /**
- * アイテム → そのアイテムを第 1 出力とするレシピ一覧(issue #22)。
+ * アイテム → そのアイテムを第 1 出力とするレシピ一覧。
  * デフォルト → alternate の順、各グループ内はレシピ ID の辞書順。
  * primary 選択(上記 (a)(b))と違って alternate も開封形も除外しない
  * — 「代替レシピを使う」「開封して取り出す」はどちらもプレイヤーの選択肢として
@@ -68,10 +68,10 @@ export function candidateRecipesByItem(
 	return candidates;
 }
 
-/** ユーザーが選び直したレシピ: アイテム → 使うレシピの ID(issue #22) */
+/** ユーザーが選び直したレシピ: アイテム → 使うレシピの ID */
 export type RecipeOverrides = ReadonlyMap<ItemId, string>;
 
-/** 上書きが候補規則(第 1 出力一致)を満たさないときの明示的なエラー(issue #22) */
+/** 上書きが候補規則(第 1 出力一致)を満たさないときの明示的なエラー */
 export class InvalidRecipeOverrideError extends Error {
 	constructor(itemId: ItemId, recipeId: string) {
 		super(`レシピが ${itemId} の候補ではありません: ${recipeId}`);
@@ -80,7 +80,7 @@ export class InvalidRecipeOverrideError extends Error {
 }
 
 /**
- * primary 選択(selectPrimaryRecipes)を基底に、ユーザーの上書きを重ねた選択を返す(issue #22)。
+ * primary 選択(selectPrimaryRecipes)を基底に、ユーザーの上書きを重ねた選択を返す。
  * primary レシピを持たないアイテム(alternate でしか作れない・開封でしか作れない等)への
  * 上書きは、選択マップへの追加になる = 原料終端だったノードからチェーンが伸びる。
  * 候補でないレシピ ID は InvalidRecipeOverrideError で弾く。UI は候補しか出さないので

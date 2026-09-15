@@ -1,4 +1,4 @@
-/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない(issue #24) */
+/* 図面トークン(src/styles/tokens.css)を参照する。生の色値を持たない */
 .planner {
 	margin-top: 1.5rem;
 }
@@ -123,7 +123,7 @@
 	font-weight: 600;
 }
 
-/* エラー時の上書き一覧(issue #22)。結果セクションの外に出るので、
+/* エラー時の上書き一覧。結果セクションの外に出るので、
    見出しの体裁は .results h2 とは別に持つ */
 .overrides {
 	list-style: none;
@@ -204,7 +204,7 @@
 	color: var(--accent-note);
 }
 
-/* 製造 + 採取の内訳(issue #23)。合算値が主役なので一段小さく添える */
+/* 製造 + 採取の内訳。合算値が主役なので一段小さく添える */
 .breakdown {
 	font-size: 0.7em;
 	font-weight: 400;

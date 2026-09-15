@@ -1,8 +1,8 @@
-// 生産計画 → mermaid flowchart 記法への変換(issue #18)。
+// 生産計画 → mermaid flowchart 記法への変換。
 // ノード = 機械グループ(レシピ・機械 × 台数)・原料・余剰・目標、
 // エッジ = アイテムの流量(個/分)。ツリーで枝ごとに重複する中間素材は
 // (生産元, 消費先, アイテム) 単位で合算し 1 本のエッジに集約する。
-// primary 選択(issue #5)によりアイテムの生産元は高々 1 つなので、集約は決定的。
+// primary 選択によりアイテムの生産元は高々 1 つなので、集約は決定的。
 // SVG への描画は mermaid に委譲する(このモジュールは文字列を作るだけの純関数)。
 import { Fraction } from "../calc/fraction";
 import type { PlanNode, ProductionPlan, RecipeData } from "../calc/types";
@@ -50,7 +50,7 @@ function escapeLabel(text: string): string {
 /**
  * 生産計画を mermaid flowchart 記法(TD: 原料が上、目標が下)の文字列に変換する。
  * 横長(LR)は紙面からはみ出しやすく、縦長のほうがスクロールが自然という
- * ユーザー判断(issue #18 のブラウザ確認)による。
+ * ユーザー判断(ブラウザ手動確認での要望)による。
  * ノード宣言(機械グループ → 原料 → 余剰 → 目標)、エッジ(ツリーの深さ優先で
  * 出現順、最後に目標への 1 本)の順に並べ、同じ入力に対して常に同じ文字列を返す。
  */

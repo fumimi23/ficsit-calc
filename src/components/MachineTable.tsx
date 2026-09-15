@@ -1,5 +1,5 @@
-// 機械一覧(issue #3)。台数は小数のまま表示し、切り上げの建設台数を併記する。
-// クロック率の提案は #14(電力カーブ対応とセット)まで出さない。
+// 機械一覧。台数は小数のまま表示し、切り上げの建設台数を併記する。
+// クロック率の提案は出さない(電力カーブ対応とセットでしか意味のある値にならないため)。
 import type { MachineRequirement, RecipeData } from "../lib/calc/types";
 import { buildingLabel, recipeLabel } from "../lib/ui/display";
 import styles from "./MachineTable.module.css";
