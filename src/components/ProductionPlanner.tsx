@@ -1,4 +1,4 @@
-// 生産チェーン計算機のコンテナ(issue #3)。
+// 生産チェーン計算機のコンテナ。
 // 入力の状態管理と planProduction の呼び出しを担い、表示は部品に委譲する。
 // RecipeData は props で受け取る(テストは fixture を注入する)。
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -40,7 +40,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	const [itemId, setItemId] = useState("");
 	const [itemQuery, setItemQuery] = useState("");
 	const [rateText, setRateText] = useState("");
-	// 上書きはアイテム単位の嗜好なので、目標アイテムを切り替えても持ち越す(issue #22)
+	// 上書きはアイテム単位の嗜好なので、目標アイテムを切り替えても持ち越す
 	const [overrides, setOverrides] = useState<RecipeOverrides>(
 		() => new Map<ItemId, string>(),
 	);
@@ -147,7 +147,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 	}, [data, selection, itemId, rateText]);
 
 	// 採取設備を持たない原料(窒素ガスなど資源井でしか採れないもの)は行が立たない。
-	// 1 行も無ければ表ごと出さない(issue #23)
+	// 1 行も無ければ表ごと出さない
 	const extractorRequirements = useMemo(
 		() =>
 			state.kind === "ready"
@@ -199,7 +199,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 				    「アイテム」1 ブロックにまとめる(ブラウザ手動確認での指摘)。
 				    可視ラベルはブロックに 1 つだけ置いて select に関連付け、検索欄の
 				    アクセシブルネームは aria-label で与える(label 要素に足すと
-				    0 件メッセージ等が名前に混入しやすい — PR #40 レビュー指摘) */}
+				    0 件メッセージ等が名前に混入しやすい) */}
 				<div className={styles.field}>
 					<label className={styles.fieldLabel} htmlFor="item-select">
 						アイテム
@@ -246,7 +246,7 @@ export function ProductionPlanner({ data }: { data: RecipeData }) {
 							setItemId(nextId);
 							// 選択操作への応答なので useEffect ではなくハンドラで完結させる。
 							// 原料(1 台分レートが無いアイテム)では undefined が返るが、そのときは
-							// 入力済みの値を消さずそのまま残す(issue #48)
+							// 入力済みの値を消さずそのまま残す
 							const rate = singleMachineRate(selection, nextId);
 							if (rate !== undefined) setRateText(rate.toDecimalString());
 						}}

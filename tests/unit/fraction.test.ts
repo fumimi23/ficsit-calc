@@ -1,4 +1,4 @@
-// Fraction の実装都合テスト(unit)。issue #6 の約束レベルの検証は tests/spec/ 側。
+// Fraction の実装都合テスト(unit)。約束レベルの検証は tests/spec/ 側。
 import { describe, expect, it } from "vitest";
 import { Fraction } from "../../src/lib/calc/fraction";
 

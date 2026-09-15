@@ -10,7 +10,7 @@ import type {
 	RecipeData,
 } from "./types";
 
-/** 存在しないアイテム ID を指定したときの明示的なエラー(issue #1) */
+/** 存在しないアイテム ID を指定したときの明示的なエラー */
 export class UnknownItemError extends Error {
 	constructor(itemId: ItemId) {
 		super(`アイテムが見つかりません: ${itemId}`);
@@ -20,7 +20,7 @@ export class UnknownItemError extends Error {
 
 export interface ProductionTarget {
 	itemId: ItemId;
-	/** 目標生産レート(個/分)。"7.5" のような十進文字列でも指定できる(issue #6) */
+	/** 目標生産レート(個/分)。"7.5" のような十進文字列でも指定できる */
 	ratePerMinute: ExactNumeric;
 }
 
@@ -32,7 +32,7 @@ const SIXTY = Fraction.of(60);
  *
  * レシピグラフを目標から遡って再帰展開し、レシピ選択(selection)に無いアイテム
  * (真の原料のほか、副産物のみ・開封のみ等で primary レシピを持たないアイテム)で終端する。
- * selection を省略すると selectPrimaryRecipes の規則(issue #5)で選ぶ。
+ * selection を省略すると selectPrimaryRecipes の規則で選ぶ。
  * 多出力レシピの第 2 以降の出力は byproducts に余剰として集計し、需要とは相殺しない。
  * 数値は誤差のない分数(Fraction)で保持し、機械台数は端数のまま返す
  * (丸め・クロック提案は表示側の関心事)。
@@ -95,7 +95,8 @@ export function planProduction(
 
 		const output = recipe.outputs.find((o) => o.item === itemId);
 		if (!output) {
-			// selectPrimaryRecipes の結果では起きない。将来のユーザー選択(ロードマップ 3)の防波堤
+			// selectPrimaryRecipes / mergeRecipeSelection の結果では起きない。
+			// selection を自前で組み立てた呼び出しへの防波堤
 			throw new Error(
 				`選択されたレシピ ${recipe.id} は ${itemId} を産出しません`,
 			);
@@ -116,7 +117,7 @@ export function planProduction(
 		entry.powerMW = entry.powerMW.add(powerMW);
 		machines.set(recipe.id, entry);
 
-		// 要求されたアイテム以外の出力は余剰(byproducts)。需要とは相殺しない(issue #5)
+		// 要求されたアイテム以外の出力は余剰(byproducts)。需要とは相殺しない
 		for (const other of recipe.outputs) {
 			if (other.item === itemId) continue;
 			addRate(

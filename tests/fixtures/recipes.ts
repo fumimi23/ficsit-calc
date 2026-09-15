@@ -1,5 +1,5 @@
 // 実ゲーム(Satisfactory 1.0)のデフォルトレシピ値を模した fixture。
-// issue #1 のスキーマ先行開発用。パーサー(#2)完成後も spec テストはこの fixture で維持する。
+// 実データ(data/recipes.json)が揃った後も、spec テストは値の動かないこの fixture で維持する。
 import type { RecipeData } from "../../src/lib/calc/types";
 
 export const fixtureData: RecipeData = {
@@ -11,7 +11,7 @@ export const fixtureData: RecipeData = {
 		screw: { name: "ネジ" },
 		"reinforced-iron-plate": { name: "強化鉄板" },
 	},
-	// 建設素材(issue #21)は items に既にあるアイテムだけで組む。
+	// 建設素材は items に既にあるアイテムだけで組む。
 	// 新しいアイテムを足すと「全 6 アイテムに戻る」を約束している item-search の UI テストが壊れる
 	buildings: {
 		smelter: {
@@ -88,12 +88,12 @@ export const fixtureData: RecipeData = {
 	],
 	// 発電機は generatorFixtureData 側に置く(理由は下のコメント)
 	generators: [],
-	// 採取設備(issue #23)は各 spec のローカル fixture に持たせる。ここに足すと
+	// 採取設備は各 spec のローカル fixture に持たせる。ここに足すと
 	// 総電力・建設コストを約束にしている既存 UI テストの期待値が動いてしまう
 	extractors: [],
 };
 
-// 発電機入りの fixture(issue #20)。fixtureData 自体に足さないのは、
+// 発電機入りの fixture。fixtureData 自体に足さないのは、
 // アイテム件数を数える既存の UI テスト(tests/spec/ui/item-search.test.tsx の
 // 「全 6 アイテムに戻る」)が fixtureData のアイテム数を約束にしているため。
 // 鉄板 30/分 = 総電力 12MW を発電側の検算に使う。
@@ -137,7 +137,7 @@ export const generatorFixtureData: RecipeData = {
 	],
 };
 
-// レシピ選択 UI(issue #22)用の fixture。1 アイテムに複数レシピがある構図
+// レシピ選択 UI 用の fixture。1 アイテムに複数レシピがある構図
 // —— デフォルト 2 本 / 開封形(循環の種) / alternate のみ —— を最小構成で再現する。
 // fixtureData を拡張しないのは、アイテム件数(item-search)やチェーン構成
 // (production-planner)を約束にしている既存 UI テストが壊れるため。
@@ -263,7 +263,7 @@ export const multiRecipeFixtureData: RecipeData = {
 		},
 	],
 	// 発電機を入れないのは、必要発電機の表がレシピ切り替えの検算(台数・電力・原料)に
-	// 関わらないため。採取設備(issue #23)も同じ理由で入れない
+	// 関わらないため。採取設備も同じ理由で入れない
 	generators: [],
 	extractors: [],
 };

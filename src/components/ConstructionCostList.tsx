@@ -1,4 +1,4 @@
-// 建設コストの一覧(issue #21)。レートではなく建てるのに要る総個数なので、
+// 建設コストの一覧。レートではなく建てるのに要る総個数なので、
 // ItemRateList(〜/分)とは単位も意味も違う別リストにする。
 import type { ItemQuantity } from "../lib/calc/construction";
 import type { RecipeData } from "../lib/calc/types";

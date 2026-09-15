@@ -1,4 +1,4 @@
-// アイテム検索の絞り込み(issue #19)。
+// アイテム検索の絞り込み。
 // 検索欄の入力でアイテム選択リストを部分一致で絞り込む。UI 非依存の純関数。
 import type { ItemDef, ItemId } from "../calc/types";
 
