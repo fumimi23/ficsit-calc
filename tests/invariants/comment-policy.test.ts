@@ -11,12 +11,12 @@ const SCAN_DIRS = ["src", "scripts", "tests"];
 
 const EXCLUDED_DIRS = ["tests/spec", "tests/invariants"];
 
-type CommentStyle = "c-like" | "css" | "hash";
+type CommentStyle = "c-like" | "astro" | "css" | "hash";
 
 const STYLE_BY_EXTENSION: Record<string, CommentStyle> = {
 	".ts": "c-like",
 	".tsx": "c-like",
-	".astro": "c-like",
+	".astro": "astro",
 	".css": "css",
 	".py": "hash",
 	".sh": "hash",
@@ -30,16 +30,21 @@ type Violation = { file: string; line: number; text: string };
 /**
  * コメント領域に該当する文字位置を true にしたマスクを返す。
  * 文字列リテラル内の `//` や `#` は追跡しない簡易抽出。
+ * astro は frontmatter の JS コメントとテンプレート部の HTML コメントの両方を持つので、
+ * JS コメントだけを見ると HTML コメントが検査の穴になる。
  */
 function commentMask(source: string, style: CommentStyle): boolean[] {
 	const mask = new Array<boolean>(source.length).fill(false);
-	let state: "code" | "line" | "block" = "code";
+	const allowsLineComment = style === "c-like" || style === "astro";
+	const allowsBlockComment = style !== "hash";
+	const allowsHtmlComment = style === "astro";
+	let state: "code" | "line" | "block" | "html" = "code";
 	let i = 0;
 	while (i < source.length) {
 		const char = source[i];
 		const next = source[i + 1];
 		if (state === "code") {
-			if (style !== "hash" && char === "/" && next === "*") {
+			if (allowsBlockComment && char === "/" && next === "*") {
 				state = "block";
 				mask[i] = true;
 				mask[i + 1] = true;
@@ -48,7 +53,7 @@ function commentMask(source: string, style: CommentStyle): boolean[] {
 			}
 			// URL の `://` をコメント開始とみなさない
 			if (
-				style === "c-like" &&
+				allowsLineComment &&
 				char === "/" &&
 				next === "/" &&
 				source[i - 1] !== ":"
@@ -57,6 +62,15 @@ function commentMask(source: string, style: CommentStyle): boolean[] {
 				mask[i] = true;
 				mask[i + 1] = true;
 				i += 2;
+				continue;
+			}
+			if (allowsHtmlComment && source.startsWith("<!--", i)) {
+				state = "html";
+				mask[i] = true;
+				mask[i + 1] = true;
+				mask[i + 2] = true;
+				mask[i + 3] = true;
+				i += 4;
 				continue;
 			}
 			if (style === "hash" && char === "#") {
@@ -72,6 +86,19 @@ function commentMask(source: string, style: CommentStyle): boolean[] {
 			if (char === "\n") {
 				state = "code";
 				i += 1;
+				continue;
+			}
+			mask[i] = true;
+			i += 1;
+			continue;
+		}
+		if (state === "html") {
+			if (source.startsWith("-->", i)) {
+				mask[i] = true;
+				mask[i + 1] = true;
+				mask[i + 2] = true;
+				state = "code";
+				i += 3;
 				continue;
 			}
 			mask[i] = true;
@@ -164,7 +191,7 @@ function collectViolations(): Violation[] {
 }
 
 describe("invariants: コメント方針", () => {
-	it("src / scripts / tests の unit・fixtures のコメントに issue 番号への参照が無い", () => {
+	it("src / scripts / tests(spec・invariants を除く)のコメントに issue 番号への参照が無い", () => {
 		const files = collectTargetFiles();
 		expect(files.length).toBeGreaterThan(0);
 
@@ -195,5 +222,22 @@ describe("invariants: コメント方針", () => {
 		// コメント外の `#21` は検出しない(コメント領域に限定できていることの確認)
 		const codeOnly = findIssueTagLines('const id = "#21";\n', "c-like");
 		expect(codeOnly).toEqual([]);
+
+		const astro = findIssueTagLines(
+			[
+				"---",
+				"// レシピ選択の前提(issue #5)",
+				"const title = 'ficsit-calc';",
+				"---",
+				"<h1>{title}</h1>",
+				"<!-- (issue #22) -->",
+				"",
+			].join("\n"),
+			"astro",
+		);
+		expect(astro).toEqual([
+			{ line: 2, text: "// レシピ選択の前提(issue #5)" },
+			{ line: 6, text: "<!-- (issue #22) -->" },
+		]);
 	});
 });
