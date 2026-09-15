@@ -1,7 +1,9 @@
 # Copilot code review への指示
 
 <!-- Copilot code review は PR の head ブランチにあるこのファイルを読む(issue #55)。
-     Copilot が繰り返す誤指摘は返信・👎・Resolve では止まらないので、根拠となる規約をここに書いて事前に抑える -->
+     Copilot が繰り返す誤指摘は返信・👎・Resolve では止まらないので、根拠となる規約をここに書いて事前に抑える。
+     実測(PR #57)で分かった限界: 総評の定型部分(見出し・overview・ファイル要約)は英語のままで、
+     指摘が「Suppressed comments」に畳まれるかも指示では制御できない。下の 2 項目はあくまで要望 -->
 
 ## レビューの書き方
 
@@ -20,16 +22,17 @@
 
 Satisfactory の生産チェーン計算機。以下は誤りがテストの外で表面化しにくいので重点的に見る。
 
-- **数値は誤差のない分数で持つ**: 計算コア(`src/lib/calc/`)の数値は BigInt ベースの `Fraction`(`src/lib/calc/fraction.ts`)。計算の途中で `number` の四則演算・`parseFloat`・`Math.round` に落ちる変更は `[blocker]` 級として指摘する。表示のための十進文字列化(`toDecimalString`)だけが例外。
-- **単位換算**: レートは個/分(液体・気体は m³/分)に統一する。Docs の液体・気体はリットル表記なので 1/1000 して m³ にする。所要時間からのレート換算は `60 / durationSeconds × amount`。換算を足す・触る変更は、境界値と既知値(例: 製錬炉の鉄インゴットは 30 個/分)での検算の観点で見る。
-- **`data/recipes.json` は生成物**: 正本は Docs.json と `src/lib/docs/parse-docs.ts` + `scripts/generate-recipes.ts`。この JSON を手編集した差分(パーサーの変更を伴わない値の書き換え)は指摘する。
-- **パーサーは欠落を黙って通さない**: `parse-docs.ts` は Docs のスキーマ解釈。欠けたフィールドを `?? 0` や optional 化で埋めると、計算結果が静かに過少になる。欠落は例外を投げて生成を止めるのが既定の方針なので、それを緩める変更は理由が PR 本文にあるか確認する。
-- **依存・ツール・CI**: 依存の追加、Node/TypeScript のバージョン変更、`scripts/check.sh` の変更は、意図が PR 本文に無ければ指摘する。
+- **数値は誤差のない分数で持つ**: 計算の途中の値は BigInt ベースの `Fraction`(`src/lib/calc/fraction.ts`)。計算が `number` の四則演算・`parseFloat`・`Math.round` に落ちる変更は `[blocker]` 級として指摘する。ただしデータモデル側の値は `ExactNumeric`(`number | string`、`src/lib/calc/types.ts`)で持ち、計算に入る時点で `Fraction.from` に通すのが正しい設計なので、この境界の `number` は指摘対象ではない。表示のための十進文字列化(`toDecimalString`)も同様。
+- **単位換算**: レートは個/分(液体・気体は m³/分)に統一する。所要時間からの換算は `60 / durationSeconds × amount`(既知値: 製錬炉の鉄インゴットは 30 個/分)。Docs の液体・気体は数量がリットルなので **÷1000** して m³ にするが、燃料のエネルギーは MJ/L なので **×1000** して MJ/m³ にする(方向が逆で、取り違えても値はそれらしく見える)。換算を足す・触る変更は境界値と既知値での検算の観点で見る。
+- **電力**: 機械・発電機・採取設備の電力は定格(`powerMW`)× 台数。発電機の副資材(石炭発電機の水など)は `amountPerMJ` で、**台数ではなく発電量(MJ)に比例する**(`types.ts` の `GeneratorFuelDef` 参照)。台数比例に書き換える変更は型が通ってしまうので指摘する。
+- **`data/recipes.json` は生成物**: 正本はゲーム同梱の `CommunityResources/Docs/` の `en-US.json` / `ja.json` と、`src/lib/docs/parse-docs.ts` + `scripts/generate-recipes.ts`。この JSON を手編集した差分(パーサーの変更を伴わない値の書き換え)は指摘する。
+- **パーサーは必須フィールドの欠落を黙って通さない**: `parse-docs.ts` は Docs のスキーマ解釈。スキーマ上必須のフィールド(数量・所要時間・電力・エネルギー値・採取レート等)を `?? 0` やフォールバックで埋めると、計算結果が静かに過少になる。欠落は例外を投げて生成を止めるのが既定の方針なので、それを緩める変更は理由が PR 本文にあるか確認する。一方 `nameJa`(日本語表示名)と `form`(物質形態)は意図的に optional なので、これらの `?` や表示側のフォールバックは正しい。
+- **依存・ツール**: 依存の追加、Node/TypeScript のバージョン変更、`scripts/check.sh` の変更は、意図が PR 本文に無ければ指摘する。
 
 ## 指摘しなくてよいこと
 
 - 整形のみの差分(Biome の適用結果)。lint / format は Biome が担当する。
-- GitHub Actions のワークフロー追加の提案。このリポジトリは既定でローカル CI(`.githooks/pre-push` → `scripts/check.sh`)を使い、Actions は使わない。
+- GitHub Actions のワークフロー追加の提案。このリポジトリは既定でローカル CI(`.githooks/pre-push` → `scripts/check.sh`)を使う(Actions を意図的に導入する PR のレビュー自体は通常どおり行う)。
 - E2E テスト・ブラウザ自動テストの追加の提案。UI の動作確認は人間が行う運用(自動 E2E は導入しない)。
-- `src/pages/index.astro` の `PlannerApp` import が未使用に見える件。Astro のアイランドは実際に使われており、Biome の `noUnusedImports` の既知の偽陽性(issue #31 / #41)。
+- `src/pages/index.astro` の `PlannerApp` import が未使用に見える件。Astro のアイランドは実際に使われており、Biome の `noUnusedImports` の既知の偽陽性(issue #31 / #41。解決したらこの項目は削除する)。
 - コードを読めば分かることを繰り返すコメントの追加提案。このリポジトリのコメントは「なぜそうしなかったか(Why not)」を書く流儀で、What / How はコードとテストが担う。
