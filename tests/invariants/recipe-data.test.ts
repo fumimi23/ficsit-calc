@@ -8,6 +8,8 @@
 //   発電機は燃料を、採取設備は対象資源を 1 つ以上持つ。
 import { describe, expect, it } from "vitest";
 import recipesJson from "../../data/recipes.json";
+import { planExtractors } from "../../src/lib/calc/extractors";
+import { Fraction } from "../../src/lib/calc/fraction";
 import { validateRecipeData } from "../../src/lib/calc/validate";
 import { fixtureData } from "../fixtures/recipes";
 
@@ -49,6 +51,24 @@ describe("invariants: レシピデータ", () => {
 		// 対象資源が正しく引けていないと、水を要求する計画に揚水ポンプが出ない
 		const waterPump = data.extractors.find((e) => e.id === "Build_WaterPump_C");
 		expect(waterPump?.resources).toContain("Desc_Water_C");
+	});
+
+	// issue #23: planExtractors は候補が複数あるのに既定(ASSUMED_MINER_ID)が無い資源で
+	// throw するが、この throw は ProductionPlanner 側で捕捉されず描画クラッシュになる。
+	// Docs 更新で採取設備が増えたときに、ブラウザではなくここで気付けるようにする
+	it("コミット済み data/recipes.json の採取設備が採るすべての資源で、planExtractors が設備を 1 つに決められる", () => {
+		const data = validateRecipeData(recipesJson);
+		const resources = [...new Set(data.extractors.flatMap((e) => e.resources))];
+
+		expect(resources.length).toBeGreaterThan(0);
+		for (const item of resources) {
+			const requirements = planExtractors(data, [
+				{ item, ratePerMinute: Fraction.of(1) },
+			]);
+
+			expect(requirements, item).toHaveLength(1);
+			expect(requirements[0]?.item, item).toBe(item);
+		}
 	});
 
 	// issue #21: 1 機種でも建設素材が欠けると建設コストが黙って過少表示になる。

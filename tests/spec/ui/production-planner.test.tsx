@@ -344,6 +344,20 @@ describe("採取設備の表示(issue #23)", () => {
 		expect(within(table).queryByText("採鉱機 Mk.1")).toBeNull();
 	});
 
+	// issue #23: ノード純度「普通」・採鉱機 Mk.2 は固定の仮定なので、
+	// 数字だけ出さずに何を仮定した台数なのかを読めるようにする
+	it("採取設備を要する計画のとき、仮定（ノード純度「普通」・採鉱機 Mk.2）が採取設備のセクションに明示される", async () => {
+		await enterTarget(extractorFixtureData, "iron-ingot", "40");
+
+		const section = screen
+			.getByRole("heading", { name: "採取設備" })
+			.closest("section");
+		expect(section).not.toBeNull();
+		// 文言そのものは表示の都合で変わるので約束にしない(仮定が読めることだけを固定する)
+		expect(section?.textContent).toMatch(/Mk\.2/);
+		expect(section?.textContent).toMatch(/普通/);
+	});
+
 	it("採取設備を持たない原料は、採取設備の表に行が出ない", async () => {
 		// 窒素ガスは資源井でしか採れない。原料としては従来どおり量だけ表示する
 		await enterTarget(extractorFixtureData, "iron-ingot", "40");
