@@ -1,8 +1,12 @@
 // issue #62 invariants: Pages へ公開する前のゲート(scripts/check.sh)が外れていないことを固定する。
 // workflow 自体は vitest で実行できないので、台帳に載せられるのは deploy.yml の静的検査だけ。
-// 固定するのは「artifact を上げる job で check.sh が走る」+「deploy job がその job を needs する」の 2 点。
-// 片方だけだと、無関係な job に check.sh を置いてゲートを迂回できてしまう。
-// action のバージョン・step 名・job 名は偶然の挙動なので固定しない(job は使っている action から特定する)。
+// 「check.sh の step がある」だけでは足りない。continue-on-error / if / `|| true` / 行末コメント /
+// ゲートを通らない 2 本目の job を足すと、step を残したまま公開だけを素通りさせられる。
+// そのため「ゲートが実際に効く形か」まで見る。
+// job は使っている action から特定するので、公式 Pages Action(upload-pages-artifact / deploy-pages)で
+// 公開すること自体もここで固定していることになる。別方式へ移すときはこの台帳ごと書き換える。
+// 固定しないもの: action のバージョン・step 名・job 名・Node のバージョン・concurrency の値・
+// step の並び順・npm ci / npm run build の有無。
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -17,7 +21,20 @@ const DEPLOY_ACTION = "actions/deploy-pages";
 
 const GATE_SCRIPT = "scripts/check.sh";
 
+// `sh scripts/check.sh || true` や `echo 'scripts/check.sh'` をゲートとみなさないため、
+// run の値そのものが check.sh の呼び出しであることを要求する
+const GATE_COMMAND = /^(?:sh|bash)\s+(?:\.\/)?scripts\/check\.sh$/;
+
+// 失敗しても後続を止めない / そもそも実行しない、を作れるキー
+const DISABLING_KEYS = ["continue-on-error", "if"];
+
 type Job = { name: string; body: string };
+
+type Step = { keys: string[]; commands: string[] };
+
+function indentOf(line: string): number {
+	return line.length - line.trimStart().length;
+}
 
 /** コメントアウトされた step でゲートを満たしたことにしないため、走査前に落とす */
 function stripComments(yaml: string): string {
@@ -25,6 +42,76 @@ function stripComments(yaml: string): string {
 		.split("\n")
 		.map((line) => (/^\s*#/.test(line) ? "" : line))
 		.join("\n");
+}
+
+function stripInlineComment(value: string): string {
+	return value.replace(/\s+#.*$/, "").trim();
+}
+
+function unquote(value: string): string {
+	return value.trim().replace(/^["']|["']$/g, "");
+}
+
+/** `key: v` / `key: [a, b]` / `key:` + `- a` の 3 形式から値の並びを取り出す */
+function sequenceValue(lines: string[], keyPattern: RegExp): string[] {
+	const index = lines.findIndex((line) => keyPattern.test(line));
+	if (index === -1) {
+		return [];
+	}
+	const inline = stripInlineComment(keyPattern.exec(lines[index])?.[1] ?? "");
+	if (inline !== "") {
+		return inline
+			.replace(/^\[/, "")
+			.replace(/\]$/, "")
+			.split(",")
+			.map(unquote)
+			.filter((value) => value !== "");
+	}
+	const items: string[] = [];
+	for (const line of lines.slice(index + 1)) {
+		const item = /^\s+-\s*(\S+)\s*$/.exec(line);
+		if (item === null) {
+			break;
+		}
+		items.push(unquote(item[1]));
+	}
+	return items;
+}
+
+/** インデント 0 のキーの直下ブロックを返す */
+function topLevelBlock(yaml: string, keyPattern: RegExp): string[] {
+	const lines = stripComments(yaml).split("\n");
+	const index = lines.findIndex((line) => keyPattern.test(line));
+	if (index === -1) {
+		return [];
+	}
+	const block: string[] = [];
+	for (const line of lines.slice(index + 1)) {
+		if (line.trim() === "") {
+			continue;
+		}
+		if (indentOf(line) === 0) {
+			break;
+		}
+		block.push(line);
+	}
+	return block;
+}
+
+function pushBranches(yaml: string): string[] {
+	const onBlock = topLevelBlock(yaml, /^on:\s*$/);
+	const pushIndex = onBlock.findIndex((line) => /^ {2}push:\s*$/.test(line));
+	if (pushIndex === -1) {
+		return [];
+	}
+	const pushBlock: string[] = [];
+	for (const line of onBlock.slice(pushIndex + 1)) {
+		if (indentOf(line) <= 2) {
+			break;
+		}
+		pushBlock.push(line);
+	}
+	return sequenceValue(pushBlock, /^ {4}branches:(.*)$/);
 }
 
 /** `jobs:` 配下をインデント 2 のキーで job ごとのブロックに切る */
@@ -53,12 +140,24 @@ function splitJobs(yaml: string): Job[] {
 	}
 	return starts.map((start, index) => {
 		const next = starts[index + 1];
-		const end = next === undefined ? jobsEnd : next.line;
 		return {
 			name: start.name,
-			body: lines.slice(start.line + 1, end).join("\n"),
+			body: lines
+				.slice(start.line + 1, next === undefined ? jobsEnd : next.line)
+				.join("\n"),
 		};
 	});
+}
+
+function jobLevelKeys(job: Job): string[] {
+	return job.body.split("\n").flatMap((line) => {
+		const key = /^ {4}([A-Za-z0-9_-]+):/.exec(line);
+		return key === null ? [] : [key[1]];
+	});
+}
+
+function needsOf(job: Job): string[] {
+	return sequenceValue(job.body.split("\n"), /^ {4}needs:(.*)$/);
 }
 
 /** job が使っている action をバージョン抜きで列挙する */
@@ -69,70 +168,292 @@ function actionsUsedBy(job: Job): string[] {
 	});
 }
 
-function jobUsing(jobs: Job[], action: string): Job | undefined {
-	return jobs.find((job) => actionsUsedBy(job).includes(action));
+function jobsUsing(jobs: Job[], action: string): Job[] {
+	return jobs.filter((job) => actionsUsedBy(job).includes(action));
 }
 
-/** step の `name:` に書いただけの見せかけをゲートとみなさない */
-function runsGateScript(job: Job): boolean {
-	return job.body
-		.split("\n")
-		.some(
-			(line) => !/^\s*(?:-\s+)?name:/.test(line) && line.includes(GATE_SCRIPT),
-		);
-}
-
-function needsOf(job: Job): string[] {
+function stepBlocks(job: Job): string[] {
 	const lines = job.body.split("\n");
-	const index = lines.findIndex((line) => /^ {4}needs:/.test(line));
+	const stepsIndex = lines.findIndex((line) => /^ {4}steps:\s*$/.test(line));
+	if (stepsIndex === -1) {
+		return [];
+	}
+	const blocks: string[][] = [];
+	let markerIndent = -1;
+	for (const line of lines.slice(stepsIndex + 1)) {
+		if (line.trim() === "") {
+			continue;
+		}
+		const indent = indentOf(line);
+		if (
+			/^\s*-\s/.test(line) &&
+			(markerIndent === -1 || indent === markerIndent)
+		) {
+			markerIndent = indent;
+			blocks.push([line]);
+			continue;
+		}
+		if (markerIndent !== -1 && indent > markerIndent) {
+			blocks[blocks.length - 1].push(line);
+			continue;
+		}
+		break;
+	}
+	return blocks.map((block) => block.join("\n"));
+}
+
+/** run の値を取り出す。ブロックスカラー(`run: |`)は行ごとに分けて返す */
+function runCommands(lines: string[], keyColumn: number): string[] {
+	const index = lines.findIndex(
+		(line, position) =>
+			(position === 0 || indentOf(line) === keyColumn) &&
+			/^run:/.test(line.slice(keyColumn)),
+	);
 	if (index === -1) {
 		return [];
 	}
-	const unquote = (value: string) => value.trim().replace(/^["']|["']$/g, "");
-	const inline = (/^ {4}needs:(.*)$/.exec(lines[index])?.[1] ?? "").trim();
-	if (inline !== "") {
-		return inline
-			.replace(/^\[/, "")
-			.replace(/\]$/, "")
-			.split(",")
-			.map(unquote)
-			.filter((value) => value !== "");
+	const inline = stripInlineComment(
+		lines[index].slice(keyColumn).replace(/^run:/, ""),
+	);
+	if (inline !== "" && !/^[|>]/.test(inline)) {
+		return [inline];
 	}
-	const items: string[] = [];
+	const commands: string[] = [];
 	for (const line of lines.slice(index + 1)) {
-		const item = /^\s+-\s*(\S+)\s*$/.exec(line);
-		if (item === null) {
+		if (line.trim() === "") {
+			continue;
+		}
+		if (indentOf(line) <= keyColumn) {
 			break;
 		}
-		items.push(unquote(item[1]));
+		commands.push(stripInlineComment(line.trim()));
 	}
-	return items;
+	return commands;
+}
+
+function parseStep(block: string): Step {
+	const lines = block.split("\n");
+	const keyColumn = lines[0].length - lines[0].replace(/^\s*-\s+/, "").length;
+	const keys = lines.flatMap((line, position) => {
+		if (position !== 0 && indentOf(line) !== keyColumn) {
+			return [];
+		}
+		const key = /^([A-Za-z0-9_-]+):/.exec(line.slice(keyColumn));
+		return key === null ? [] : [key[1]];
+	});
+	return { keys, commands: runCommands(lines, keyColumn) };
 }
 
 function collectGateFailures(yaml: string): string[] {
-	const jobs = splitJobs(yaml);
-	const artifactJob = jobUsing(jobs, ARTIFACT_ACTION);
-	const deployJob = jobUsing(jobs, DEPLOY_ACTION);
 	const failures: string[] = [];
-	if (artifactJob === undefined) {
-		failures.push(`${ARTIFACT_ACTION} を使う job が無い`);
-	} else if (!runsGateScript(artifactJob)) {
+	if (!pushBranches(yaml).includes("main")) {
+		failures.push("on.push.branches に main が無い");
+	}
+	const jobs = splitJobs(yaml);
+	const artifactJobs = jobsUsing(jobs, ARTIFACT_ACTION);
+	const deployJobs = jobsUsing(jobs, DEPLOY_ACTION);
+	// 2 本目があると、ゲートを通らない経路から公開できてしまう
+	if (artifactJobs.length !== 1) {
 		failures.push(
-			`${GATE_SCRIPT} を実行する step が job "${artifactJob.name}" に無い`,
+			`${ARTIFACT_ACTION} を使う job が ${artifactJobs.length} 個(1 個であること)`,
 		);
 	}
-	if (deployJob === undefined) {
-		failures.push(`${DEPLOY_ACTION} を使う job が無い`);
-	} else if (
-		artifactJob !== undefined &&
-		!needsOf(deployJob).includes(artifactJob.name)
-	) {
+	if (deployJobs.length !== 1) {
+		failures.push(
+			`${DEPLOY_ACTION} を使う job が ${deployJobs.length} 個(1 個であること)`,
+		);
+	}
+	if (artifactJobs.length !== 1 || deployJobs.length !== 1) {
+		return failures;
+	}
+	const artifactJob = artifactJobs[0];
+	const deployJob = deployJobs[0];
+	for (const job of [artifactJob, deployJob]) {
+		for (const key of jobLevelKeys(job)) {
+			if (DISABLING_KEYS.includes(key)) {
+				failures.push(`job "${job.name}" に job レベルの ${key} がある`);
+			}
+		}
+	}
+	const gateSteps = stepBlocks(artifactJob)
+		.map(parseStep)
+		.filter((step) =>
+			step.commands.some((command) => GATE_COMMAND.test(command)),
+		);
+	if (gateSteps.length === 0) {
+		failures.push(
+			`job "${artifactJob.name}" に ${GATE_SCRIPT} を実行する step が無い`,
+		);
+	}
+	for (const step of gateSteps) {
+		for (const key of step.keys) {
+			if (DISABLING_KEYS.includes(key)) {
+				failures.push(
+					`job "${artifactJob.name}" のゲート step に ${key} がある`,
+				);
+			}
+		}
+	}
+	if (!needsOf(deployJob).includes(artifactJob.name)) {
 		failures.push(
 			`job "${deployJob.name}" の needs に "${artifactJob.name}" が無い`,
 		);
 	}
 	return failures;
 }
+
+const VALID_WORKFLOW = [
+	"on:",
+	"  push:",
+	"    branches: [main]",
+	"  workflow_dispatch:",
+	"",
+	"jobs:",
+	"  build:",
+	"    runs-on: ubuntu-latest",
+	"    steps:",
+	"      - uses: actions/checkout@v7",
+	"      - run: npm ci",
+	"      - run: sh scripts/check.sh",
+	"      - uses: actions/upload-pages-artifact@v5",
+	"        with:",
+	"          path: ./dist",
+	"  deploy:",
+	"    needs: build",
+	"    runs-on: ubuntu-latest",
+	"    steps:",
+	"      - uses: actions/deploy-pages@v5",
+	"",
+].join("\n");
+
+const GATE_STEP = "      - run: sh scripts/check.sh";
+
+function appendJob(yaml: string, lines: string[]): string {
+	return yaml + lines.join("\n");
+}
+
+// 検査が「ゲートの実効性」を見ていることを示す回帰ケース。
+// 期待値は失敗メッセージの文言ではなく、原因になった YAML のキー / action 名で照合する
+// (人間向けの文言を直しただけで落ちないようにするため)。
+const BYPASSES: [string, string, RegExp][] = [
+	[
+		"A: ゲート step の continue-on-error",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			`${GATE_STEP}\n        continue-on-error: true`,
+		),
+		/continue-on-error/,
+	],
+	[
+		"B: || true でゲートの失敗を握りつぶす",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: sh scripts/check.sh || true",
+		),
+		/scripts\/check\.sh/,
+	],
+	[
+		"C: ゲート step の if: false",
+		VALID_WORKFLOW.replace(GATE_STEP, `${GATE_STEP}\n        if: false`),
+		/\bif\b/,
+	],
+	[
+		"D: deploy job の if: always()",
+		VALID_WORKFLOW.replace(
+			"    needs: build",
+			"    needs: build\n    if: always()",
+		),
+		/\bif\b/,
+	],
+	[
+		"E: 行末コメントでゲートを装う",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: npm run test # sh scripts/check.sh は流さない",
+		),
+		/scripts\/check\.sh/,
+	],
+	[
+		"F: echo でゲートを装う",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: echo 'scripts/check.sh は別途'",
+		),
+		/scripts\/check\.sh/,
+	],
+	[
+		"G: artifact job の continue-on-error",
+		VALID_WORKFLOW.replace(
+			"  build:\n    runs-on: ubuntu-latest",
+			"  build:\n    continue-on-error: true\n    runs-on: ubuntu-latest",
+		),
+		/continue-on-error/,
+	],
+	[
+		"H: env の値でゲートを装う",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: npm run test\n        env:\n          SKIPPED_GATE: scripts/check.sh",
+		),
+		/scripts\/check\.sh/,
+	],
+	[
+		"M: ゲートを通らない 2 本目の deploy job",
+		appendJob(VALID_WORKFLOW, [
+			"  deploy-hotfix:",
+			"    runs-on: ubuntu-latest",
+			"    steps:",
+			"      - uses: actions/deploy-pages@v5",
+			"",
+		]),
+		/actions\/deploy-pages/,
+	],
+	[
+		"N: ゲートを通らない 2 本目の artifact job",
+		appendJob(
+			VALID_WORKFLOW.replace(
+				"    needs: build",
+				"    needs: [build, build-fast]",
+			),
+			[
+				"  build-fast:",
+				"    runs-on: ubuntu-latest",
+				"    steps:",
+				"      - uses: actions/upload-pages-artifact@v5",
+				"",
+			],
+		),
+		/actions\/upload-pages-artifact/,
+	],
+	[
+		"トリガーを main 以外に変える",
+		VALID_WORKFLOW.replace("    branches: [main]", "    branches: [preview]"),
+		/on\.push\.branches/,
+	],
+	[
+		"ゲート step を消す",
+		VALID_WORKFLOW.replace(`${GATE_STEP}\n`, ""),
+		/scripts\/check\.sh/,
+	],
+	[
+		"ゲート step をコメントアウトする",
+		VALID_WORKFLOW.replace(GATE_STEP, `      # ${GATE_STEP.trim()}`),
+		/scripts\/check\.sh/,
+	],
+	[
+		"step の name にだけ書く",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - name: sh scripts/check.sh\n        run: npm run test",
+		),
+		/scripts\/check\.sh/,
+	],
+	[
+		"deploy job の needs を外す",
+		VALID_WORKFLOW.replace("    needs: build\n", ""),
+		/needs/,
+	],
+];
 
 describe("invariants: Pages デプロイのゲート", () => {
 	it("deploy.yml が check.sh を通してからデプロイする", () => {
@@ -143,81 +464,16 @@ describe("invariants: Pages デプロイのゲート", () => {
 		expect(failures, `ゲートの欠落:\n${failures.join("\n")}`).toEqual([]);
 	});
 
-	it("ゲートを外した workflow を検出できる", () => {
-		const jobs = (gateStep: string, needs: string) =>
-			[
-				"jobs:",
-				"  build:",
-				"    runs-on: ubuntu-latest",
-				"    steps:",
-				"      - uses: actions/checkout@v7",
-				gateStep,
-				"      - uses: actions/upload-pages-artifact@v5",
-				"        with:",
-				"          path: ./dist",
-				"  deploy:",
-				needs,
-				"    runs-on: ubuntu-latest",
-				"    steps:",
-				"      - uses: actions/deploy-pages@v5",
-				"",
-			].join("\n");
-
+	it("ゲートを無効化する書き換えを検出できる", () => {
+		expect(collectGateFailures(VALID_WORKFLOW)).toEqual([]);
 		expect(
 			collectGateFailures(
-				jobs("      - run: sh scripts/check.sh", "    needs: build"),
-			),
-		).toEqual([]);
-		expect(
-			collectGateFailures(
-				jobs("      - run: sh scripts/check.sh", "    needs: [build]"),
+				VALID_WORKFLOW.replace("    needs: build", "    needs: [build]"),
 			),
 		).toEqual([]);
 
-		expect(
-			collectGateFailures(
-				jobs("      - run: npm run build", "    needs: build"),
-			),
-		).toEqual(['scripts/check.sh を実行する step が job "build" に無い']);
-
-		expect(
-			collectGateFailures(
-				jobs("      # - run: sh scripts/check.sh", "    needs: build"),
-			),
-		).toEqual(['scripts/check.sh を実行する step が job "build" に無い']);
-
-		expect(
-			collectGateFailures(
-				jobs("      - name: sh scripts/check.sh", "    needs: build"),
-			),
-		).toEqual(['scripts/check.sh を実行する step が job "build" に無い']);
-
-		expect(
-			collectGateFailures(
-				jobs("      - run: sh scripts/check.sh", "    if: always()"),
-			),
-		).toEqual(['job "deploy" の needs に "build" が無い']);
-
-		// ゲートを迂回する形(無関係な job に check.sh がある)も検出する
-		const bypass = [
-			"jobs:",
-			"  lint:",
-			"    runs-on: ubuntu-latest",
-			"    steps:",
-			"      - run: sh scripts/check.sh",
-			"  build:",
-			"    runs-on: ubuntu-latest",
-			"    steps:",
-			"      - uses: actions/upload-pages-artifact@v5",
-			"  deploy:",
-			"    needs: build",
-			"    runs-on: ubuntu-latest",
-			"    steps:",
-			"      - uses: actions/deploy-pages@v5",
-			"",
-		].join("\n");
-		expect(collectGateFailures(bypass)).toEqual([
-			'scripts/check.sh を実行する step が job "build" に無い',
-		]);
+		for (const [label, yaml, cause] of BYPASSES) {
+			expect(collectGateFailures(yaml).join("\n"), label).toMatch(cause);
+		}
 	});
 });

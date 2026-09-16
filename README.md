@@ -48,7 +48,7 @@ npm run generate-recipes -- "/mnt/e/Epic Games/Satisfactory/CommunityResources/D
 
 lint / format は **Biome**。整形の適用は `sh scripts/fmt.sh`（check.sh 側は差分があれば失敗する検出のみ）。
 
-GitHub Actions が走るのは main へのマージ時だけで、Pages へ公開する前にも同じ `sh scripts/check.sh` を通す（`.github/workflows/deploy.yml`）。squash マージで main にできるコミットは pre-push フックを一度も通っていないため、公開する成果物そのものをここで検証する。
+GitHub Actions が走るのは main への push（通常はマージ）と手動実行のときだけで、Pages へ公開する前にも同じ `sh scripts/check.sh` を通す（`.github/workflows/deploy.yml`）。squash マージで main にできるコミットは pre-push フックを一度も通っていないため、公開する成果物そのものをここで検証する。
 
 注意: `astro check` は TypeScript 6.x が必要（7.x のネイティブコンパイラは対応 API 未搭載のため devDependencies で 6.x にピン留めしている）。
 
