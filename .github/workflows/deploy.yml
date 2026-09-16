@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # 公開は 1 本ずつ直列に流す。走行中のデプロイを打ち切ると Pages が中途半端な状態で残りうる
 concurrency:
@@ -35,6 +33,10 @@ jobs:
 
   deploy:
     needs: build
+    # 依存パッケージのコードが動く build job には Pages への書き込みも OIDC も渡さない
+    permissions:
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     environment:
       name: github-pages
