@@ -2,7 +2,7 @@
 
 Satisfactory の生産チェーン計算機（**非公式ツール**）。作りたいアイテムと目標生産数（個/分）を入力すると、必要な**機械の種類と台数**・**中間素材と原料の必要量（個/分）**・**合計消費電力（MW）**を逆算して表示する Web アプリ。
 
-- 計算はすべてクライアント側の純粋な処理（サーバー API なし）。静的サイトとして GitHub Pages で公開予定
+- 計算はすべてクライアント側の純粋な処理（サーバー API なし）。静的サイトとして GitHub Pages で公開: <https://fumimi23.github.io/ficsit-calc>
 - v1 はデフォルトレシピのみ対応。代替レシピ・オーバークロック・採掘機/資源純度はロードマップ扱い（経緯と全体像は [docs/kickoff.md](docs/kickoff.md)）
 
 ## データの出典と取り扱い
@@ -40,13 +40,15 @@ npm run generate-recipes -- "/mnt/e/Epic Games/Satisfactory/CommunityResources/D
 
 ## ローカル CI
 
-GitHub Actions は使わず、push 前にローカルでチェックを回す。
+既定のゲートは push 前のローカルチェック（git フック）。
 
 - 有効化（クローンごとに一度）: `git config core.hooksPath .githooks`
 - 手動実行: `sh scripts/check.sh`（Biome → `astro check` → Vitest の順）
 - 緊急時のバイパス: `git push --no-verify`
 
 lint / format は **Biome**。整形の適用は `sh scripts/fmt.sh`（check.sh 側は差分があれば失敗する検出のみ）。
+
+GitHub Actions が走るのは main への push（通常はマージ）と手動実行のときだけで、Pages へ公開する前にも同じ `sh scripts/check.sh` を通す（`.github/workflows/deploy.yml`）。squash マージで main にできるコミットは pre-push フックを一度も通っていないため、公開する成果物そのものをここで検証する。
 
 注意: `astro check` は TypeScript 6.x が必要（7.x のネイティブコンパイラは対応 API 未搭載のため devDependencies で 6.x にピン留めしている）。
 
