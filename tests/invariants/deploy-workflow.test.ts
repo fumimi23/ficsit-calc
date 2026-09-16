@@ -10,8 +10,10 @@
 // 射程:
 // - `run: |` は許すが、ブロック内のシェル条件分岐(`if ...; then`)までは追わない
 //   (`set +e` による errexit 無効化だけは個別に弾く)。
-// - `if` / `shell` はキーの存在だけで失敗にする。強化目的の条件(`if: github.ref == ...`)や
-//   `shell: bash` の明示を足すときも台帳の書き換えが要る(既定の `bash -e {0}` から外れる形は区別しない)。
+// - `if` / `shell` / `defaults` はキーの存在だけで失敗にする。強化目的の条件(`if: github.ref == ...`)や
+//   `shell: bash` の明示、`defaults.run.working-directory` のような無害な用途を足すときも
+//   台帳の書き換えが要る(既定の `bash -e {0}` から外れる形を値で区別しない)。
+// - ゲートの `run` は 1 行か `run: |` のみ。折りたたみスカラー(`run: >`)はコマンド無しとして扱う。
 // - ゲートの呼び出しは `sh|bash scripts/check.sh` の 1 形に固定する。`npm run check` 経由は等価でも red
 //   (別名経由を許すと、その別名の中身を空にしてゲートを抜けられる)。
 import { existsSync, readFileSync } from "node:fs";
@@ -44,6 +46,9 @@ const GATE_STEP_DISABLING_KEYS = [...DISABLING_KEYS, "shell"];
 
 // これを置くと main への push でも workflow ごと起動しなくなる
 const PATH_FILTER_KEYS = ["paths", "paths-ignore"];
+
+// workflow / job のどちらに置いても run の既定シェルを差し替えられる
+const DEFAULTS_KEY = "defaults";
 
 // `"continue-on-error": true` のような引用符付きのキーでも同じ意味になる
 const KEY_PATTERN = /^["']?([A-Za-z0-9_-]+)["']?:/;
@@ -144,6 +149,18 @@ function pushBlock(yaml: string): string[] {
 	return block;
 }
 
+function topLevelKeys(yaml: string): string[] {
+	return stripComments(yaml)
+		.split("\n")
+		.flatMap((line) => {
+			if (indentOf(line) !== 0) {
+				return [];
+			}
+			const key = KEY_PATTERN.exec(line);
+			return key === null ? [] : [key[1]];
+		});
+}
+
 function pushBranches(yaml: string): string[] {
 	return sequenceValue(pushBlock(yaml), /^ {4}branches:(.*)$/);
 }
@@ -174,7 +191,7 @@ function splitJobs(yaml: string): Job[] {
 		if (!inJobs) {
 			continue;
 		}
-		const key = /^ {2}([A-Za-z0-9_-]+):\s*$/.exec(line);
+		const key = /^ {2}["']?([A-Za-z0-9_-]+)["']?:\s*$/.exec(line);
 		if (key !== null) {
 			starts.push({ name: key[1], line: index });
 		}
@@ -204,11 +221,15 @@ function needsOf(job: Job): string[] {
 	return sequenceValue(job.body.split("\n"), /^ {4}needs:(.*)$/);
 }
 
-/** job が使っている action をバージョン抜きで列挙する */
+/** job が使っている action をバージョン抜きで列挙する(キー・値の引用符は外す) */
 function actionsUsedBy(job: Job): string[] {
 	return job.body.split("\n").flatMap((line) => {
-		const used = /^\s*(?:-\s+)?uses:\s*(\S+)/.exec(line);
-		return used === null ? [] : [used[1].split("@")[0]];
+		const text = line.trim().replace(/^-\s+/, "");
+		if (KEY_PATTERN.exec(text)?.[1] !== "uses") {
+			return [];
+		}
+		const used = unquote(stripInlineComment(text.replace(KEY_PATTERN, "")));
+		return used === "" ? [] : [used.split("@")[0]];
 	});
 }
 
@@ -246,7 +267,11 @@ function stepBlocks(job: Job): string[] {
 	return blocks.map((block) => block.join("\n"));
 }
 
-/** run の値を取り出す。ブロックスカラー(`run: |`)は行ごとに分けて返す */
+/**
+ * run の値を取り出す。ブロックスカラー(`run: |`)は行ごとに分けて返す。
+ * 折りたたみスカラー(`run: >`)は行が連結されて 1 コマンドになる(`sh scripts/check.sh` の次行に
+ * `|| true` を置ける)ので、折りたたみ規則を実装せずコマンド無しとして扱う = ゲートに使えない。
+ */
 function runCommands(lines: string[], keyColumn: number): string[] {
 	const index = lines.findIndex(
 		(line, position) =>
@@ -259,7 +284,10 @@ function runCommands(lines: string[], keyColumn: number): string[] {
 	const inline = stripInlineComment(
 		lines[index].slice(keyColumn).replace(KEY_PATTERN, ""),
 	);
-	if (inline !== "" && !/^[|>]/.test(inline)) {
+	if (/^>/.test(inline)) {
+		return [];
+	}
+	if (inline !== "" && !/^\|/.test(inline)) {
 		return [inline];
 	}
 	const commands: string[] = [];
@@ -296,6 +324,10 @@ function collectGateFailures(yaml: string): string[] {
 	for (const key of pushPathFilters(yaml)) {
 		failures.push(`on.push に ${key} がある`);
 	}
+	// defaults.run.shell でも run の既定シェル(`bash -e {0}`)を差し替えられる
+	if (topLevelKeys(yaml).includes(DEFAULTS_KEY)) {
+		failures.push(`workflow レベルの ${DEFAULTS_KEY} がある`);
+	}
 	const jobs = splitJobs(yaml);
 	const artifactJobs = jobsUsing(jobs, ARTIFACT_ACTION);
 	const deployJobs = jobsUsing(jobs, DEPLOY_ACTION);
@@ -322,6 +354,11 @@ function collectGateFailures(yaml: string): string[] {
 			}
 		}
 	}
+	if (jobLevelKeys(artifactJob).includes(DEFAULTS_KEY)) {
+		failures.push(
+			`job "${artifactJob.name}" に job レベルの ${DEFAULTS_KEY} がある`,
+		);
+	}
 	const gateSteps = stepBlocks(artifactJob)
 		.map(parseStep)
 		.filter((step) =>
@@ -342,7 +379,7 @@ function collectGateFailures(yaml: string): string[] {
 		}
 		for (const command of step.commands) {
 			// `set -e; set +e` のように区切りの後ろへ置かれても拾う
-			for (const segment of command.split(/\s*(?:;|&&)\s*/)) {
+			for (const segment of command.split(/\s*(?:;|&&|\|\|)\s*/)) {
 				if (ERREXIT_OFF.test(segment)) {
 					failures.push(
 						`job "${artifactJob.name}" のゲート step に set +e (errexit の無効化)がある`,
@@ -525,6 +562,60 @@ const BYPASSES: [string, string, RegExp][] = [
 		"X5: ゲート step の shell 上書きで -e を外す",
 		VALID_WORKFLOW.replace(GATE_STEP, `${GATE_STEP}\n        shell: bash {0}`),
 		/shell/,
+	],
+	[
+		"Y1: workflow レベルの defaults で既定シェルを差し替える",
+		VALID_WORKFLOW.replace(
+			"jobs:",
+			"defaults:\n  run:\n    shell: bash {0}\n\njobs:",
+		),
+		/defaults/,
+	],
+	[
+		"Y2: artifact job の defaults で既定シェルを差し替える",
+		VALID_WORKFLOW.replace(
+			"  build:\n    runs-on: ubuntu-latest",
+			"  build:\n    defaults:\n      run:\n        shell: bash {0}\n    runs-on: ubuntu-latest",
+		),
+		/defaults/,
+	],
+	[
+		"Y3: 折りたたみスカラーで || true を次行に隠す",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: >\n          sh scripts/check.sh\n          || true",
+		),
+		/scripts\/check\.sh/,
+	],
+	[
+		"Y4: 引用符付き uses の 2 本目の deploy job",
+		`${VALID_WORKFLOW}${[
+			"  deploy-hotfix:",
+			"    runs-on: ubuntu-latest",
+			"    steps:",
+			'      - "uses": "actions/deploy-pages@v5"',
+			"",
+		].join("\n")}`,
+		/actions\/deploy-pages/,
+	],
+	[
+		"Y5: 引用符付き job ID の 2 本目の deploy job",
+		`${VALID_WORKFLOW}${[
+			'  "deploy-hotfix":',
+			"    runs-on: ubuntu-latest",
+			"    steps:",
+			"      - uses: actions/deploy-pages@v5",
+			"",
+		].join("\n")}`,
+		/actions\/deploy-pages/,
+	],
+	[
+		"Y6: || の後ろに set +e",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: |\n          false || set +e\n          sh scripts/check.sh",
+		),
+		/set \+e/,
 	],
 	[
 		"X3: paths-ignore で起動を止める",
