@@ -288,7 +288,7 @@ function runCommands(lines: string[], keyColumn: number): string[] {
 		return [];
 	}
 	if (inline !== "" && !/^\|/.test(inline)) {
-		return [inline];
+		return [unquote(inline)];
 	}
 	const commands: string[] = [];
 	for (const line of lines.slice(index + 1)) {
@@ -666,6 +666,10 @@ const VALID_VARIANTS: [string, string][] = [
 			"    branches: [main]",
 			"    branches:\n      - main # 本番のみ",
 		).replace("    needs: build", "    needs:\n      - build # ゲート"),
+	],
+	[
+		"run の値を引用符で囲む",
+		VALID_WORKFLOW.replace(GATE_STEP, '      - run: "sh scripts/check.sh"'),
 	],
 	[
 		"run: | でゲートを呼ぶ",
