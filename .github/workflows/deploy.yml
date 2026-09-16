@@ -33,7 +33,9 @@ jobs:
 
   deploy:
     needs: build
-    # 依存パッケージのコードが動く build job には Pages への書き込みも OIDC も渡さない
+    # 依存パッケージのコードが動く build job には Pages への書き込みも OIDC も渡さない。
+    # job の permissions はトップレベルの継承ではなく置換なので、この job の contents は none。
+    # checkout を足すなら contents: read をここに書き足すこと
     permissions:
       pages: write
       id-token: write

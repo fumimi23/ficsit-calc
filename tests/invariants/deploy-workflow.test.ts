@@ -10,7 +10,8 @@
 // 射程:
 // - `run: |` は許すが、ブロック内のシェル条件分岐(`if ...; then`)までは追わない
 //   (`set +e` による errexit 無効化だけは個別に弾く)。
-// - `if` はキーの存在だけで失敗にする。強化目的の条件(`if: github.ref == ...`)を足すときも台帳の書き換えが要る。
+// - `if` / `shell` はキーの存在だけで失敗にする。強化目的の条件(`if: github.ref == ...`)や
+//   `shell: bash` の明示を足すときも台帳の書き換えが要る(既定の `bash -e {0}` から外れる形は区別しない)。
 // - ゲートの呼び出しは `sh|bash scripts/check.sh` の 1 形に固定する。`npm run check` 経由は等価でも red
 //   (別名経由を許すと、その別名の中身を空にしてゲートを抜けられる)。
 import { existsSync, readFileSync } from "node:fs";
@@ -36,6 +37,10 @@ const ERREXIT_OFF = /^set\s+\+(?:[a-zA-Z]*e[a-zA-Z]*|o\s+errexit)\b/;
 
 // 失敗しても後続を止めない / そもそも実行しない、を作れるキー
 const DISABLING_KEYS = ["continue-on-error", "if"];
+
+// run の既定シェルは `bash -e {0}`。`shell: bash {0}` に差し替えると -e が外れ、
+// ゲートの後ろに別のコマンドを置くだけで check.sh の失敗を握りつぶせる
+const GATE_STEP_DISABLING_KEYS = [...DISABLING_KEYS, "shell"];
 
 // これを置くと main への push でも workflow ごと起動しなくなる
 const PATH_FILTER_KEYS = ["paths", "paths-ignore"];
@@ -83,12 +88,22 @@ function sequenceValue(lines: string[], keyPattern: RegExp): string[] {
 			.filter((value) => value !== "");
 	}
 	const items: string[] = [];
+	let itemIndent = -1;
 	for (const line of lines.slice(index + 1)) {
-		const item = /^\s+-\s*(\S+)\s*$/.exec(line);
-		if (item === null) {
+		if (line.trim() === "") {
+			continue;
+		}
+		const item = /^(\s+)-\s*(.+)$/.exec(line);
+		if (item === null || (itemIndent !== -1 && item[1].length !== itemIndent)) {
 			break;
 		}
-		items.push(unquote(item[1]));
+		itemIndent = item[1].length;
+		// `- main # 本番のみ` のような行末コメント付きでも要素を落とさない(落とすと正当な workflow が red になる)
+		const value = unquote(stripInlineComment(item[2]));
+		if (value === "") {
+			break;
+		}
+		items.push(value);
 	}
 	return items;
 }
@@ -319,17 +334,20 @@ function collectGateFailures(yaml: string): string[] {
 	}
 	for (const step of gateSteps) {
 		for (const key of step.keys) {
-			if (DISABLING_KEYS.includes(key)) {
+			if (GATE_STEP_DISABLING_KEYS.includes(key)) {
 				failures.push(
 					`job "${artifactJob.name}" のゲート step に ${key} がある`,
 				);
 			}
 		}
 		for (const command of step.commands) {
-			if (ERREXIT_OFF.test(command)) {
-				failures.push(
-					`job "${artifactJob.name}" のゲート step に set +e (errexit の無効化)がある`,
-				);
+			// `set -e; set +e` のように区切りの後ろへ置かれても拾う
+			for (const segment of command.split(/\s*(?:;|&&)\s*/)) {
+				if (ERREXIT_OFF.test(segment)) {
+					failures.push(
+						`job "${artifactJob.name}" のゲート step に set +e (errexit の無効化)がある`,
+					);
+				}
 			}
 		}
 	}
@@ -496,6 +514,19 @@ const BYPASSES: [string, string, RegExp][] = [
 		/set \+e/,
 	],
 	[
+		"X1: 区切りの後ろに set +e を置く",
+		VALID_WORKFLOW.replace(
+			GATE_STEP,
+			"      - run: |\n          set -e; set +e\n          sh scripts/check.sh",
+		),
+		/set \+e/,
+	],
+	[
+		"X5: ゲート step の shell 上書きで -e を外す",
+		VALID_WORKFLOW.replace(GATE_STEP, `${GATE_STEP}\n        shell: bash {0}`),
+		/shell/,
+	],
+	[
 		"X3: paths-ignore で起動を止める",
 		VALID_WORKFLOW.replace(
 			"    branches: [main]",
@@ -537,6 +568,13 @@ const VALID_VARIANTS: [string, string][] = [
 			"    branches: [main]",
 			"    branches:\n      - main",
 		),
+	],
+	[
+		"ブロックリストの要素に行末コメントを付ける",
+		VALID_WORKFLOW.replace(
+			"    branches: [main]",
+			"    branches:\n      - main # 本番のみ",
+		).replace("    needs: build", "    needs:\n      - build # ゲート"),
 	],
 	[
 		"run: | でゲートを呼ぶ",
