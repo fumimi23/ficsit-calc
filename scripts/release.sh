@@ -42,15 +42,19 @@ fi
 # close だけ失敗した回はマイルストーンが open のまま残るので、復旧の再実行はここを通る。
 # --paginate と --jq の併用では jq フィルタがページごとに適用されて出力が連結されるので、
 # 1 行 1 件で出して先頭を取る。パイプで直接受けると set -e が gh の失敗を拾えなくなるため代入を分ける。
-MILESTONE_ROWS="$(gh api --paginate "repos/{owner}/{repo}/milestones?state=open&per_page=100" \
-  --jq ".[] | select(.title == \"$TAG\") | \"\(.number) \(.closed_issues)\"")"
+# タグ名は env 経由で渡す。jq のソースへ連結すると、引用符を含む名前で構文エラーになる。
+MILESTONE_ROWS="$(TAG="$TAG" gh api --paginate \
+  "repos/{owner}/{repo}/milestones?state=open&per_page=100" \
+  --jq '.[] | select(.title == env.TAG) | "\(.number) \(.open_issues) \(.closed_issues)"')"
 MILESTONE_ROW="$(printf '%s\n' "$MILESTONE_ROWS" | head -n 1)"
 if [ -z "$MILESTONE_ROW" ]; then
   echo "open のマイルストーン $TAG がありません(未作成か、既に close 済み)" >&2
   exit 1
 fi
-MILESTONE_NUMBER="${MILESTONE_ROW% *}"
-MILESTONE_CLOSED="${MILESTONE_ROW#* }"
+set -- $MILESTONE_ROW
+MILESTONE_NUMBER="$1"
+MILESTONE_OPEN="$2"
+MILESTONE_CLOSED="$3"
 
 REMAINING="$(gh issue list --state open --milestone "$TAG" --limit 200 \
   --json number,title --jq '.[] | "  #\(.number) \(.title)"')"
@@ -60,10 +64,21 @@ if [ -n "$REMAINING" ]; then
   exit 1
 fi
 
+# REST の open 件数はマイルストーンを付けた open PR も数える。gh issue list は PR を含めないので、
+# 未マージ PR だけが残る版はここでしか止められない。
+# if の条件に置いたコマンドには set -e が効かないため、非数値で [ が落ちても素通りする。
+# ! で受けると [ の失敗(終了コード 2)が真になり、中止側に倒れる。
+if ! [ "$MILESTONE_OPEN" -eq 0 ] 2>/dev/null; then
+  echo "マイルストーン $TAG の open 件数が 0 ではありません(値: $MILESTONE_OPEN)。" >&2
+  echo "issue 一覧は空なので、マイルストーンを付けた open の PR が残っているとみられます。" >&2
+  exit 1
+fi
+
 # 作ったばかりで issue を 1 件も紐付けていないマイルストーンは残件 0 の検査を素通りするので、
 # 中身のない版を切らないようここで止める。
-if [ "$MILESTONE_CLOSED" -eq 0 ]; then
-  echo "マイルストーン $TAG に closed の issue がありません(中身のない版は切らない)" >&2
+if ! [ "$MILESTONE_CLOSED" -gt 0 ] 2>/dev/null; then
+  echo "マイルストーン $TAG に closed の issue がありません(値: $MILESTONE_CLOSED)。" >&2
+  echo "中身のない版は切らない。" >&2
   exit 1
 fi
 
