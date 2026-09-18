@@ -100,6 +100,25 @@ export interface ExtractorDef {
 	constructionCost: RecipeIngredient[];
 }
 
+/** 搬送設備 ID(例: "Build_ConveyorBeltMk4_C")。RecipeData.belts / pipes の要素の id */
+export type TransportId = string;
+
+/**
+ * 搬送設備(ベルト・パイプ)1 段。
+ * 建設素材は持たない: ベルト・パイプの費用は長さ依存で「1 台あたり」が定義できないため。
+ * コンベアリフトも収録しない: 速度がベルトと同一で、段の判定に情報を足さないため。
+ */
+export interface TransportDef {
+	id: TransportId;
+	name: string;
+	/** 日本語表示名。無ければ表示は name にフォールバック */
+	nameJa?: string;
+	/** Mk 番号(英語表示名の "Mk.N" 由来)。ラベルの "Mk.4" と段の順序付けに使う */
+	tier: number;
+	/** 1 本あたりの送量上限(ベルト = 個/分、パイプ = m³/分) */
+	ratePerMinute: ExactNumeric;
+}
+
 export interface RecipeIngredient {
 	item: ItemId;
 	/** 1 クラフトあたりの個数 */
@@ -130,6 +149,10 @@ export interface RecipeData {
 	generators: GeneratorDef[];
 	/** 採取設備の一覧。原料合計から必要台数・電力を出すのに使う */
 	extractors: ExtractorDef[];
+	/** ベルトの一覧(tier 昇順)。固体の流量を運ぶのに要る最低の Mk を出すのに使う */
+	belts: TransportDef[];
+	/** パイプの一覧(tier 昇順)。液体・気体の流量に使う */
+	pipes: TransportDef[];
 }
 
 // ---- 逆算結果 ----

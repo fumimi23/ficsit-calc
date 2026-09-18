@@ -99,6 +99,8 @@ const syntheticData: RecipeData = {
 	],
 	generators: [],
 	extractors: [],
+	belts: [],
+	pipes: [],
 };
 
 describe("primary レシピの選択規則(issue #5)", () => {

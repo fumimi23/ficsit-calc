@@ -310,3 +310,67 @@ describe("Docs パーサー: 採取設備の収録(issue #23)", () => {
 		expect(data.items.Desc_Water_C?.form).toBe("liquid");
 	});
 });
+
+// issue #35: 接続図のエッジに最低 Mk を注記するために、Docs から搬送設備
+// (ベルト・パイプの 1 本あたりの送量上限)も収録する。
+describe("Docs パーサー: 搬送設備の収録(issue #35)", () => {
+	// ExactNumeric の表現(number / 十進文字列)は約束しないので、値は Fraction で比べる
+	const rates = (list: { ratePerMinute: ExactNumeric }[]) =>
+		list.map((t) => Fraction.from(t.ratePerMinute).toString());
+
+	it("ベルトが Mk.1〜6 の 6 段、tier 昇順で収録される", () => {
+		// Docs 上の並びは tier 順ではないので、昇順は読み手ではなくパーサーが保証する
+		const belts = parseFixture().belts;
+
+		expect(belts.map((b) => b.id)).toEqual([
+			"Build_ConveyorBeltMk1_C",
+			"Build_ConveyorBeltMk2_C",
+			"Build_ConveyorBeltMk3_C",
+			"Build_ConveyorBeltMk4_C",
+			"Build_ConveyorBeltMk5_C",
+			"Build_ConveyorBeltMk6_C",
+		]);
+		expect(belts.map((b) => b.tier)).toEqual([1, 2, 3, 4, 5, 6]);
+	});
+
+	it("ベルトの送量が Docs の mSpeed の半分(個/分)で収録される", () => {
+		// mSpeed は cm/分で、アイテム間隔が 2cm 固定なので個/分は mSpeed / 2
+		const belts = parseFixture().belts;
+
+		expect(rates(belts)).toEqual(["60", "120", "270", "480", "780", "1200"]);
+
+		const mk4 = belts.find((b) => b.id === "Build_ConveyorBeltMk4_C");
+		expect(mk4?.name).toBe("Conveyor Belt Mk.4");
+		expect(mk4?.nameJa).toBe("コンベア・ベルト Mk.4");
+	});
+
+	it("パイプが Mk.1・Mk.2 の 2 段、送量 mFlowLimit × 60(m³/分)で収録される", () => {
+		// ClassName は Build_Pipeline_C / Build_PipelineMK2_C、日本語名は「パイプラインMk.1」と
+		// 表記が揃わない。段は英語表示名の "Mk.N" からしか一貫して取れない
+		const pipes = parseFixture().pipes;
+
+		expect(pipes.map((p) => p.id)).toEqual([
+			"Build_Pipeline_C",
+			"Build_PipelineMK2_C",
+		]);
+		expect(pipes.map((p) => p.tier)).toEqual([1, 2]);
+		expect(rates(pipes)).toEqual(["300", "600"]);
+		expect(pipes[1]?.name).toBe("Pipeline Mk.2");
+		expect(pipes[1]?.nameJa).toBe("パイプラインMk.2");
+	});
+
+	it("外観違いのクリーン版パイプは収録されない", () => {
+		// 同じ tier が 2 つ入ると、最低段の選定がどちらを採るかで揺れる
+		const ids = parseFixture().pipes.map((p) => p.id);
+
+		expect(ids).not.toContain("Build_Pipeline_NoIndicator_C");
+		expect(ids).not.toContain("Build_PipelineMK2_NoIndicator_C");
+	});
+
+	it("コンベアリフトはベルトとして収録されない", () => {
+		// 速度がベルトと同一なので段の判定に情報を足さず、混ぜると tier が重複する
+		const ids = parseFixture().belts.map((b) => b.id);
+
+		expect(ids).not.toContain("Build_ConveyorLiftMk1_C");
+	});
+});
