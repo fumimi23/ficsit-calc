@@ -28,14 +28,14 @@ def issue(number, prio=None, milestone=None, labels=(), body="", title=None):
     }
 
 
-def milestone(number, title, state="open", open_issues=0):
+def milestone(number, title, state="open", open_issues=0, closed_issues=0):
     """gh api repos/.../milestones の 1 件を模す(REST の snake_case)。"""
     return {
         "number": number,
         "title": title,
         "state": state,
         "open_issues": open_issues,
-        "closed_issues": 0,
+        "closed_issues": closed_issues,
         "description": "",
         "due_on": None,
     }
@@ -54,19 +54,30 @@ class MilestoneTitleTest(unittest.TestCase):
 
 
 class OldestOpenMilestoneTest(unittest.TestCase):
-    # issue #63: 「最も古い open マイルストーン」= open のうち number 最小
+    # issue #63: 「最も古い open マイルストーン」= 残 open を持つ open のうち number 最小
     def test_open_のうち番号が最小のものを返す(self):
-        ms = [milestone(3, "v0.3.0"), milestone(2, "v0.2.0")]
+        ms = [milestone(3, "v0.3.0", open_issues=1),
+              milestone(2, "v0.2.0", open_issues=1)]
         self.assertEqual(next_issue.oldest_open_milestone(ms), "v0.2.0")
 
     def test_closed_のマイルストーンは無視する(self):
-        ms = [milestone(1, "v0.1.0", state="closed"), milestone(2, "v0.2.0")]
+        ms = [milestone(1, "v0.1.0", state="closed", open_issues=1),
+              milestone(2, "v0.2.0", open_issues=1)]
         self.assertEqual(next_issue.oldest_open_milestone(ms), "v0.2.0")
 
-    def test_open_が無ければ_None(self):
+    # issue #63: 残 0 のマイルストーンは close されるまで open のまま残るが、
+    # 所属する open issue が無いので target にするとマイルストーン段が全 issue で効かなくなる
+    def test_残_open_が_0_のマイルストーンは_target_にしない(self):
+        ms = [milestone(1, "v0.1.0", open_issues=0),
+              milestone(2, "v0.2.0", open_issues=3)]
+        self.assertEqual(next_issue.oldest_open_milestone(ms), "v0.2.0")
+
+    def test_着手先のある_open_マイルストーンが無ければ_None(self):
         self.assertIsNone(next_issue.oldest_open_milestone([]))
         self.assertIsNone(
-            next_issue.oldest_open_milestone([milestone(1, "v0.1.0", state="closed")])
+            next_issue.oldest_open_milestone(
+                [milestone(1, "v0.1.0", state="closed", open_issues=1)]
+            )
         )
 
 
@@ -74,16 +85,22 @@ class ReleasableMilestonesTest(unittest.TestCase):
     # issue #63: open issue が 0 のマイルストーンがあるとき、出力にリリースを促す行が含まれる
     def test_残_open_が_0_の_open_マイルストーンだけを番号の昇順で返す(self):
         ms = [
-            milestone(3, "v0.3.0", open_issues=0),
-            milestone(2, "v0.2.0", open_issues=3),
-            milestone(1, "v0.1.0", open_issues=0),
+            milestone(3, "v0.3.0", open_issues=0, closed_issues=2),
+            milestone(2, "v0.2.0", open_issues=3, closed_issues=1),
+            milestone(1, "v0.1.0", open_issues=0, closed_issues=5),
         ]
         self.assertEqual(
             next_issue.releasable_milestones(ms), ["v0.1.0", "v0.3.0"]
         )
 
     def test_closed_のマイルストーンは促さない(self):
-        ms = [milestone(1, "v0.1.0", state="closed", open_issues=0)]
+        ms = [milestone(1, "v0.1.0", state="closed", open_issues=0, closed_issues=3)]
+        self.assertEqual(next_issue.releasable_milestones(ms), [])
+
+    # issue #63: issue を 1 件も紐付けていないマイルストーンも残 open は 0 になるが、
+    # ここで促すと残件検査も 0 件で通り、中身の無い Release が切れてしまう
+    def test_issue_を一度も紐付けていないマイルストーンは促さない(self):
+        ms = [milestone(1, "v0.1.0", open_issues=0, closed_issues=0)]
         self.assertEqual(next_issue.releasable_milestones(ms), [])
 
 
@@ -115,6 +132,15 @@ class PickMilestoneTest(unittest.TestCase):
         ]
         picked, _ = next_issue.pick(issues, "v0.1.0")
         self.assertEqual(picked["number"], 20)
+
+    # issue #63: マイルストーン段は P1 / P2 の話。P0 同士は所属で順番を変えない
+    def test_P0_同士はマイルストーン所属に関わらず番号昇順(self):
+        issues = [
+            issue(20, prio="P0", milestone=(1, "v0.1.0")),
+            issue(10, prio="P0"),
+        ]
+        picked, _ = next_issue.pick(issues, "v0.1.0")
+        self.assertEqual(picked["number"], 10)
 
     # issue #63: 他マイルストーン所属は「マイルストーン無し」と同じ扱い(最古のものだけが優遇される)
     def test_最古でないマイルストーン所属は優遇されない(self):
