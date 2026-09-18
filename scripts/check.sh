@@ -19,4 +19,7 @@ npx astro check
 echo "[check] tests (vitest)"
 npx vitest run --passWithNoTests
 
+echo "[check] tests (python unittest)"
+python3 -m unittest discover -s tests/spec -p "*_test.py"
+
 echo "[check] すべて OK"

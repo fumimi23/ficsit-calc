@@ -43,7 +43,7 @@ npm run generate-recipes -- "/mnt/e/Epic Games/Satisfactory/CommunityResources/D
 既定のゲートは push 前のローカルチェック（git フック）。
 
 - 有効化（クローンごとに一度）: `git config core.hooksPath .githooks`
-- 手動実行: `sh scripts/check.sh`（Biome → `astro check` → Vitest の順）
+- 手動実行: `sh scripts/check.sh`（Biome → `astro check` → Vitest → Python unittest の順）
 - 緊急時のバイパス: `git push --no-verify`
 
 lint / format は **Biome**。整形の適用は `sh scripts/fmt.sh`（check.sh 側は差分があれば失敗する検出のみ）。
