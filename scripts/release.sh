@@ -38,15 +38,19 @@ if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
   exit 1
 fi
 
+# open に限定するのは、close 済みの版に再実行すると残件 0 のゲートを素通りしてしまうため。
+# close だけ失敗した回はマイルストーンが open のまま残るので、復旧の再実行はここを通る。
 # --paginate と --jq の併用では jq フィルタがページごとに適用されて出力が連結されるので、
 # 1 行 1 件で出して先頭を取る。パイプで直接受けると set -e が gh の失敗を拾えなくなるため代入を分ける。
-MILESTONE_NUMBERS="$(gh api --paginate "repos/{owner}/{repo}/milestones?state=all&per_page=100" \
-  --jq ".[] | select(.title == \"$TAG\") | .number")"
-MILESTONE_NUMBER="$(printf '%s\n' "$MILESTONE_NUMBERS" | head -n 1)"
-if [ -z "$MILESTONE_NUMBER" ]; then
-  echo "マイルストーン $TAG がありません" >&2
+MILESTONE_ROWS="$(gh api --paginate "repos/{owner}/{repo}/milestones?state=open&per_page=100" \
+  --jq ".[] | select(.title == \"$TAG\") | \"\(.number) \(.closed_issues)\"")"
+MILESTONE_ROW="$(printf '%s\n' "$MILESTONE_ROWS" | head -n 1)"
+if [ -z "$MILESTONE_ROW" ]; then
+  echo "open のマイルストーン $TAG がありません(未作成か、既に close 済み)" >&2
   exit 1
 fi
+MILESTONE_NUMBER="${MILESTONE_ROW% *}"
+MILESTONE_CLOSED="${MILESTONE_ROW#* }"
 
 REMAINING="$(gh issue list --state open --milestone "$TAG" --limit 200 \
   --json number,title --jq '.[] | "  #\(.number) \(.title)"')"
@@ -56,14 +60,28 @@ if [ -n "$REMAINING" ]; then
   exit 1
 fi
 
+# 作ったばかりで issue を 1 件も紐付けていないマイルストーンは残件 0 の検査を素通りするので、
+# 中身のない版を切らないようここで止める。
+if [ "$MILESTONE_CLOSED" -eq 0 ]; then
+  echo "マイルストーン $TAG に closed の issue がありません(中身のない版は切らない)" >&2
+  exit 1
+fi
+
 # close だけ失敗した回の再実行を通すため。作成をやり直すと tag already exists で落ち、
 # マイルストーンが open のまま取り残される。
+CREATED=""
 if gh release view "$TAG" >/dev/null 2>&1; then
   echo "Release $TAG は既にあります。マイルストーンの close だけ行います。" >&2
 else
   gh release create "$TAG" --target main --generate-notes
+  CREATED="yes"
 fi
 gh api -X PATCH "repos/{owner}/{repo}/milestones/$MILESTONE_NUMBER" \
   -f state=closed >/dev/null
 
-echo "リリースしました: $(gh release view "$TAG" --json url --jq .url)"
+RELEASE_URL="$(gh release view "$TAG" --json url --jq .url)"
+if [ -n "$CREATED" ]; then
+  echo "リリースしました: $RELEASE_URL"
+else
+  echo "マイルストーン $TAG を close しました(Release は作成済みのものを使いました): $RELEASE_URL"
+fi

@@ -61,7 +61,7 @@ def releasable_milestones(milestones):
     # 「残 0」と誤認して中身ゼロの Release を促さないため。
     ready = [m for m in milestones
              if m.get("state") == "open"
-             and (m.get("open_issues") or 0) == 0
+             and m.get("open_issues") == 0
              and (m.get("closed_issues") or 0) > 0]
     return [m["title"] for m in sorted(ready, key=lambda m: m["number"])]
 
