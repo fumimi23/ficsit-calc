@@ -8,7 +8,7 @@
 
 **セッション開始時**、ユーザーから特定の作業指示が無ければ:
 
-1. `python3 scripts/next-issue.py` を実行し、出力された issue に着手する(1 列目 = 番号、2 列目 = `resume` / `start`)
+1. `python3 scripts/next-issue.py` を実行する。出力は「リリース可能: …」の行(0 行以上)が先に来て、その後に着手する issue の行(1 列目 = 番号、2 列目 = `resume` / `start`)が 1 行続く。促し行があれば issue に入る前に指示どおり `sh scripts/release.sh <タグ>` を実行する。着手できる issue が無いときは促し行だけで終わる(issue の行は出ず、終了コードは非 0)
 2. `start` なら着手をクレームする:
    `gh issue edit <N> --add-assignee @me --add-label in-progress`
    その後ブランチ `<種別>/<番号>-スラッグ` を切り、受け入れ条件から約束テスト(red 確認)→ 実装 → PR(`Closes #N`)の通常フローへ
@@ -19,6 +19,7 @@
 - issue は `Closes #N` で自動クローズされる(in-progress ラベルもクローズで役目を終える)
 - やり残し・途中で見つかった課題は、**必ず優先度ラベル付きの新 issue** にしてから終わる(これが次セッションへの引き継ぎ)
 - 実装中に得た知見(ハマりどころ・設計判断の理由)は該当 issue のコメントに書き戻す
+- **リリース判定**: 閉じた issue の属するマイルストーンが「open の issue と PR が 0 件」かつ「closed の issue が 1 件以上」になったら `sh scripts/release.sh <タグ>` を実行して版を切る(条件を満たさなければ `release.sh` が止めるので、迷ったら叩いてよい。`next-issue.py` も次セッションの冒頭で促すので、取りこぼしてもそこで気づく)
 
 ## 外部記憶の規約(issue メタデータ)
 
@@ -27,6 +28,7 @@
 - **優先度**: ラベル `P0`(最優先) / `P1` / `P2` — issue 作成時に必ずどれか 1 つ付ける
 - **着手中**: ラベル `in-progress` + セルフアサイン(同時に最大 1 件)
 - **依存**: issue 本文に `Blocked by #N` 行を書く(`next-issue.py` がこれを見て着手候補から除外する)
+- **リリース単位**: マイルストーン。マイルストーン名 = タグ名(`v0.1.0` 形式)、description に版の狙いを 1 行。issue 作成時に `gh issue create --milestone v0.1.0` で束ねる(issue テンプレートの front matter では指定できないので、優先度ラベルと同じくコマンドで付ける)。`next-issue.py` は最も古い open マイルストーンの issue を優先するので、版が閉じないまま次の版の issue が先に選ばれることはない。履歴は GitHub Releases に置き、`CHANGELOG.md` はリポジトリに持たない
 
 ## UI の動作確認(このプロジェクト固有)
 

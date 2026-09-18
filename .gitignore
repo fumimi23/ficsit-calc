@@ -2,6 +2,7 @@
 node_modules/
 dist/
 .astro/
+__pycache__/
 
 # 環境変数・秘密（コミットしない）
 .env
