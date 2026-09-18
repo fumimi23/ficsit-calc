@@ -87,6 +87,25 @@ describe("搬送設備のスキーマ検証(issue #35)", () => {
 		).toThrow();
 	});
 
+	it("ベルト・パイプの段(tier)が重複するとき、スキーマ検証がエラーになる", () => {
+		// 同じ段が 2 つあると最低段の選定が先勝ちで静かに揺れる。パーサーは Docs 読み込み時に
+		// 落とすが、UI が実行時に通るゲートは validateRecipeData だけなので両方で守る。
+		// ID は別にして、id 重複ではなく tier 重複で落ちたことを確かめる
+		expect(() =>
+			validateRecipeData(
+				withTransports([belt(), belt({ id: "Build_ConveyorBeltMk1Alt_C" })]),
+			),
+		).toThrow();
+		expect(() =>
+			validateRecipeData(
+				withTransports(
+					[],
+					[pipe(), pipe({ id: "Build_Pipeline_NoIndicator_C" })],
+				),
+			),
+		).toThrow();
+	});
+
 	it("送量が正でないとき、スキーマ検証がエラーになる", () => {
 		// 送量 0 は必要本数が 0 除算になる
 		expect(() =>

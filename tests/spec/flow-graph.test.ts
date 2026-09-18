@@ -220,8 +220,8 @@ describe("接続図: エッジへの搬送設備の注記(issue #35)", () => {
 	});
 
 	it("ベルト・パイプが収録されていないデータのとき、エッジラベルに段の注記が付かない", () => {
-		// 搬送設備を知らない古い recipes.json や搬送設備を持たないローカル fixture を
-		// 読んだときに、注記なしのラベルへ縮退する(エラーにも "Mk.undefined" にもしない)
+		// 搬送設備を持たないローカル fixture を読んだときに、注記なしのラベルへ縮退する
+		// (エラーにも "Mk.undefined" にもしない)
 		const withoutTransports: RecipeData = {
 			...fixtureData,
 			belts: [],
@@ -238,6 +238,78 @@ describe("接続図: エッジへの搬送設備の注記(issue #35)", () => {
 				'\traw_iron_ore(["鉄鉱石（原料）"])',
 				'\ttarget_iron_ore(["鉄鉱石（目標）"])',
 				'\traw_iron_ore -- "鉄鉱石 10 /分" --> target_iron_ore',
+			].join("\n"),
+		);
+	});
+
+	it("副産物のエッジのとき、余剰ノードへ向かう流量にも段が注記される", () => {
+		// 余剰の産出量はレシピ定義から復元した値で、他のエッジとは経路が違う。
+		// 液体の副産物なのでパイプの段が付く
+		const surplusData: RecipeData = {
+			items: {
+				crude: { name: "原油", form: "liquid" },
+				plastic: { name: "プラスチック" },
+				residue: { name: "廃重油", form: "liquid" },
+			},
+			buildings: {
+				refinery: {
+					name: "精製機",
+					powerMW: 30,
+					constructionCost: [{ item: "plastic", amount: 1 }],
+				},
+			},
+			recipes: [
+				{
+					id: "plastic",
+					name: "プラスチック",
+					building: "refinery",
+					durationSeconds: 6,
+					alternate: false,
+					inputs: [{ item: "crude", amount: 3 }],
+					outputs: [
+						{ item: "plastic", amount: 2 },
+						{ item: "residue", amount: 1 },
+					],
+				},
+			],
+			generators: [],
+			extractors: [],
+			belts: fixtureData.belts,
+			pipes: fixtureData.pipes,
+		};
+		const plan = planProduction(surplusData, {
+			itemId: "plastic",
+			ratePerMinute: 1200,
+		});
+
+		expect(planToMermaid(surplusData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\trecipe_plastic["プラスチック<br/>精製機 × 60"]',
+				'\traw_crude(["原油（原料）"])',
+				'\tsurplus_residue(["廃重油（余剰）"])',
+				'\ttarget_plastic(["プラスチック（目標）"])',
+				'\trecipe_plastic -- "廃重油 600 /分（Mk.2）" --> surplus_residue',
+				'\traw_crude -- "原油 1800 /分（Mk.2 × 3 本）" --> recipe_plastic',
+				'\trecipe_plastic -- "プラスチック 1200 /分（Mk.6）" --> target_plastic',
+			].join("\n"),
+		);
+	});
+
+	it("流量が 0 /分 のエッジのとき、段の注記が付かない", () => {
+		// 目標レート 0 は planProduction も UI も受理する。運ぶものが無いエッジに
+		// 搬送設備は要らないので、Mk.1 が要るかのように見せない
+		const plan = planProduction(fixtureData, {
+			itemId: "iron-ore",
+			ratePerMinute: 0,
+		});
+
+		expect(planToMermaid(fixtureData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\traw_iron_ore(["鉄鉱石（原料）"])',
+				'\ttarget_iron_ore(["鉄鉱石（目標）"])',
+				'\traw_iron_ore -- "鉄鉱石 0 /分" --> target_iron_ore',
 			].join("\n"),
 		);
 	});

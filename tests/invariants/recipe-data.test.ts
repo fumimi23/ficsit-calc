@@ -101,6 +101,19 @@ describe("invariants: レシピデータ", () => {
 		expect(ids.filter((id) => id.includes("ConveyorLift"))).toEqual([]);
 	});
 
+	// issue #35: form はスキーマ上 optional で、selectTransport は未指定を固体として扱う。
+	// Docs ドリフトで液体・気体の mForm が読めなくなると、エッジがベルトの表で注記され
+	// (レシピ数量の m³ 換算も外れ)結果が静かに間違う
+	it("コミット済み data/recipes.json の全アイテムが物質形態(form)を持つ", () => {
+		const data = validateRecipeData(recipesJson);
+		const entries = Object.entries(data.items);
+
+		expect(entries.length).toBeGreaterThan(0);
+		expect(
+			entries.filter(([, item]) => item.form === undefined).map(([id]) => id),
+		).toEqual([]);
+	});
+
 	// issue #21: 1 機種でも建設素材が欠けると建設コストが黙って過少表示になる。
 	// 参照整合性と正の数量は validateRecipeData 側(上の 1 本目)が全件を見る
 	it("コミット済み data/recipes.json の全機械・全発電機が建設素材を持つ", () => {

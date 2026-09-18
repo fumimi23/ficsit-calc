@@ -97,7 +97,7 @@ describe("搬送設備の選定(issue #35)", () => {
 	});
 
 	it("ベルト・パイプが 1 段も収録されていないとき、undefined になる", () => {
-		// 搬送設備を知らない古い recipes.json を読んでもエラーにせず、注記なしに縮退させる
+		// 搬送設備を持たないローカル fixture でもエラーにせず、呼び出し側を注記なしに縮退させる
 		expect(
 			selectTransport(withoutTransports, "iron-ingot", Fraction.of(60)),
 		).toBeUndefined();
