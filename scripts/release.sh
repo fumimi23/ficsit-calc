@@ -5,7 +5,8 @@
 # 発火を「マイルストーンの open issue が 0 になった瞬間」の自動トリガーにしないのは、
 # 重複・取りやめでも issue は閉じるため。判定は機械に、発火は人の宣言に残す。
 #
-# exit code: 0 = リリースした / 1 = 前提不成立・残件あり / 2 = 実行環境の問題
+# exit code: 0 = リリースした / 2 = gh が無い / 1 = 前提不成立・残件あり。
+# set -e で落ちる git・gh の失敗はそのコマンド自身の終了コード(多くは 1)で終わる。
 set -e
 cd "$(CDPATH= cd "$(dirname "$0")/.." && pwd)"
 
@@ -37,9 +38,12 @@ if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
   exit 1
 fi
 
-MILESTONE_NUMBER="$(gh api "repos/{owner}/{repo}/milestones?state=all&per_page=100" \
-  --jq "[.[] | select(.title == \"$TAG\")] | .[0].number")"
-if [ -z "$MILESTONE_NUMBER" ] || [ "$MILESTONE_NUMBER" = "null" ]; then
+# --paginate と --jq の併用では jq フィルタがページごとに適用されて出力が連結されるので、
+# 1 行 1 件で出して先頭を取る。パイプで直接受けると set -e が gh の失敗を拾えなくなるため代入を分ける。
+MILESTONE_NUMBERS="$(gh api --paginate "repos/{owner}/{repo}/milestones?state=all&per_page=100" \
+  --jq ".[] | select(.title == \"$TAG\") | .number")"
+MILESTONE_NUMBER="$(printf '%s\n' "$MILESTONE_NUMBERS" | head -n 1)"
+if [ -z "$MILESTONE_NUMBER" ]; then
   echo "マイルストーン $TAG がありません" >&2
   exit 1
 fi
@@ -52,7 +56,13 @@ if [ -n "$REMAINING" ]; then
   exit 1
 fi
 
-gh release create "$TAG" --target main --generate-notes
+# close だけ失敗した回の再実行を通すため。作成をやり直すと tag already exists で落ち、
+# マイルストーンが open のまま取り残される。
+if gh release view "$TAG" >/dev/null 2>&1; then
+  echo "Release $TAG は既にあります。マイルストーンの close だけ行います。" >&2
+else
+  gh release create "$TAG" --target main --generate-notes
+fi
 gh api -X PATCH "repos/{owner}/{repo}/milestones/$MILESTONE_NUMBER" \
   -f state=closed >/dev/null
 

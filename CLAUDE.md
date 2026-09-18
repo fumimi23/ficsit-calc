@@ -8,7 +8,7 @@
 
 **セッション開始時**、ユーザーから特定の作業指示が無ければ:
 
-1. `python3 scripts/next-issue.py` を実行する。出力の最後の 1 行が着手する issue(1 列目 = 番号、2 列目 = `resume` / `start`)。その手前に「リリース可能: …」の行があれば、issue に入る前に指示どおり `sh scripts/release.sh <タグ>` を実行する
+1. `python3 scripts/next-issue.py` を実行する。出力は「リリース可能: …」の行(0 行以上)が先に来て、その後に着手する issue の行(1 列目 = 番号、2 列目 = `resume` / `start`)が 1 行続く。促し行があれば issue に入る前に指示どおり `sh scripts/release.sh <タグ>` を実行する。着手できる issue が無いときは促し行だけで終わる(issue の行は出ず、終了コードは非 0)
 2. `start` なら着手をクレームする:
    `gh issue edit <N> --add-assignee @me --add-label in-progress`
    その後ブランチ `<種別>/<番号>-スラッグ` を切り、受け入れ条件から約束テスト(red 確認)→ 実装 → PR(`Closes #N`)の通常フローへ

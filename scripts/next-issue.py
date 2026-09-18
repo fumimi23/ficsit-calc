@@ -7,11 +7,13 @@
   1. in-progress ラベルの issue があればそれを再開する(前セッションの中断の痕跡)
   2. open のうち、本文の「Blocked by #N」の依存先が全て closed のものに絞る
   3. P0
-  4. 最も古い open マイルストーンに属する issue(P1 > P2 > 優先度ラベル無し)
+  4. 最も古い open マイルストーン(open issue が残っているもののうち番号最小)に
+     属する issue(P1 > P2 > 優先度ラベル無し)
   5. マイルストーン無し / それ以外のマイルストーン(P1 > P2 > 優先度ラベル無し)
   6. 同率は番号の小さい順
 
-出力: 残 open が 0 の open マイルストーンごとにリリースを促す行(0 行以上)を先に出し、
+出力: リリース可能な open マイルストーン(残 open が 0 で、closed issue が 1 件以上)ごとに
+      リリースを促す行(0 行以上)を先に出し、
       続けて「<番号>(タブ)<resume|start>(タブ)<タイトル>」を 1 行。
 exit code: 0 = 選択できた / 1 = 着手できる issue が無い / 2 = 実行環境の問題
 """
@@ -45,23 +47,31 @@ def milestone_title(issue):
 def oldest_open_milestone(milestones):
     # マイルストーン番号は作成順に振られるので、番号最小 = 最も古い。
     # due_on や created_at は未設定があり得るため使わない。
-    opened = [m for m in milestones if m.get("state") == "open"]
+    # 残 open が 0 のものを外すのは、リリースを切るまでの窓で
+    # 「所属 issue が 1 件も無いマイルストーン」が target に居座るのを防ぐため。
+    opened = [m for m in milestones
+              if m.get("state") == "open" and (m.get("open_issues") or 0) > 0]
     if not opened:
         return None
     return min(opened, key=lambda m: m["number"])["title"]
 
 
 def releasable_milestones(milestones):
+    # closed_issues を見るのは、まだ issue を 1 件も紐付けていない新規マイルストーンを
+    # 「残 0」と誤認して中身ゼロの Release を促さないため。
     ready = [m for m in milestones
-             if m.get("state") == "open" and m.get("open_issues") == 0]
+             if m.get("state") == "open"
+             and (m.get("open_issues") or 0) == 0
+             and (m.get("closed_issues") or 0) > 0]
     return [m["title"] for m in sorted(ready, key=lambda m: m["number"])]
 
 
 def sort_key(issue, target_milestone):
     p = prio(issue)
-    in_target = (target_milestone is not None
+    # マイルストーン段は P1 / P2 の話。P0 同士は所属に関わらず番号昇順で並べる。
+    in_target = (p != 0
+                 and target_milestone is not None
                  and milestone_title(issue) == target_milestone)
-    # P0 はマイルストーンより強い(版の都合で最優先を待たせない)。
     return (0 if p == 0 else 1, 0 if in_target else 1, p, issue["number"])
 
 
@@ -100,13 +110,15 @@ def main():
     issues = json.loads(proc.stdout)
 
     # 残 open が 0 のマイルストーンは open issue 側から見えない(所属 issue が一覧に出ない)。
+    # --slurp はページの配列を返す(--jq とは併用できないので平坦化は Python 側でやる)。
     milestones_proc = subprocess.run(
-        ["gh", "api", "repos/{owner}/{repo}/milestones?state=open&per_page=100"],
+        ["gh", "api", "--paginate", "--slurp",
+         "repos/{owner}/{repo}/milestones?state=open&per_page=100"],
         stdout=subprocess.PIPE, text=True,
     )
     if milestones_proc.returncode != 0:
         return 2
-    milestones = json.loads(milestones_proc.stdout)
+    milestones = [m for page in json.loads(milestones_proc.stdout) for m in page]
 
     for title in releasable_milestones(milestones):
         print(release_notice(title))
