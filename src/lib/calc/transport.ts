@@ -13,8 +13,8 @@ export interface TransportRequirement {
 
 /**
  * 流量を運べる最低の段を選ぶ。固体はベルト、液体・気体はパイプの表を見る。
- * 段が 1 つも収録されていないデータ(搬送設備を知らない古い recipes.json・
- * ローカル fixture)では undefined を返し、呼び出し側を注記なしに縮退させる。
+ * 段が 1 つも収録されていないデータ(搬送設備を持たないローカル fixture)では
+ * undefined を返し、呼び出し側を注記なしに縮退させる。
  */
 export function selectTransport(
 	data: RecipeData,

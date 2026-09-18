@@ -55,10 +55,11 @@ function escapeLabel(text: string): string {
 
 /**
  * その流量を運ぶのに要る段の注記。1 本で運べるなら最低の Mk、最大 Mk でも足りなければ本数付き。
- * 括弧を全角にするのはノードラベルの（原料）等と表記を揃えるため、かつ mermaid の
- * エッジラベルで半角丸括弧を使うリスクを避けるため。
+ * 括弧を全角にするのはノードラベルの（原料）等と表記を揃えるため。
  */
 function transportNote(data: RecipeData, item: ItemId, rate: Fraction): string {
+	// 運ぶものが無いエッジに、Mk.1 が要るかのような注記を出さない
+	if (rate.isZero()) return "";
 	const requirement = selectTransport(data, item, rate);
 	if (!requirement) return "";
 	const tier = `Mk.${requirement.transport.tier}`;

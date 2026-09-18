@@ -171,6 +171,7 @@ export function validateRecipeData(value: unknown): RecipeData {
 /** ベルト・パイプの検証。段・送量の意味は違っても構造は同じなので 1 つにまとめる */
 function requireTransports(list: unknown[], label: string): void {
 	const ids = new Set<string>();
+	const tiers = new Set<number>();
 	for (const raw of list) {
 		const transport = asRecord(raw, `${label} の要素`);
 		const id = requireNonEmpty(transport.id, `${label}[].id`);
@@ -187,6 +188,14 @@ function requireTransports(list: unknown[], label: string): void {
 		) {
 			throw new Error(`${id}.tier が正の整数ではありません: ${transport.tier}`);
 		}
+		// 同じ段が 2 つあると最低段の選定が先勝ちで静かに揺れる。パーサーも Docs 読み込み時に
+		// 落とすが、実行時に読むデータがこの検証しか通らない経路があるので両方で守る
+		if (tiers.has(transport.tier)) {
+			throw new Error(
+				`搬送設備の段が重複しています: ${id} = Mk.${transport.tier}`,
+			);
+		}
+		tiers.add(transport.tier);
 		// 送量 0 を通すと必要本数が 0 除算になる
 		requirePositive(transport.ratePerMinute, `${id}.ratePerMinute`);
 	}
