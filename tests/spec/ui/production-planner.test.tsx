@@ -140,6 +140,8 @@ describe("Web UI 最小版(issue #3)", () => {
 			],
 			generators: [],
 			extractors: [],
+			belts: [],
+			pipes: [],
 		};
 		await enterTarget(byproductData, "plastic", "20");
 
@@ -314,6 +316,8 @@ const extractorFixtureData: RecipeData = {
 			constructionCost: [{ item: "iron-rod", amount: 30 }],
 		},
 	],
+	belts: [],
+	pipes: [],
 };
 
 describe("採取設備の表示(issue #23)", () => {

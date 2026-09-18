@@ -22,6 +22,7 @@ import type {
 	RecipeData,
 	RecipeDef,
 	RecipeIngredient,
+	TransportDef,
 } from "../calc/types";
 
 /** 燃料を燃やして定格出力を出す発電機の NativeClass(suffix 一致。地熱は含めない) */
@@ -35,6 +36,15 @@ const EXTRACTOR_NATIVE_CLASSES = [
 	".FGBuildableWaterPump'",
 	".FGBuildableResourceExtractor'",
 ];
+
+/**
+ * ベルトの NativeClass(suffix 一致)。コンベアリフト(FGBuildableConveyorLift)は
+ * 速度がベルトと同一で、段の判定に情報を足さないので列挙しない
+ */
+const BELT_NATIVE_CLASS = ".FGBuildableConveyorBelt'";
+
+/** パイプの NativeClass(suffix 一致)。末尾クォートまでの一致でポンプ・ジャンクションは入らない */
+const PIPE_NATIVE_CLASS = ".FGBuildablePipeline'";
 
 /** 採取できる資源を形態から引くための descriptor の NativeClass(suffix 一致) */
 const RESOURCE_DESCRIPTOR_NATIVE_CLASS = ".FGResourceDescriptor'";
@@ -308,6 +318,10 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		}
 	}
 
+	// 搬送設備は建設素材を持たないので referencedItems を増やさない(items の前後どちらでもよい)
+	const belts = parseTransports(groups, jaNames, BELT_NATIVE_CLASS, beltRate);
+	const pipes = parseTransports(groups, jaNames, PIPE_NATIVE_CLASS, pipeRate);
+
 	// 全 Descriptor は収録しない(データポリシー: 抽出は計算に必要な最小限)
 	const items = new Map<string, ItemDef>();
 	for (const id of referencedItems) {
@@ -330,6 +344,8 @@ export function parseDocs(enText: string, jaText?: string): RecipeData {
 		recipes: recipes.sort((a, b) => byKey(a.id, b.id)),
 		generators: generators.sort((a, b) => byKey(a.id, b.id)),
 		extractors: extractors.sort((a, b) => byKey(a.id, b.id)),
+		belts,
+		pipes,
 	};
 }
 
@@ -446,6 +462,7 @@ function convertAmount(
 
 const THOUSAND = Fraction.of(1000);
 const SIXTY = Fraction.of(60);
+const TWO = Fraction.of(2);
 
 /**
  * 分数で出した換算結果を ExactNumeric(十進)に戻す。
@@ -516,6 +533,75 @@ function extractRatePerMinute(
 	return toExactNumeric(
 		form === "liquid" || form === "gas" ? perMinute.div(THOUSAND) : perMinute,
 		`${id}.mItemsPerCycle`,
+	);
+}
+
+// 段(Mk 番号)は英語表示名からだけ取る。ClassName は Build_Pipeline_C(Mk 無し)と
+// Build_PipelineMK2_C で不統一、日本語表示名は「パイプラインMk.1」とスペースの有無が揃わない
+const TIER_RE = /Mk\.(\d+)/;
+
+/**
+ * 1 種類(ベルト or パイプ)の搬送設備を tier 昇順で読む。
+ * 送量の単位が種類で違うので、生値 → 1 分あたりの換算は呼び出し側から渡す。
+ */
+function parseTransports(
+	groups: DocsGroup[],
+	jaNames: Map<string, string> | null,
+	nativeClass: string,
+	rateOf: (entry: DocsEntry, id: string) => ExactNumeric,
+): TransportDef[] {
+	const transports: TransportDef[] = [];
+	const tiers = new Set<number>();
+	for (const group of groups) {
+		if (!group.NativeClass.endsWith(nativeClass)) continue;
+		for (const entry of group.Classes) {
+			const id = entry.ClassName;
+			// 外観違いのクリーン版は送量も段も本家と同じ重複
+			if (id.includes("NoIndicator")) continue;
+			const name = requireString(entry.mDisplayName, `${id}.mDisplayName`);
+			const tier = parseTier(name, id);
+			// 同じ段が 2 つあると最低段の選定がどちらを採るかで揺れる(除外漏れ = Docs ドリフトの兆候)
+			if (tiers.has(tier)) {
+				throw new Error(`搬送設備の段が重複しています: ${id} = Mk.${tier}`);
+			}
+			tiers.add(tier);
+			transports.push({
+				id,
+				name,
+				...jaName(jaNames, id),
+				tier,
+				ratePerMinute: rateOf(entry, id),
+			});
+		}
+	}
+	// Docs 上の並びは段順ではない
+	return transports.sort((a, b) => a.tier - b.tier);
+}
+
+function parseTier(name: string, id: string): number {
+	const matched = TIER_RE.exec(name);
+	// 段が読めないとラベルの "Mk.N" も段の順序も作れない
+	if (!matched) {
+		throw new Error(`搬送設備の段が表示名から読めません: ${id} = ${name}`);
+	}
+	return Number(matched[1]);
+}
+
+/** ベルト 1 本の送量(個/分)。mSpeed は cm/分 で、ベルト上のアイテム間隔は 2cm 固定 */
+function beltRate(entry: DocsEntry, id: string): ExactNumeric {
+	return toExactNumeric(
+		Fraction.from(requireString(entry.mSpeed, `${id}.mSpeed`)).div(TWO),
+		`${id}.mSpeed`,
+	);
+}
+
+/** パイプ 1 本の送量(m³/分)。mFlowLimit は m³/秒 */
+function pipeRate(entry: DocsEntry, id: string): ExactNumeric {
+	return toExactNumeric(
+		Fraction.from(requireString(entry.mFlowLimit, `${id}.mFlowLimit`)).mul(
+			SIXTY,
+		),
+		`${id}.mFlowLimit`,
 	);
 }
 

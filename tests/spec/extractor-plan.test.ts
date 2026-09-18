@@ -77,6 +77,8 @@ const extractorData: RecipeData = {
 			constructionCost: [{ item: "iron-rod", amount: 30 }],
 		},
 	],
+	belts: [],
+	pipes: [],
 };
 
 describe("採取設備の算出(issue #23)", () => {

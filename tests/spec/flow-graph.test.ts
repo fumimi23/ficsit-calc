@@ -25,13 +25,13 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 				'\trecipe_iron_rod["鉄のロッド<br/>構築機 × 1"]',
 				'\traw_iron_ore(["鉄鉱石（原料）"])',
 				'\ttarget_reinforced_iron_plate(["強化鉄板（目標）"])',
-				'\trecipe_iron_plate -- "鉄板 30 /分" --> recipe_reinforced_iron_plate',
-				'\trecipe_iron_ingot -- "鉄インゴット 45 /分" --> recipe_iron_plate',
-				'\traw_iron_ore -- "鉄鉱石 60 /分" --> recipe_iron_ingot',
-				'\trecipe_screw -- "ネジ 60 /分" --> recipe_reinforced_iron_plate',
-				'\trecipe_iron_rod -- "鉄のロッド 15 /分" --> recipe_screw',
-				'\trecipe_iron_ingot -- "鉄インゴット 15 /分" --> recipe_iron_rod',
-				'\trecipe_reinforced_iron_plate -- "強化鉄板 5 /分" --> target_reinforced_iron_plate',
+				'\trecipe_iron_plate -- "鉄板 30 /分（Mk.1）" --> recipe_reinforced_iron_plate',
+				'\trecipe_iron_ingot -- "鉄インゴット 45 /分（Mk.1）" --> recipe_iron_plate',
+				'\traw_iron_ore -- "鉄鉱石 60 /分（Mk.1）" --> recipe_iron_ingot',
+				'\trecipe_screw -- "ネジ 60 /分（Mk.1）" --> recipe_reinforced_iron_plate',
+				'\trecipe_iron_rod -- "鉄のロッド 15 /分（Mk.1）" --> recipe_screw',
+				'\trecipe_iron_ingot -- "鉄インゴット 15 /分（Mk.1）" --> recipe_iron_rod',
+				'\trecipe_reinforced_iron_plate -- "強化鉄板 5 /分（Mk.1）" --> target_reinforced_iron_plate',
 			].join("\n"),
 		);
 	});
@@ -47,15 +47,15 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 		expect(text.match(/recipe_iron_ingot\[/g)).toHaveLength(1);
 		// そこから鉄板・ロッドの 2 本の矢印が出る
 		expect(text).toContain(
-			'recipe_iron_ingot -- "鉄インゴット 45 /分" --> recipe_iron_plate',
+			'recipe_iron_ingot -- "鉄インゴット 45 /分（Mk.1）" --> recipe_iron_plate',
 		);
 		expect(text).toContain(
-			'recipe_iron_ingot -- "鉄インゴット 15 /分" --> recipe_iron_rod',
+			'recipe_iron_ingot -- "鉄インゴット 15 /分（Mk.1）" --> recipe_iron_rod',
 		);
 		// ツリーの枝ごとの重複要求(45 + 15)が原料エッジでは 1 本に合算される
 		expect(text.match(/raw_iron_ore -- /g)).toHaveLength(1);
 		expect(text).toContain(
-			'raw_iron_ore -- "鉄鉱石 60 /分" --> recipe_iron_ingot',
+			'raw_iron_ore -- "鉄鉱石 60 /分（Mk.1）" --> recipe_iron_ingot',
 		);
 	});
 
@@ -90,6 +90,10 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 			],
 			generators: [],
 			extractors: [],
+			// 搬送設備を入れないのは、副産物のエッジが出ること自体がこのテストの
+			// 約束で、段の注記を混ぜると期待値が 2 つの約束を抱えるため
+			belts: [],
+			pipes: [],
 		};
 		const plan = planProduction(byproductData, {
 			itemId: "plastic",
@@ -121,7 +125,191 @@ describe("接続図: 計画 → mermaid 記法の変換(issue #18)", () => {
 				"flowchart TD",
 				'\traw_iron_ore(["鉄鉱石（原料）"])',
 				'\ttarget_iron_ore(["鉄鉱石（目標）"])',
+				'\traw_iron_ore -- "鉄鉱石 10 /分（Mk.1）" --> target_iron_ore',
+			].join("\n"),
+		);
+	});
+});
+
+// issue #35: 1 エッジ = コンベア 1 本という暗黙の前提はベルトの送量上限で崩れるので、
+// 各エッジに「その流量を 1 本で運べる最低の Mk」を注記する。
+// 固体はベルト、液体・気体はパイプの表で判定し、最大 Mk でも足りなければ本数を出す。
+describe("接続図: エッジへの搬送設備の注記(issue #35)", () => {
+	it("流量がベルト Mk.5 の上限ちょうどのとき、1 本で運べる段として（Mk.5）が注記される", () => {
+		const plan = planProduction(fixtureData, {
+			itemId: "iron-ingot",
+			ratePerMinute: 780,
+		});
+
+		expect(planToMermaid(fixtureData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\trecipe_iron_ingot["鉄インゴット<br/>製錬炉 × 26"]',
+				'\traw_iron_ore(["鉄鉱石（原料）"])',
+				'\ttarget_iron_ingot(["鉄インゴット（目標）"])',
+				'\traw_iron_ore -- "鉄鉱石 780 /分（Mk.5）" --> recipe_iron_ingot',
+				'\trecipe_iron_ingot -- "鉄インゴット 780 /分（Mk.5）" --> target_iron_ingot',
+			].join("\n"),
+		);
+	});
+
+	it("最大 Mk でも 1 本で運べない流量のとき、必要本数付きで注記される", () => {
+		const plan = planProduction(fixtureData, {
+			itemId: "iron-ingot",
+			ratePerMinute: 2400,
+		});
+
+		expect(planToMermaid(fixtureData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\trecipe_iron_ingot["鉄インゴット<br/>製錬炉 × 80"]',
+				'\traw_iron_ore(["鉄鉱石（原料）"])',
+				'\ttarget_iron_ingot(["鉄インゴット（目標）"])',
+				'\traw_iron_ore -- "鉄鉱石 2400 /分（Mk.6 × 2 本）" --> recipe_iron_ingot',
+				'\trecipe_iron_ingot -- "鉄インゴット 2400 /分（Mk.6 × 2 本）" --> target_iron_ingot',
+			].join("\n"),
+		);
+	});
+
+	it("液体のエッジのとき、同じ流量でもベルトではなくパイプの段で注記される", () => {
+		// 300 /分 は固体ならベルト Mk.4(270 < 300 ≤ 480)、液体ならパイプ Mk.1(≤ 300)。
+		// 表を取り違えると同じ数値が違う段になるので、1 つの図で両方を突き合わせる
+		const pipeData: RecipeData = {
+			items: {
+				water: { name: "水", form: "liquid" },
+				plastic: { name: "プラスチック" },
+			},
+			buildings: {
+				refinery: {
+					name: "精製機",
+					powerMW: 30,
+					constructionCost: [{ item: "plastic", amount: 1 }],
+				},
+			},
+			recipes: [
+				{
+					id: "plastic",
+					name: "プラスチック",
+					building: "refinery",
+					durationSeconds: 60,
+					alternate: false,
+					inputs: [{ item: "water", amount: 300 }],
+					outputs: [{ item: "plastic", amount: 300 }],
+				},
+			],
+			generators: [],
+			extractors: [],
+			belts: fixtureData.belts,
+			pipes: fixtureData.pipes,
+		};
+		const plan = planProduction(pipeData, {
+			itemId: "plastic",
+			ratePerMinute: 300,
+		});
+
+		expect(planToMermaid(pipeData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\trecipe_plastic["プラスチック<br/>精製機 × 1"]',
+				'\traw_water(["水（原料）"])',
+				'\ttarget_plastic(["プラスチック（目標）"])',
+				'\traw_water -- "水 300 /分（Mk.1）" --> recipe_plastic',
+				'\trecipe_plastic -- "プラスチック 300 /分（Mk.4）" --> target_plastic',
+			].join("\n"),
+		);
+	});
+
+	it("ベルト・パイプが収録されていないデータのとき、エッジラベルに段の注記が付かない", () => {
+		// 搬送設備を持たないローカル fixture を読んだときに、注記なしのラベルへ縮退する
+		// (エラーにも "Mk.undefined" にもしない)
+		const withoutTransports: RecipeData = {
+			...fixtureData,
+			belts: [],
+			pipes: [],
+		};
+		const plan = planProduction(withoutTransports, {
+			itemId: "iron-ore",
+			ratePerMinute: 10,
+		});
+
+		expect(planToMermaid(withoutTransports, plan)).toBe(
+			[
+				"flowchart TD",
+				'\traw_iron_ore(["鉄鉱石（原料）"])',
+				'\ttarget_iron_ore(["鉄鉱石（目標）"])',
 				'\traw_iron_ore -- "鉄鉱石 10 /分" --> target_iron_ore',
+			].join("\n"),
+		);
+	});
+
+	it("副産物のエッジのとき、余剰ノードへ向かう流量にも段が注記される", () => {
+		// 余剰の産出量はレシピ定義から復元した値で、他のエッジとは経路が違う。
+		// 液体の副産物なのでパイプの段が付く
+		const surplusData: RecipeData = {
+			items: {
+				crude: { name: "原油", form: "liquid" },
+				plastic: { name: "プラスチック" },
+				residue: { name: "廃重油", form: "liquid" },
+			},
+			buildings: {
+				refinery: {
+					name: "精製機",
+					powerMW: 30,
+					constructionCost: [{ item: "plastic", amount: 1 }],
+				},
+			},
+			recipes: [
+				{
+					id: "plastic",
+					name: "プラスチック",
+					building: "refinery",
+					durationSeconds: 6,
+					alternate: false,
+					inputs: [{ item: "crude", amount: 3 }],
+					outputs: [
+						{ item: "plastic", amount: 2 },
+						{ item: "residue", amount: 1 },
+					],
+				},
+			],
+			generators: [],
+			extractors: [],
+			belts: fixtureData.belts,
+			pipes: fixtureData.pipes,
+		};
+		const plan = planProduction(surplusData, {
+			itemId: "plastic",
+			ratePerMinute: 1200,
+		});
+
+		expect(planToMermaid(surplusData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\trecipe_plastic["プラスチック<br/>精製機 × 60"]',
+				'\traw_crude(["原油（原料）"])',
+				'\tsurplus_residue(["廃重油（余剰）"])',
+				'\ttarget_plastic(["プラスチック（目標）"])',
+				'\trecipe_plastic -- "廃重油 600 /分（Mk.2）" --> surplus_residue',
+				'\traw_crude -- "原油 1800 /分（Mk.2 × 3 本）" --> recipe_plastic',
+				'\trecipe_plastic -- "プラスチック 1200 /分（Mk.6）" --> target_plastic',
+			].join("\n"),
+		);
+	});
+
+	it("流量が 0 /分 のエッジのとき、段の注記が付かない", () => {
+		// 目標レート 0 は planProduction も UI も受理する。運ぶものが無いエッジに
+		// 搬送設備は要らないので、Mk.1 が要るかのように見せない
+		const plan = planProduction(fixtureData, {
+			itemId: "iron-ore",
+			ratePerMinute: 0,
+		});
+
+		expect(planToMermaid(fixtureData, plan)).toBe(
+			[
+				"flowchart TD",
+				'\traw_iron_ore(["鉄鉱石（原料）"])',
+				'\ttarget_iron_ore(["鉄鉱石（目標）"])',
+				'\traw_iron_ore -- "鉄鉱石 0 /分" --> target_iron_ore',
 			].join("\n"),
 		);
 	});

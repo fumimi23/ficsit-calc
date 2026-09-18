@@ -3,13 +3,14 @@
 //   スキーマ準拠 /
 //   参照整合性(レシピの入出力アイテムと発電機の燃料・副資材、採取設備の対象資源は
 //     アイテム辞書に、レシピの機械はビルディング辞書に存在) /
-//   正の値(電力・定格出力・所要時間・数量・エネルギー値・副資材比率・採取レート) /
-//   ID の一意性(レシピ・発電機・採取設備) /
+//   正の値(電力・定格出力・所要時間・数量・エネルギー値・副資材比率・採取レート・送量) /
+//   ID の一意性(レシピ・発電機・採取設備・搬送設備) /
 //   発電機は燃料を、採取設備は対象資源を 1 つ以上持つ。
 import { describe, expect, it } from "vitest";
 import recipesJson from "../../data/recipes.json";
 import { planExtractors } from "../../src/lib/calc/extractors";
 import { Fraction } from "../../src/lib/calc/fraction";
+import type { TransportDef } from "../../src/lib/calc/types";
 import { validateRecipeData } from "../../src/lib/calc/validate";
 import { fixtureData } from "../fixtures/recipes";
 
@@ -69,6 +70,48 @@ describe("invariants: レシピデータ", () => {
 			expect(requirements, item).toHaveLength(1);
 			expect(requirements[0]?.item, item).toBe(item);
 		}
+	});
+
+	// issue #35: 接続図のエッジに最低 Mk を注記するには、スナップショットに
+	// ベルト・パイプの送量が要る。外観違い(クリーン版)とコンベアリフトは tier を
+	// 重複させるので収録対象外
+	it("コミット済み data/recipes.json にベルト Mk.1〜6・パイプ Mk.1〜2 が既知の送量で収録されている", () => {
+		const data = validateRecipeData(recipesJson);
+		// ExactNumeric の表現(number / 十進文字列)は約束しないので、値は Fraction で比べる
+		const summary = (list: TransportDef[]) =>
+			list.map(
+				(t) => `${t.id}:${t.tier}:${Fraction.from(t.ratePerMinute).toString()}`,
+			);
+
+		expect(summary(data.belts)).toEqual([
+			"Build_ConveyorBeltMk1_C:1:60",
+			"Build_ConveyorBeltMk2_C:2:120",
+			"Build_ConveyorBeltMk3_C:3:270",
+			"Build_ConveyorBeltMk4_C:4:480",
+			"Build_ConveyorBeltMk5_C:5:780",
+			"Build_ConveyorBeltMk6_C:6:1200",
+		]);
+		expect(summary(data.pipes)).toEqual([
+			"Build_Pipeline_C:1:300",
+			"Build_PipelineMK2_C:2:600",
+		]);
+
+		const ids = [...data.belts, ...data.pipes].map((t) => t.id);
+		expect(ids.filter((id) => id.includes("NoIndicator"))).toEqual([]);
+		expect(ids.filter((id) => id.includes("ConveyorLift"))).toEqual([]);
+	});
+
+	// issue #35: form はスキーマ上 optional で、selectTransport は未指定を固体として扱う。
+	// Docs ドリフトで液体・気体の mForm が読めなくなると、エッジがベルトの表で注記され
+	// (レシピ数量の m³ 換算も外れ)結果が静かに間違う
+	it("コミット済み data/recipes.json の全アイテムが物質形態(form)を持つ", () => {
+		const data = validateRecipeData(recipesJson);
+		const entries = Object.entries(data.items);
+
+		expect(entries.length).toBeGreaterThan(0);
+		expect(
+			entries.filter(([, item]) => item.form === undefined).map(([id]) => id),
+		).toEqual([]);
 	});
 
 	// issue #21: 1 機種でも建設素材が欠けると建設コストが黙って過少表示になる。

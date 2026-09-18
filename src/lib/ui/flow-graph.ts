@@ -5,7 +5,13 @@
 // primary 選択によりアイテムの生産元は高々 1 つなので、集約は決定的。
 // SVG への描画は mermaid に委譲する(このモジュールは文字列を作るだけの純関数)。
 import { Fraction } from "../calc/fraction";
-import type { PlanNode, ProductionPlan, RecipeData } from "../calc/types";
+import { selectTransport } from "../calc/transport";
+import type {
+	ItemId,
+	PlanNode,
+	ProductionPlan,
+	RecipeData,
+} from "../calc/types";
 import { buildingLabel, itemLabel, recipeLabel } from "./display";
 
 type NodeKind = "recipe" | "raw" | "surplus" | "target";
@@ -45,6 +51,21 @@ class NodeIds {
 /** mermaid の引用符付きラベルに埋め込める形にする(引用符は mermaid のエンティティ表記へ) */
 function escapeLabel(text: string): string {
 	return text.replace(/"/g, "#quot;");
+}
+
+/**
+ * その流量を運ぶのに要る段の注記。1 本で運べるなら最低の Mk、最大 Mk でも足りなければ本数付き。
+ * 括弧を全角にするのはノードラベルの（原料）等と表記を揃えるため。
+ */
+function transportNote(data: RecipeData, item: ItemId, rate: Fraction): string {
+	// 運ぶものが無いエッジに、Mk.1 が要るかのような注記を出さない
+	if (rate.isZero()) return "";
+	const requirement = selectTransport(data, item, rate);
+	if (!requirement) return "";
+	const tier = `Mk.${requirement.transport.tier}`;
+	return requirement.lines === 1
+		? `（${tier}）`
+		: `（${tier} × ${requirement.lines} 本）`;
 }
 
 /**
@@ -137,7 +158,7 @@ export function planToMermaid(data: RecipeData, plan: ProductionPlan): string {
 	);
 
 	for (const edge of edges.values()) {
-		const label = `${escapeLabel(itemLabel(data, edge.item))} ${edge.rate.toDecimalString()} /分`;
+		const label = `${escapeLabel(itemLabel(data, edge.item))} ${edge.rate.toDecimalString()} /分${transportNote(data, edge.item, edge.rate)}`;
 		lines.push(`\t${edge.from} -- "${label}" --> ${edge.to}`);
 	}
 	return lines.join("\n");

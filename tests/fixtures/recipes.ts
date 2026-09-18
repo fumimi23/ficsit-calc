@@ -91,6 +91,68 @@ export const fixtureData: RecipeData = {
 	// 採取設備は各 spec のローカル fixture に持たせる。ここに足すと
 	// 総電力・建設コストを約束にしている既存 UI テストの期待値が動いてしまう
 	extractors: [],
+	// 搬送設備は実データと同じ全段を入れる。ここだけ空にすると接続図のエッジ注記が
+	// 縮退し、段の選定を約束にしている flow-graph の spec が書けなくなる
+	belts: [
+		{
+			id: "Build_ConveyorBeltMk1_C",
+			name: "Conveyor Belt Mk.1",
+			nameJa: "コンベア・ベルト Mk.1",
+			tier: 1,
+			ratePerMinute: 60,
+		},
+		{
+			id: "Build_ConveyorBeltMk2_C",
+			name: "Conveyor Belt Mk.2",
+			nameJa: "コンベア・ベルト Mk.2",
+			tier: 2,
+			ratePerMinute: 120,
+		},
+		{
+			id: "Build_ConveyorBeltMk3_C",
+			name: "Conveyor Belt Mk.3",
+			nameJa: "コンベア・ベルト Mk.3",
+			tier: 3,
+			ratePerMinute: 270,
+		},
+		{
+			id: "Build_ConveyorBeltMk4_C",
+			name: "Conveyor Belt Mk.4",
+			nameJa: "コンベア・ベルト Mk.4",
+			tier: 4,
+			ratePerMinute: 480,
+		},
+		{
+			id: "Build_ConveyorBeltMk5_C",
+			name: "Conveyor Belt Mk.5",
+			nameJa: "コンベア・ベルト Mk.5",
+			tier: 5,
+			ratePerMinute: 780,
+		},
+		{
+			id: "Build_ConveyorBeltMk6_C",
+			name: "Conveyor Belt Mk.6",
+			nameJa: "コンベア・ベルト Mk.6",
+			tier: 6,
+			ratePerMinute: 1200,
+		},
+	],
+	pipes: [
+		{
+			id: "Build_Pipeline_C",
+			name: "Pipeline Mk.1",
+			nameJa: "パイプラインMk.1",
+			tier: 1,
+			ratePerMinute: 300,
+		},
+		{
+			id: "Build_PipelineMK2_C",
+			name: "Pipeline Mk.2",
+			nameJa: "パイプラインMk.2",
+			tier: 2,
+			ratePerMinute: 600,
+		},
+	],
 };
 
 // 発電機入りの fixture。fixtureData 自体に足さないのは、
@@ -105,6 +167,10 @@ export const generatorFixtureData: RecipeData = {
 		water: { name: "水", form: "liquid" },
 		fuel: { name: "燃料", form: "liquid" },
 	},
+	// fixtureData から引き継がれる搬送設備を空に戻す。発電の検算(台数・燃料・水)に
+	// 段の注記は関わらず、入っていると別の約束を巻き込むため
+	belts: [],
+	pipes: [],
 	generators: [
 		{
 			id: "coal-generator",
@@ -263,7 +329,9 @@ export const multiRecipeFixtureData: RecipeData = {
 		},
 	],
 	// 発電機を入れないのは、必要発電機の表がレシピ切り替えの検算(台数・電力・原料)に
-	// 関わらないため。採取設備も同じ理由で入れない
+	// 関わらないため。採取設備・搬送設備も同じ理由で入れない
 	generators: [],
 	extractors: [],
+	belts: [],
+	pipes: [],
 };

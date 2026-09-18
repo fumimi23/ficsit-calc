@@ -11,7 +11,7 @@ const FORMS = new Set(["solid", "liquid", "gas"]);
  * 値が RecipeData のスキーマに準拠していることを検証して返す。違反は Error。
  * 検査内容: 構造と型 / 参照整合性(レシピの入出力アイテム・機械・発電機の燃料・
  * 採取設備の対象資源が辞書に存在) / 数値の正当性(電力・所要時間・数量・エネルギー値・
- * 採取レートが正の ExactNumeric) / ID の一意性。
+ * 採取レート・搬送設備の送量が正の ExactNumeric、搬送設備の段が正の整数) / ID の一意性。
  */
 export function validateRecipeData(value: unknown): RecipeData {
 	const root = asRecord(value, "recipes.json");
@@ -27,6 +27,12 @@ export function validateRecipeData(value: unknown): RecipeData {
 	// 採取設備を持たないローカル fixture がすべて検証を通らなくなる
 	if (!Array.isArray(root.extractors)) {
 		throw new Error("extractors が配列ではありません");
+	}
+	if (!Array.isArray(root.belts)) {
+		throw new Error("belts が配列ではありません");
+	}
+	if (!Array.isArray(root.pipes)) {
+		throw new Error("pipes が配列ではありません");
 	}
 
 	for (const [id, raw] of Object.entries(items)) {
@@ -156,7 +162,43 @@ export function validateRecipeData(value: unknown): RecipeData {
 		}
 	}
 
+	requireTransports(root.belts, "belts");
+	requireTransports(root.pipes, "pipes");
+
 	return value as RecipeData;
+}
+
+/** ベルト・パイプの検証。段・送量の意味は違っても構造は同じなので 1 つにまとめる */
+function requireTransports(list: unknown[], label: string): void {
+	const ids = new Set<string>();
+	const tiers = new Set<number>();
+	for (const raw of list) {
+		const transport = asRecord(raw, `${label} の要素`);
+		const id = requireNonEmpty(transport.id, `${label}[].id`);
+		if (ids.has(id)) {
+			throw new Error(`搬送設備 ID が重複しています: ${id}`);
+		}
+		ids.add(id);
+		requireName(transport, id);
+		// 段はラベルの "Mk.4" にそのまま出るので、0・負・端数はどれも表示として成立しない
+		if (
+			typeof transport.tier !== "number" ||
+			!Number.isInteger(transport.tier) ||
+			transport.tier <= 0
+		) {
+			throw new Error(`${id}.tier が正の整数ではありません: ${transport.tier}`);
+		}
+		// 同じ段が 2 つあると最低段の選定が先勝ちで静かに揺れる。パーサーも Docs 読み込み時に
+		// 落とすが、実行時に読むデータがこの検証しか通らない経路があるので両方で守る
+		if (tiers.has(transport.tier)) {
+			throw new Error(
+				`搬送設備の段が重複しています: ${id} = Mk.${transport.tier}`,
+			);
+		}
+		tiers.add(transport.tier);
+		// 送量 0 を通すと必要本数が 0 除算になる
+		requirePositive(transport.ratePerMinute, `${id}.ratePerMinute`);
+	}
 }
 
 function asRecord(value: unknown, label: string): Record<string, unknown> {

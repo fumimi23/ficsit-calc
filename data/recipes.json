@@ -7093,5 +7093,65 @@
 				}
 			]
 		}
+	],
+	"belts": [
+		{
+			"id": "Build_ConveyorBeltMk1_C",
+			"name": "Conveyor Belt Mk.1",
+			"nameJa": "コンベア・ベルト Mk.1",
+			"tier": 1,
+			"ratePerMinute": 60
+		},
+		{
+			"id": "Build_ConveyorBeltMk2_C",
+			"name": "Conveyor Belt Mk.2",
+			"nameJa": "コンベア・ベルト Mk.2",
+			"tier": 2,
+			"ratePerMinute": 120
+		},
+		{
+			"id": "Build_ConveyorBeltMk3_C",
+			"name": "Conveyor Belt Mk.3",
+			"nameJa": "コンベア・ベルト Mk.3",
+			"tier": 3,
+			"ratePerMinute": 270
+		},
+		{
+			"id": "Build_ConveyorBeltMk4_C",
+			"name": "Conveyor Belt Mk.4",
+			"nameJa": "コンベア・ベルト Mk.4",
+			"tier": 4,
+			"ratePerMinute": 480
+		},
+		{
+			"id": "Build_ConveyorBeltMk5_C",
+			"name": "Conveyor Belt Mk.5",
+			"nameJa": "コンベア・ベルト Mk.5",
+			"tier": 5,
+			"ratePerMinute": 780
+		},
+		{
+			"id": "Build_ConveyorBeltMk6_C",
+			"name": "Conveyor Belt Mk.6",
+			"nameJa": "コンベア・ベルト Mk.6",
+			"tier": 6,
+			"ratePerMinute": 1200
+		}
+	],
+	"pipes": [
+		{
+			"id": "Build_Pipeline_C",
+			"name": "Pipeline Mk.1",
+			"nameJa": "パイプラインMk.1",
+			"tier": 1,
+			"ratePerMinute": 300
+		},
+		{
+			"id": "Build_PipelineMK2_C",
+			"name": "Pipeline Mk.2",
+			"nameJa": "パイプラインMk.2",
+			"tier": 2,
+			"ratePerMinute": 600
+		}
 	]
 }
